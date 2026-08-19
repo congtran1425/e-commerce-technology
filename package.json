@@ -9,9 +9,11 @@
   "scripts": {
     "build": "npm run build --workspaces --if-present",
     "check": "npm run check --workspaces --if-present",
+    "dev:api": "npm run dev --workspace=@ecommerce/api",
+    "dev:web": "npm run dev --workspace=@ecommerce/web",
     "test": "npm run test --workspaces --if-present"
   },
   "engines": {
-    "node": ">=20"
+    "node": "^20.19.0 || >=22.12.0"
   }
 }

@@ -6,4 +6,29 @@ info:
 servers:
   - url: http://localhost:3000/api
     description: Local development
-paths: {}
+paths:
+  /health:
+    get:
+      summary: Kiểm tra trạng thái API
+      operationId: getHealth
+      responses:
+        "200":
+          description: API đang hoạt động
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - status
+                  - service
+                  - timestamp
+                properties:
+                  status:
+                    type: string
+                    const: ok
+                  service:
+                    type: string
+                    example: e-commerce-api
+                  timestamp:
+                    type: string
+                    format: date-time

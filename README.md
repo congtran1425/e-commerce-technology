@@ -117,20 +117,34 @@ Không dùng tin nhắn nhóm hoặc nội dung truyền miệng làm đặc t�
 - Không import xuyên sâu vào phần nội bộ của module khác; module nên cung cấp public API qua `index.ts`.
 - Một pull request thay đổi API phải cập nhật code, contract, OpenAPI, test và tài liệu liên quan cùng lúc.
 
+## Project skill
+
+Repository cài Hallmark ở `.agents/skills/hallmark`. Đây là skill thiết kế giao diện giúp agent tránh các bố cục và phong cách AI rập khuôn khi xây mới, audit hoặc redesign frontend.
+
+Skill được khóa nguồn trong `skills-lock.json` và thuộc phạm vi repository để các thành viên dùng chung. Sau khi clone/pull, hãy khởi động một phiên Codex mới để skill được phát hiện. Có thể gọi rõ bằng `$hallmark` khi giao nhiệm vụ thiết kế; việc cài skill không tự thay đổi source hoặc giao diện hiện tại.
+
 ## Bắt đầu
 
-Repository mới chỉ là bộ khung. Sau khi nhóm chốt runtime, package manager và các thư viện, cài dependency tại thư mục gốc rồi dùng npm workspaces để chạy từng ứng dụng.
+Yêu cầu Node.js `^20.19.0 || >=22.12.0`. Cài dependency một lần tại thư mục gốc bằng lockfile đã commit:
 
 ```bash
-npm install
+npm ci
 npm run check
+npm run build
 ```
 
-Các lệnh `dev`, `build` và `test` sẽ được bổ sung khi khởi tạo source React và Express.
+Chạy development bằng hai terminal:
+
+```bash
+npm run dev:api
+npm run dev:web
+```
+
+- Web: `http://localhost:5173`
+- API health check: `http://localhost:3000/api/health`
 
 ## Những quyết định còn mở
 
-- JavaScript hay TypeScript (đề xuất: TypeScript cho cả frontend và backend).
 - Database và ORM.
 - Cơ chế access token, refresh token hoặc session.
 - Thư viện validation và test.
