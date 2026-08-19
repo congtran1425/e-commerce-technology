@@ -1,0 +1,33 @@
+name: Feature
+description: Đề xuất hoặc triển khai một chức năng.
+title: "[Feature]: "
+labels:
+  - feature
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Vấn đề hoặc nhu cầu
+      description: Mô tả người dùng và giá trị cần tạo ra.
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: Phạm vi
+      description: Nêu những phần thuộc và không thuộc công việc này.
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Tiêu chí hoàn thành
+      description: Liệt kê các kết quả có thể kiểm chứng.
+      placeholder: "- [ ] ..."
+    validations:
+      required: true
+  - type: textarea
+    id: dependencies
+    attributes:
+      label: Phụ thuộc và ảnh hưởng
+      description: API, database, UI hoặc Issue liên quan.
