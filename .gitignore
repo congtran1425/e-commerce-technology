@@ -28,3 +28,10 @@ Thumbs.db
 
 # Deployment providers
 .vercel/
+
+# Ke hoach ca nhan, chi luu tren may nay
+/docs/roadmap/
+/docs/planning/
+/docs/Mô tả đề tài.docx
+/docs/product/decision-log.md
+/scripts/generate-roadmap-workbook.ps1

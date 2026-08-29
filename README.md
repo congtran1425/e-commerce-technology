@@ -145,7 +145,6 @@ npm run dev:web
 
 ## Những quyết định còn mở
 
-- Database và ORM.
 - Cơ chế access token, refresh token hoặc session.
 - Thư viện validation và test.
 - Nhà cung cấp dịch vụ triển khai backend.
