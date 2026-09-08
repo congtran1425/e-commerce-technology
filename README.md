@@ -1,68 +1,61 @@
 # E-commerce Technology
 
-Monorepo cho đồ án cuối kỳ môn E-commerce Technology, được phát triển bởi nhóm 5 thành viên.
+Dự án thương mại điện tử cá nhân dành cho người Việt muốn tự làm bánh tại nhà, từ người mới bắt đầu đến người đã có kinh nghiệm.
 
-Hệ thống dự kiến gồm:
+Giá trị cốt lõi:
 
-- `apps/web`: React frontend dành cho khách hàng và quản trị viên.
-- `apps/api`: Express REST API, chịu trách nhiệm xác thực, phân quyền và nghiệp vụ.
-- `packages/contracts`: kiểu dữ liệu và API contract dùng chung.
-- `packages/validation`: nơi dành cho schema validation dùng chung khi có nhu cầu.
-- `packages/config`: cấu hình dùng chung như TypeScript hoặc ESLint khi có nhu cầu.
+```text
+chọn món bánh → chọn khẩu phần → mua đủ nguyên liệu và dụng cụ
+```
+
+Tên `E-commerce Technology` và nhận diện hiện tại chỉ là tạm thời. Việc đổi thương hiệu sẽ được thực hiện sau.
+
+## Thành phần hệ thống
+
+- `apps/web`: ứng dụng React dành cho khách hàng và quản trị viên.
+- `apps/api`: Express REST API xử lý xác thực, phân quyền và nghiệp vụ.
+- `packages/contracts`: kiểu dữ liệu và hợp đồng API dùng chung.
+- `packages/validation`: lược đồ kiểm tra dữ liệu dùng chung khi có nhu cầu.
+- `packages/config`: cấu hình TypeScript, ESLint và công cụ dùng chung.
 
 ## Kiến trúc triển khai dự kiến
 
 ```text
-Browser
+Trình duyệt
    |
    v
 React trên Vercel
    | HTTPS API
    v
-Express API trên dịch vụ backend
+Oracle Cloud VM: Caddy -> Express API
    |
    v
-Database
+PostgreSQL trên cùng máy ảo
 ```
 
-Frontend có hai vùng giao diện trong cùng một ứng dụng:
+Khách hàng và quản trị viên dùng chung một ứng dụng React nhưng có vùng giao diện riêng:
 
 ```text
-/*          -> khách hàng
-/admin/*    -> quản trị viên
+/*          → khách hàng
+/admin/*    → quản trị viên
 ```
 
-Khi có domain riêng, dự kiến dùng một domain gốc và subdomain:
+Tên miền dự kiến:
 
 ```text
-example.com       -> frontend
-api.example.com   -> backend
+ecomtech.congtc145.id.vn       → frontend hiện tại
+api.ecomtech.congtc145.id.vn   → backend dự kiến
 ```
 
-Backend luôn là nơi kiểm tra quyền thực sự. Việc ẩn nút hoặc bảo vệ route ở React không thay thế cho xác thực và phân quyền trên API.
+Backend luôn là nơi kiểm tra quyền thực sự. Chặn đường dẫn ở React chỉ hỗ trợ trải nghiệm, không thay thế xác thực và phân quyền tại API.
 
 ## Cấu trúc repository
 
 ```text
 .
 |-- apps/
-|   |-- web/                       # React customer + admin
-|   |   |-- public/
-|   |   |-- src/
-|   |   |   |-- app/
-|   |   |   |-- features/
-|   |   |   |-- layouts/
-|   |   |   |-- pages/
-|   |   |   `-- shared/
-|   |   `-- tests/
+|   |-- web/                       # React: khách hàng + quản trị
 |   `-- api/                       # Express REST API
-|       |-- src/
-|       |   |-- app/
-|       |   |-- config/
-|       |   |-- modules/
-|       |   |-- middleware/
-|       |   `-- shared/
-|       `-- tests/
 |-- packages/
 |   |-- contracts/src/
 |   |-- validation/src/
@@ -72,68 +65,80 @@ Backend luôn là nơi kiểm tra quyền thực sự. Việc ẩn nút hoặc b
 |   |-- api/
 |   |-- database/
 |   |-- decisions/
+|   |-- design/
+|   |-- legal/
+|   |-- product/
+|   |-- payments/
+|   |-- deployment/
 |   `-- workflows/
 |-- .github/
-|   |-- ISSUE_TEMPLATE/
-|   `-- workflows/
+|-- compose.yaml                   # PostgreSQL cục bộ tại cổng 5433
+|-- compose.production.yaml        # API + PostgreSQL + HTTPS trên Oracle
+|-- deploy/oracle/                 # cấu hình Caddy và mẫu biến môi trường
+|-- AGENTS.md
 |-- CONTRIBUTING.md
 `-- package.json
 ```
 
 Đọc thêm:
 
+- [Tầm nhìn sản phẩm](docs/product/vision.md)
+- [Định hướng trải nghiệm và giao diện](docs/design/direction.md)
+- [Danh mục mã nguồn giao diện tham khảo](docs/design/reference-catalog.md)
 - [Tổng quan kiến trúc](docs/architecture/overview.md)
 - [Xác thực và phân quyền](docs/architecture/authentication.md)
 - [Triển khai](docs/architecture/deployment.md)
+- [Triển khai Oracle Cloud](docs/deployment/oracle-cloud.md)
+- [Tích hợp ZaloPay Sandbox](docs/payments/zalopay.md)
 - [Quy ước API](docs/api/conventions.md)
+- [Quy tắc sử dụng mã nguồn bên thứ ba](docs/legal/source-policy.md)
 - [Quy trình Git](docs/workflows/git-workflow.md)
-- [Definition of Done](docs/workflows/definition-of-done.md)
-- [Hướng dẫn đóng góp](CONTRIBUTING.md)
+- [Điều kiện hoàn thành](docs/workflows/definition-of-done.md)
 
-## Nguồn sự thật của dự án
-
-Mỗi loại thông tin chỉ nên có một nơi chính thức:
+## Nguồn thông tin chính thức
 
 | Nội dung | Nơi lưu |
 | --- | --- |
-| Cách cài đặt và chạy dự án | `README.md` |
-| Quy trình đóng góp | `CONTRIBUTING.md` |
+| Cài đặt và chạy dự án | `README.md` |
+| Tầm nhìn, phạm vi và quyết định sản phẩm đã chốt | `docs/product/vision.md` |
 | Kiến trúc hệ thống | `docs/architecture/` |
-| API contract | `docs/api/openapi.yaml` và `packages/contracts` |
-| Database schema | migration của ORM và `docs/database/schema.md` |
+| Hợp đồng API | `docs/api/openapi.yaml` và `packages/contracts` |
+| Lược đồ cơ sở dữ liệu | migration Prisma và `docs/database/schema.md` |
 | Quyết định kỹ thuật | `docs/decisions/` |
-| Công việc và người thực hiện | GitHub Issues/Project |
-| Người review theo phạm vi | `.github/CODEOWNERS` |
-| Biến môi trường cần có | các file `.env.example` |
+| Công việc đang làm | GitHub Issues/Project |
+| Biến môi trường cần có | các tệp `.env.example` |
 
-Không dùng tin nhắn nhóm hoặc nội dung truyền miệng làm đặc tả cuối cùng. Khi một quyết định thay đổi, cập nhật nguồn sự thật tương ứng trong cùng pull request.
+Một thay đổi về hành vi, API hoặc kiến trúc phải cập nhật nguồn thông tin tương ứng trong cùng pull request.
 
-## Nguyên tắc tổ chức code
+## Nguyên tắc tổ chức mã nguồn
 
-- Chia code theo module nghiệp vụ, không chia theo tên thành viên.
-- Customer và admin dùng layout/route riêng nhưng cùng thuộc `apps/web`.
-- Backend tổ chức theo module như auth, products, carts và orders.
-- Chỉ đưa mã vào `shared` hoặc `packages` sau khi nó thực sự được dùng chung.
-- Không import xuyên sâu vào phần nội bộ của module khác; module nên cung cấp public API qua `index.ts`.
-- Một pull request thay đổi API phải cập nhật code, contract, OpenAPI, test và tài liệu liên quan cùng lúc.
+- Chia mã theo miền nghiệp vụ.
+- Giao diện khách hàng và quản trị dùng layout/route riêng nhưng cùng thuộc `apps/web`.
+- Backend tổ chức theo module như auth, recipes, products, carts, orders và payments.
+- Chỉ đưa mã vào `shared` hoặc `packages` khi thực sự được dùng ở nhiều nơi.
+- Không import sâu vào phần nội bộ của module khác; mỗi module cung cấp điểm truy cập công khai qua `index.ts`.
+- Thay đổi API phải cập nhật đồng thời mã nguồn, OpenAPI, kiểu dùng chung, kiểm thử và tài liệu liên quan.
 
-## Project skill
+## Thiết kế và tái sử dụng mã nguồn
 
-Repository cài Hallmark ở `.agents/skills/hallmark`. Đây là skill thiết kế giao diện giúp agent tránh các bố cục và phong cách AI rập khuôn khi xây mới, audit hoặc redesign frontend.
+Không tạo toàn bộ giao diện chỉ từ một mô tả chung. Trước khi xây giao diện mới, cần khảo sát mã nguồn tham khảo có giấy phép phù hợp, ghi nhận nguồn, rồi chọn lọc và biến đổi cho đúng sản phẩm. Không sao chép nguyên giao diện, hình ảnh, nội dung hoặc nhận diện của dự án khác.
 
-Skill được khóa nguồn trong `skills-lock.json` và thuộc phạm vi repository để các thành viên dùng chung. Sau khi clone/pull, hãy khởi động một phiên Codex mới để skill được phát hiện. Có thể gọi rõ bằng `$hallmark` khi giao nhiệm vụ thiết kế; việc cài skill không tự thay đổi source hoặc giao diện hiện tại.
+Hallmark được cài tại `.agents/skills/hallmark` để hỗ trợ tránh bố cục AI rập khuôn. Quy tắc dành cho tác nhân AI nằm trong `AGENTS.md`; quy tắc pháp lý nằm trong `docs/legal/source-policy.md`.
 
 ## Bắt đầu
 
-Yêu cầu Node.js `^20.19.0 || >=22.12.0`. Cài dependency một lần tại thư mục gốc bằng lockfile đã commit:
+Yêu cầu Node.js `^20.19.0 || >=22.12.0`.
 
 ```bash
 npm ci
+npm run db:start
+npm run db:migrate
+npm run db:seed
 npm run check
 npm run build
 ```
 
-Chạy development bằng hai terminal:
+Chạy môi trường phát triển bằng hai terminal:
 
 ```bash
 npm run dev:api
@@ -142,12 +147,16 @@ npm run dev:web
 
 - Web: `http://localhost:5173`
 - API health check: `http://localhost:3000/api/health`
+- PostgreSQL cục bộ: `localhost:5433`
 
-## Những quyết định còn mở
+## Quyết định còn mở
 
-- Cơ chế access token, refresh token hoặc session.
-- Thư viện validation và test.
-- Nhà cung cấp dịch vụ triển khai backend.
-- Có tích hợp thanh toán thật hay chỉ mô phỏng.
+- Nhà cung cấp và chính sách lưu ảnh/tệp.
+- Vận chuyển và quy trình hoàn tiền ZaloPay.
+- Chiến lược biên tập và bản quyền nội dung.
 
-Không tạo cấu trúc phụ thuộc vào các lựa chọn trên trước khi nhóm chấp thuận và ghi nhận bằng ADR.
+Không âm thầm chọn mặc định cho các vấn đề trên. Khi cần triển khai phần phụ thuộc, phải ghi quyết định vào tài liệu hoặc ADR trước.
+
+## Giấy phép
+
+Mã nguồn của dự án được phát hành theo [MIT License](LICENSE).

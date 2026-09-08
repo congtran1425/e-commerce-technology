@@ -1,0 +1,107 @@
+name: ecomtech-production
+
+x-default-logging: &default-logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "3"
+
+services:
+  postgres:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:?POSTGRES_DB chưa được cấu hình}
+      POSTGRES_USER: ${POSTGRES_USER:?POSTGRES_USER chưa được cấu hình}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD chưa được cấu hình}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    networks: [backend]
+    logging: *default-logging
+
+  migrate:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+      target: migrate
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: ${DATABASE_URL:?DATABASE_URL chưa được cấu hình}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: "no"
+    networks: [backend]
+    logging: *default-logging
+
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+      target: runtime
+    restart: unless-stopped
+    init: true
+    read_only: true
+    security_opt:
+      - no-new-privileges:true
+    tmpfs:
+      - /tmp
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      DATABASE_URL: ${DATABASE_URL:?DATABASE_URL chưa được cấu hình}
+      CORS_ORIGIN: ${CORS_ORIGIN:?CORS_ORIGIN chưa được cấu hình}
+      SESSION_TTL_DAYS: ${SESSION_TTL_DAYS:-30}
+      ZALOPAY_APP_ID: ${ZALOPAY_APP_ID:-}
+      ZALOPAY_KEY1: ${ZALOPAY_KEY1:-}
+      ZALOPAY_KEY2: ${ZALOPAY_KEY2:-}
+      ZALOPAY_CALLBACK_URL: ${ZALOPAY_CALLBACK_URL:-}
+      ZALOPAY_REDIRECT_URL: ${ZALOPAY_REDIRECT_URL:-}
+      ZALOPAY_CREATE_URL: ${ZALOPAY_CREATE_URL:-https://sb-openapi.zalopay.vn/v2/create}
+      ZALOPAY_QUERY_URL: ${ZALOPAY_QUERY_URL:-https://sb-openapi.zalopay.vn/v2/query}
+      ZALOPAY_EXPIRE_SECONDS: ${ZALOPAY_EXPIRE_SECONDS:-900}
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    expose:
+      - "3000"
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000/api/health').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+    networks: [backend]
+    logging: *default-logging
+
+  caddy:
+    image: caddy:2.10-alpine
+    restart: unless-stopped
+    environment:
+      API_DOMAIN: ${API_DOMAIN:?API_DOMAIN chưa được cấu hình}
+    depends_on:
+      api:
+        condition: service_healthy
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ./deploy/oracle/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    networks: [backend]
+    logging: *default-logging
+
+networks:
+  backend:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  caddy_data:
+  caddy_config:

@@ -8,7 +8,7 @@ export function createApp() {
   const app = express();
 
   app.disable('x-powered-by');
-  app.use(cors({ origin: env.corsOrigins }));
+  app.use(cors({ origin: env.corsOrigins, credentials: true }));
   app.use(express.json());
 
   app.use('/api', apiRouter);

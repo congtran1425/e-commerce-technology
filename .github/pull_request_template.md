@@ -26,4 +26,4 @@ Closes #
 - [ ] Tôi đã tự review diff.
 - [ ] Test/tài liệu/contract liên quan đã được cập nhật.
 - [ ] Không chứa secret hoặc dữ liệu nhạy cảm.
-- [ ] Tôi đã thông báo người phụ trách phần bị ảnh hưởng.
+- [ ] Tôi đã kiểm tra các module, hợp đồng và tài liệu bị ảnh hưởng.

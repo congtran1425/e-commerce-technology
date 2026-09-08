@@ -5,7 +5,7 @@ Date: 2026-08-20
 
 ## Context
 
-Dự án có React frontend, Express backend và contract dùng chung. Nhóm gồm 5 thành viên cần một nơi thống nhất cho code, tài liệu và quy trình review.
+Dự án có React frontend, Express backend và hợp đồng API dùng chung. Một repository duy nhất giúp thay đổi xuyên suốt frontend, backend, contract và tài liệu theo cùng một lịch sử.
 
 ## Decision
 

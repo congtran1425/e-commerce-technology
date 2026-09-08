@@ -2,6 +2,7 @@
   "name": "e-commerce-technology",
   "version": "0.1.0",
   "private": true,
+  "license": "MIT",
   "workspaces": [
     "apps/*",
     "packages/*"
@@ -9,9 +10,17 @@
   "scripts": {
     "build": "npm run build --workspaces --if-present",
     "check": "npm run check --workspaces --if-present",
+    "db:generate": "npm run db:generate --workspace=@ecommerce/api",
+    "db:migrate": "npm run db:migrate --workspace=@ecommerce/api",
+    "db:migrate:deploy": "npm run db:migrate:deploy --workspace=@ecommerce/api",
+    "db:seed": "npm run db:seed --workspace=@ecommerce/api",
+    "db:start": "docker compose up -d postgres",
+    "db:stop": "docker compose stop postgres",
     "dev:api": "npm run dev --workspace=@ecommerce/api",
     "dev:web": "npm run dev --workspace=@ecommerce/web",
-    "test": "npm run test --workspaces --if-present"
+    "test": "npm run test --workspaces --if-present",
+    "deploy:oracle:config": "docker compose --env-file deploy/oracle/.env.example -f compose.production.yaml config --quiet",
+    "deploy:oracle:build": "docker compose --env-file deploy/oracle/.env.example -f compose.production.yaml build"
   },
   "engines": {
     "node": "^20.19.0 || >=22.12.0"

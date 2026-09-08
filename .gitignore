@@ -10,6 +10,18 @@ coverage/
 .env
 .env.*
 !.env.example
+/deploy/oracle/.env
+
+# Private keys and local database backups
+*.pem
+*.key
+*.p12
+*.pfx
+*.jks
+*.dump
+*.backup
+/.pgpass
+/backups/
 
 # Logs
 *.log
@@ -25,6 +37,14 @@ Thumbs.db
 .eslintcache
 *.tsbuildinfo
 .vite/
+.references/
+apps/api/src/generated/prisma/
+
+# Tệp thử nghiệm cổng thanh toán chứa khóa mẫu, chỉ giữ để đối chiếu cục bộ
+/server.js
+
+# Hallmark keeps a local design-process log; decisions are documented in docs/design.
+.hallmark/
 
 # Deployment providers
 .vercel/

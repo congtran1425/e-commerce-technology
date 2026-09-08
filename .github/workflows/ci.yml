@@ -27,3 +27,9 @@ jobs:
 
       - name: Run workspace tests
         run: npm test
+
+      - name: Build all workspaces
+        run: npm run build
+
+      - name: Validate Oracle production Compose configuration
+        run: npm run deploy:oracle:config

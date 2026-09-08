@@ -5,20 +5,33 @@
   "type": "module",
   "scripts": {
     "dev": "tsx watch src/index.ts",
-    "build": "tsc -p tsconfig.json",
-    "check": "tsc -p tsconfig.json --noEmit",
-    "start": "node dist/index.js"
+    "build": "npm run db:generate && tsc -p tsconfig.json",
+    "check": "npm run db:generate && tsc -p tsconfig.json --noEmit",
+    "db:generate": "prisma generate",
+    "db:migrate": "prisma migrate dev && prisma generate",
+    "db:migrate:deploy": "prisma migrate deploy",
+    "db:seed": "prisma generate && prisma db seed",
+    "start": "node dist/index.js",
+    "test": "vitest run src"
   },
   "dependencies": {
+    "@prisma/adapter-pg": "^7.10.0",
+    "@prisma/client": "^7.10.0",
+    "argon2": "^0.45.1",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
-    "express": "^5.2.1"
+    "express": "^5.2.1",
+    "pg": "^8.23.0",
+    "zod": "^4.5.4"
   },
   "devDependencies": {
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
     "@types/node": "^26.2.0",
+    "@types/pg": "^8.23.1",
+    "prisma": "^7.10.0",
     "tsx": "^4.23.12",
-    "typescript": "^7.0.2"
+    "typescript": "^7.0.2",
+    "vitest": "^5.0.0"
   }
 }

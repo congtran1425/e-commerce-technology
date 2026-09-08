@@ -1,14 +1,16 @@
-# Hướng dẫn đóng góp
+# Hướng dẫn phát triển
+
+Dù hiện là dự án cá nhân, mọi thay đổi vẫn đi qua quy trình có thể kiểm tra lại để lịch sử repository phù hợp với một sản phẩm dùng trong hồ sơ năng lực.
 
 ## Trước khi bắt đầu
 
-1. Chọn hoặc tạo một GitHub Issue có phạm vi và tiêu chí hoàn thành rõ ràng.
-2. Kiểm tra xem có thành viên nào đang sửa cùng module, API contract hoặc migration không.
-3. Với thay đổi kiến trúc, tạo ADR ở trạng thái `Proposed` trước khi triển khai.
+1. Tạo hoặc chọn GitHub Issue có phạm vi và tiêu chí hoàn thành rõ ràng.
+2. Kiểm tra các thay đổi đang dở để tránh sửa chồng lên cùng module, hợp đồng API hoặc migration.
+3. Với thay đổi kiến trúc đáng kể, tạo ADR ở trạng thái `Proposed` trước khi triển khai.
 
-## Branch
+## Nhánh
 
-Tạo branch ngắn hạn từ `main`:
+Tạo nhánh ngắn hạn từ `main`:
 
 ```text
 feat/<issue>-<mo-ta-ngan>
@@ -19,27 +21,26 @@ refactor/<issue>-<mo-ta-ngan>
 
 Ví dụ: `feat/123-product-filter`.
 
-Không dùng branch cố định theo tên thành viên. Không push trực tiếp lên `main` sau khi repository đã bật branch protection.
+Không đẩy trực tiếp lên `main` khi branch protection đã được bật.
 
 ## Pull request
 
-- Một PR chỉ giải quyết một mục tiêu.
+- Một pull request chỉ giải quyết một mục tiêu.
 - Liên kết Issue trong phần mô tả.
-- Nêu rõ thay đổi API, database, biến môi trường và ảnh chụp giao diện nếu có.
-- Tự kiểm tra checklist trong PR template.
-- Cần ít nhất một review từ thành viên khác trước khi merge.
-- Thay đổi contract hoặc database cần review từ người phụ trách phần bị ảnh hưởng.
-- Ưu tiên squash merge để giữ lịch sử `main` gọn.
+- Nêu rõ ảnh hưởng đến API, database, biến môi trường và giao diện.
+- Tự đọc lại toàn bộ diff và hoàn thành checklist.
+- Chỉ merge khi kiểm tra tự động thành công.
+- Ưu tiên squash merge để lịch sử `main` gọn.
+- Khi có cộng tác viên, yêu cầu review cho thay đổi quan trọng về bảo mật, hợp đồng API và migration.
 
-## Tránh xung đột
+## Hạn chế xung đột
 
-- Pull/rebase `main` trước khi bắt đầu và trước khi yêu cầu review.
-- Hạn chế nhiều người cùng sửa các file tổng hợp như router gốc, export gốc và lockfile.
-- Cài package bằng npm trong đúng workspace, không sửa `package-lock.json` thủ công.
-- Không format toàn bộ repository trong một PR tính năng.
-- Không đổi tên hoặc di chuyển hàng loạt file khi chưa thông báo nhóm.
-- Giữ module nghiệp vụ tự chứa; chỉ thay đổi public contract khi có sự thống nhất.
+- Cập nhật `main` trước khi bắt đầu và trước khi mở pull request.
+- Cài package bằng npm trong đúng workspace; không sửa `package-lock.json` thủ công.
+- Không format toàn bộ repository trong pull request tính năng.
+- Không đổi tên hoặc di chuyển hàng loạt tệp ngoài phạm vi Issue.
+- Giữ module nghiệp vụ tự chứa; chỉ thay đổi hợp đồng công khai khi đã cập nhật mọi nơi sử dụng.
 
-## Definition of Done
+## Điều kiện hoàn thành
 
 Xem [docs/workflows/definition-of-done.md](docs/workflows/definition-of-done.md).

@@ -1,6 +1,2 @@
-# Bổ sung username/team sau khi nhóm thống nhất phân công.
-# Ví dụ:
-# /apps/web/ @frontend-owner
-# /apps/api/ @backend-owner
-# /packages/contracts/ @frontend-owner @backend-owner
-# /docs/api/ @frontend-owner @backend-owner
+# Chủ sở hữu mặc định của repository cá nhân.
+* @congtran1425

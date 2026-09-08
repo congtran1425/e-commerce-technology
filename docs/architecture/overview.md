@@ -2,7 +2,7 @@
 
 ## Mục tiêu
 
-Hệ thống là website thương mại điện tử gồm React frontend và Express REST API giao tiếp qua HTTPS. Frontend dự kiến triển khai trên Vercel; backend triển khai độc lập trên một dịch vụ SaaS/PaaS phù hợp.
+Hệ thống là website thương mại điện tử cá nhân gồm React frontend và Express REST API giao tiếp qua HTTPS. Frontend triển khai trên Vercel; backend và PostgreSQL trước mắt chạy bằng Docker trên một máy ảo Oracle Cloud tại khu vực Singapore.
 
 ## Ranh giới ứng dụng
 
@@ -45,4 +45,19 @@ route -> middleware -> controller -> service -> repository -> database
 
 ## Các module dự kiến
 
-Auth, users, products, categories, carts, orders, inventory và có thể payments. Danh sách này sẽ được điều chỉnh theo phạm vi đồ án.
+Auth, users, products, categories, inventory, recipes, articles, media, carts, orders và payments. Danh sách được điều chỉnh theo [tầm nhìn sản phẩm](../product/vision.md).
+
+## Luồng đặt hàng hiện tại
+
+```text
+React trên Vercel
+  -> Express kiểm tra phiên, địa chỉ, giá và tồn kho
+  -> PostgreSQL giữ hàng và tạo đơn chờ thanh toán
+  -> Express ký yêu cầu tạo giao dịch ZaloPay Sandbox
+  -> trình duyệt đi tới trang thanh toán ZaloPay
+  -> ZaloPay gọi callback HTTPS tới Express
+  -> Express xác minh chữ ký, số tiền và cập nhật đơn
+  -> React đọc lại trạng thái đơn từ Express
+```
+
+Khóa ZaloPay chỉ tồn tại ở backend. Kết quả chuyển hướng về trình duyệt chỉ dùng cho trải nghiệm; callback đã kiểm tra chữ ký hoặc API đối chiếu trạng thái mới được dùng để xác nhận thanh toán.

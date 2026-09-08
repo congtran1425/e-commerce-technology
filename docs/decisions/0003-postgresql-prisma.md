@@ -5,7 +5,7 @@ Date: 2026-08-30
 
 ## Context
 
-Nghiệp vụ có nhiều quan hệ và invariant: sản phẩm–biến thể–tồn kho, công thức–định lượng–sản phẩm tương thích, giỏ hàng, đơn hàng, thanh toán và hoàn tiền. Nhóm không bị ràng buộc phải dùng một database hoặc ORM khác.
+Nghiệp vụ có nhiều quan hệ và bất biến cần bảo vệ: sản phẩm–biến thể–tồn kho, công thức–định lượng–sản phẩm tương thích, giỏ hàng, đơn hàng, thanh toán và hoàn tiền. Dự án không bị ràng buộc phải dùng một database hoặc ORM khác.
 
 ## Decision
 
@@ -20,7 +20,7 @@ Nghiệp vụ có nhiều quan hệ và invariant: sản phẩm–biến thể�
 ## Consequences
 
 - Mô hình dữ liệu và transaction phù hợp luồng tồn kho–order–payment.
-- Thành viên phải review migration cùng code thay đổi nghiệp vụ.
+- Migration phải được tự review cùng mã thay đổi nghiệp vụ; khi có cộng tác viên, thay đổi quan trọng cần thêm một lượt review.
 - Cần thiết kế snapshot giá/tên sản phẩm trong order item để lịch sử đơn không bị thay đổi khi catalog cập nhật.
 - Prisma không thay thế việc hiểu constraint, index, query plan và transaction của PostgreSQL.
 - Provider PostgreSQL vẫn là quyết định riêng, được chốt sau benchmark hạ tầng.

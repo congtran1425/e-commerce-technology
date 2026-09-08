@@ -1,0 +1,21 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: ecomtech-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ecomtech
+      POSTGRES_USER: ecomtech
+      POSTGRES_PASSWORD: ecomtech_local
+    ports:
+      - "5433:5432"
+    volumes:
+      - ecomtech_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ecomtech -d ecomtech"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  ecomtech_postgres_data:

@@ -3,7 +3,7 @@
 ## Nguyên tắc
 
 - API dùng JSON qua HTTPS.
-- Endpoint được version nếu nhóm xác định có nhu cầu, ví dụ `/api/v1`.
+- Endpoint được đánh phiên bản khi cần duy trì nhiều hợp đồng hoặc tránh thay đổi phá vỡ client, ví dụ `/api/v1`.
 - Dùng HTTP method và status code nhất quán.
 - Lỗi trả về một cấu trúc thống nhất, không để lộ stack trace ở production.
 
@@ -30,4 +30,4 @@ Một PR thay đổi API phải cập nhật đồng thời:
 5. `packages/contracts` nếu có type liên quan.
 6. Test backend và phần frontend sử dụng API.
 
-Không để frontend suy đoán response từ trao đổi miệng hoặc tin nhắn nhóm.
+Không để frontend suy đoán response từ hành vi chưa được ghi trong OpenAPI hoặc kiểu dùng chung.

@@ -1,0 +1,37 @@
+:root {
+  --font-display: "Fraunces", Georgia, serif;
+  --font-body: "IBM Plex Sans", "Segoe UI", sans-serif;
+
+  --color-paper: oklch(95% 0.015 82);
+  --color-paper-raised: oklch(97.5% 0.012 82);
+  --color-paper-deep: oklch(89% 0.025 82);
+  --color-ink: oklch(25% 0.02 70);
+  --color-ink-soft: oklch(45% 0.02 72);
+  --color-rule: oklch(73% 0.025 78);
+  --color-accent: oklch(46% 0.14 36);
+  --color-accent-deep: oklch(35% 0.12 35);
+  --color-accent-ink: oklch(98% 0.01 82);
+  --color-focus: oklch(55% 0.12 220);
+  --color-error: oklch(42% 0.16 30);
+  --color-error-surface: oklch(93% 0.035 30);
+  --color-success: oklch(42% 0.08 145);
+  --color-success-surface: oklch(93% 0.035 145);
+
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+  --space-8: 4.5rem;
+  --space-9: 7rem;
+
+  --radius-small: 0.25rem;
+  --radius-medium: 0.75rem;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in: cubic-bezier(0.7, 0, 0.84, 0);
+  --duration-micro: 120ms;
+  --duration-short: 160ms;
+  --z-toast: 500;
+}

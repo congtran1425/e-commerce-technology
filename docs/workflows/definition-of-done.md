@@ -11,4 +11,4 @@ Một công việc chỉ hoàn thành khi các mục áp dụng được đáp �
 - [ ] Migration và tài liệu schema được cập nhật nếu database thay đổi.
 - [ ] `.env.example` được cập nhật nếu thêm biến môi trường; không commit secret.
 - [ ] Tài liệu/ADR được cập nhật nếu hành vi hoặc kiến trúc thay đổi.
-- [ ] PR được tự review, có reviewer khác chấp thuận và CI vượt qua.
+- [ ] PR được tự review và CI vượt qua; có reviewer khác chấp thuận nếu thay đổi có cộng tác viên tham gia.

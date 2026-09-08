@@ -1,4 +1,9 @@
 import { Router } from 'express';
+import { authRouter } from '../modules/auth/auth.routes.js';
+import { cartRouter } from '../modules/cart/cart.routes.js';
+import { recipeRouter } from '../modules/recipes/recipe.routes.js';
+import { orderRouter } from '../modules/orders/order.routes.js';
+import { paymentRouter } from '../modules/payments/payment.routes.js';
 
 export const apiRouter = Router();
 
@@ -9,3 +14,9 @@ apiRouter.get('/health', (_request, response) => {
     timestamp: new Date().toISOString(),
   });
 });
+
+apiRouter.use('/recipes', recipeRouter);
+apiRouter.use('/cart', cartRouter);
+apiRouter.use('/auth', authRouter);
+apiRouter.use('/orders', orderRouter);
+apiRouter.use('/payments', paymentRouter);

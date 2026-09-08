@@ -2,10 +2,14 @@ openapi: 3.1.0
 info:
   title: E-commerce Technology API
   version: 0.1.0
-  description: API contract skeleton. Endpoints will be added with their implementation.
+  description: API cho danh mục công thức và kế hoạch mua nguyên liệu theo khẩu phần.
+  license:
+    name: MIT
+    identifier: MIT
 servers:
   - url: http://localhost:3000/api
     description: Local development
+security: []
 paths:
   /health:
     get:
@@ -32,3 +36,573 @@ paths:
                   timestamp:
                     type: string
                     format: date-time
+  /auth/register:
+    post:
+      summary: Tạo tài khoản khách hàng và mở phiên đăng nhập
+      operationId: registerCustomer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegisterRequest"
+      responses:
+        "201":
+          description: Tài khoản và phiên đã được tạo
+          headers:
+            Set-Cookie:
+              description: Cookie phiên HttpOnly; tên production có tiền tố `__Host-`.
+              schema: { type: string }
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+        "400":
+          description: Tên, email hoặc mật khẩu không hợp lệ
+        "409":
+          description: Email đã được dùng
+  /auth/login:
+    post:
+      summary: Đăng nhập và tạo một phiên mới
+      operationId: login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginRequest"
+      responses:
+        "200":
+          description: Đăng nhập thành công
+          headers:
+            Set-Cookie:
+              description: Cookie phiên HttpOnly; tên production có tiền tố `__Host-`.
+              schema: { type: string }
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+        "400":
+          description: Dữ liệu gửi lên không hợp lệ
+        "401":
+          description: Email hoặc mật khẩu không đúng
+  /auth/me:
+    get:
+      summary: Lấy tài khoản của phiên hiện tại
+      operationId: getCurrentUser
+      security:
+        - sessionCookie: []
+      responses:
+        "200":
+          description: Phiên hợp lệ
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+        "401":
+          description: Thiếu cookie, phiên hết hạn hoặc tài khoản không hoạt động
+  /auth/logout:
+    post:
+      summary: Kết thúc phiên hiện tại và xóa cookie
+      operationId: logout
+      responses:
+        "204":
+          description: Đã kết thúc phiên hoặc trước đó không có phiên
+  /recipes:
+    get:
+      summary: Lấy danh sách công thức đã xuất bản
+      operationId: listRecipes
+      responses:
+        "200":
+          description: Danh sách công thức
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/RecipeSummary"
+  /recipes/{slug}:
+    get:
+      summary: Lấy công thức và gợi ý quy cách theo khẩu phần
+      operationId: getRecipePlan
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: servings
+          in: query
+          required: false
+          description: Số người, từ 1 đến 50. Bỏ trống để dùng khẩu phần gốc.
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 50
+      responses:
+        "200":
+          description: Công thức, định lượng và quy cách được đề xuất
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    $ref: "#/components/schemas/RecipeDetail"
+        "400":
+          description: Khẩu phần hoặc slug không hợp lệ
+        "404":
+          description: Không tìm thấy công thức đã xuất bản
+  /cart/quote:
+    post:
+      summary: Kiểm tra lại giá và tồn kho của giỏ tạm
+      operationId: quoteCart
+      description: >-
+        Không tạo giỏ hàng, không giữ hàng và không trừ kho. API chỉ trả về trạng thái hiện tại
+        của các biến thể để client hiển thị trước khi thanh toán.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CartQuoteRequest"
+      responses:
+        "200":
+          description: Giá, tồn kho và tạm tính đã được đối chiếu
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    $ref: "#/components/schemas/CartQuote"
+        "400":
+          description: Danh sách biến thể hoặc số lượng không hợp lệ
+  /orders:
+    post:
+      summary: Giữ tồn kho, tạo đơn và tạo giao dịch ZaloPay Sandbox
+      operationId: createOrder
+      security:
+        - sessionCookie: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateOrderRequest"
+      responses:
+        "201":
+          description: Đơn đã được tạo; dùng `payment.checkoutUrl` để sang ZaloPay
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OrderResponse"
+        "400":
+          description: Địa chỉ, mã chống tạo trùng hoặc mặt hàng không hợp lệ
+        "401":
+          description: Chưa đăng nhập
+        "409":
+          description: Không đủ tồn kho hoặc lần tạo đơn đã kết thúc
+        "503":
+          description: Máy chủ chưa được cấu hình ZaloPay
+  /orders/{orderNumber}:
+    get:
+      summary: Xem một đơn thuộc tài khoản hiện tại
+      operationId: getOrder
+      security:
+        - sessionCookie: []
+      parameters:
+        - $ref: "#/components/parameters/OrderNumber"
+      responses:
+        "200":
+          description: Chi tiết đơn và lần thanh toán gần nhất
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OrderResponse"
+        "401":
+          description: Chưa đăng nhập
+        "404":
+          description: Không tìm thấy đơn hoặc đơn không thuộc tài khoản
+  /orders/{orderNumber}/payment-status:
+    post:
+      summary: Đối chiếu trạng thái giao dịch với ZaloPay
+      operationId: syncOrderPayment
+      security:
+        - sessionCookie: []
+      parameters:
+        - $ref: "#/components/parameters/OrderNumber"
+      responses:
+        "200":
+          description: Trạng thái đơn sau khi đối chiếu
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OrderResponse"
+        "401":
+          description: Chưa đăng nhập
+        "404":
+          description: Không tìm thấy đơn hoặc đơn không thuộc tài khoản
+        "502":
+          description: Chưa thể kết nối tới ZaloPay
+  /payments/zalopay/callback:
+    post:
+      summary: Nhận thông báo thanh toán trực tiếp từ ZaloPay
+      operationId: receiveZaloPayCallback
+      description: Endpoint công khai; backend xác minh HMAC bằng KEY2 trước khi cập nhật đơn.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ZaloPayCallbackRequest"
+      responses:
+        "200":
+          description: Kết quả tiếp nhận theo giao thức callback của ZaloPay
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ZaloPayCallbackResponse"
+components:
+  securitySchemes:
+    sessionCookie:
+      type: apiKey
+      in: cookie
+      name: ecomtech_session
+      description: Môi trường production dùng tên `__Host-ecomtech_session`.
+  parameters:
+    OrderNumber:
+      name: orderNumber
+      in: path
+      required: true
+      schema:
+        type: string
+        pattern: "^EC\\d{6}[A-Z0-9]{8}$"
+  schemas:
+    RegisterRequest:
+      type: object
+      additionalProperties: false
+      required: [displayName, email, password]
+      properties:
+        displayName:
+          type: string
+          minLength: 2
+          maxLength: 100
+        email:
+          type: string
+          format: email
+          maxLength: 254
+        password:
+          type: string
+          format: password
+          minLength: 10
+          maxLength: 128
+    LoginRequest:
+      type: object
+      additionalProperties: false
+      required: [email, password]
+      properties:
+        email:
+          type: string
+          format: email
+          maxLength: 254
+        password:
+          type: string
+          format: password
+          minLength: 10
+          maxLength: 128
+    AuthResponse:
+      type: object
+      required: [data]
+      properties:
+        data:
+          type: object
+          required: [user]
+          properties:
+            user:
+              $ref: "#/components/schemas/AuthUser"
+    AuthUser:
+      type: object
+      required: [id, email, displayName, role]
+      properties:
+        id:
+          type: string
+          pattern: "^[1-9]\\d*$"
+        email:
+          type: string
+          format: email
+        displayName:
+          type: string
+        role:
+          type: string
+          enum: [CUSTOMER, ADMIN]
+    CartQuoteRequest:
+      type: object
+      required: [items]
+      properties:
+        items:
+          type: array
+          minItems: 1
+          maxItems: 50
+          items:
+            type: object
+            required: [variantId, quantity]
+            properties:
+              variantId:
+                type: string
+                pattern: "^[1-9]\\d*$"
+              quantity:
+                type: integer
+                minimum: 1
+                maximum: 99
+    CartQuote:
+      type: object
+      required: [items, subtotal, currency, canCheckout]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/CartQuoteItem"
+        subtotal:
+          type: string
+          description: Số tiền thập phân hai chữ số, không dùng số thực.
+          example: "205000.00"
+        currency:
+          type: string
+          const: VND
+        canCheckout:
+          type: boolean
+          description: Chỉ true khi tất cả biến thể tồn tại, còn bán và đủ tồn kho.
+    CartQuoteItem:
+      type: object
+      required: [variantId, productName, label, requestedQuantity, availableQuantity, unitPrice, lineTotal, currency, status]
+      properties:
+        variantId: { type: string }
+        productName: { type: [string, "null"] }
+        label: { type: [string, "null"] }
+        requestedQuantity: { type: integer }
+        availableQuantity: { type: [integer, "null"] }
+        unitPrice: { type: [string, "null"] }
+        lineTotal: { type: [string, "null"] }
+        currency: { type: [string, "null"] }
+        status:
+          type: string
+          enum: [AVAILABLE, INSUFFICIENT_STOCK, UNAVAILABLE]
+    CreateOrderRequest:
+      type: object
+      additionalProperties: false
+      required: [idempotencyKey, recipient, items]
+      properties:
+        idempotencyKey:
+          type: string
+          format: uuid
+          description: Mã duy nhất cho một lần bấm đặt hàng, dùng để chống tạo đơn trùng.
+        recipient:
+          $ref: "#/components/schemas/OrderRecipientInput"
+        note:
+          type: string
+          maxLength: 500
+        items:
+          type: array
+          minItems: 1
+          maxItems: 50
+          items:
+            type: object
+            additionalProperties: false
+            required: [variantId, quantity]
+            properties:
+              variantId:
+                type: string
+                pattern: "^[1-9]\\d*$"
+              quantity:
+                type: integer
+                minimum: 1
+                maximum: 99
+    OrderRecipientInput:
+      type: object
+      additionalProperties: false
+      required: [name, phone, addressLine, district, province]
+      properties:
+        name: { type: string, minLength: 1, maxLength: 100 }
+        phone:
+          type: string
+          description: Số Việt Nam bắt đầu bằng 0 hoặc +84; khoảng trắng, dấu chấm và gạch ngang được chuẩn hóa.
+        addressLine: { type: string, minLength: 1, maxLength: 250 }
+        ward: { type: string, maxLength: 120 }
+        district: { type: string, minLength: 1, maxLength: 120 }
+        province: { type: string, minLength: 1, maxLength: 120 }
+    OrderResponse:
+      type: object
+      required: [data]
+      properties:
+        data:
+          $ref: "#/components/schemas/Order"
+    Order:
+      type: object
+      required: [orderNumber, status, currency, subtotal, shippingFee, total, recipient, items, payment, createdAt, updatedAt]
+      properties:
+        orderNumber: { type: string }
+        status:
+          type: string
+          enum: [AWAITING_PAYMENT, CONFIRMED, PAYMENT_REVIEW, PREPARING, SHIPPING, DELIVERED, CANCELLED]
+        currency: { type: string, const: VND }
+        subtotal: { type: string, example: "160000.00" }
+        shippingFee: { type: string, example: "0.00" }
+        total: { type: string, example: "160000.00" }
+        recipient:
+          allOf:
+            - $ref: "#/components/schemas/OrderRecipientInput"
+            - type: object
+              properties:
+                ward: { type: [string, "null"] }
+        note: { type: [string, "null"] }
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/OrderItem"
+        payment:
+          oneOf:
+            - $ref: "#/components/schemas/Payment"
+            - type: "null"
+        createdAt: { type: string, format: date-time }
+        updatedAt: { type: string, format: date-time }
+    OrderItem:
+      type: object
+      required: [id, variantId, productName, sku, variantLabel, quantity, unitPrice, lineTotal]
+      properties:
+        id: { type: string, pattern: "^[1-9]\\d*$" }
+        variantId: { type: [string, "null"] }
+        productName: { type: string }
+        sku: { type: string }
+        variantLabel: { type: string }
+        quantity: { type: integer, minimum: 1 }
+        unitPrice: { type: string }
+        lineTotal: { type: string }
+    Payment:
+      type: object
+      required: [provider, status, checkoutUrl, expiresAt, paidAt]
+      properties:
+        provider: { type: string, const: ZALOPAY }
+        status:
+          type: string
+          enum: [PENDING, SUCCEEDED, FAILED, EXPIRED, CANCELLED, REFUND_PENDING, REFUNDED]
+        checkoutUrl: { type: [string, "null"], format: uri }
+        expiresAt: { type: string, format: date-time }
+        paidAt: { type: [string, "null"], format: date-time }
+    ZaloPayCallbackRequest:
+      type: object
+      required: [data, mac]
+      properties:
+        data:
+          type: string
+          description: Chuỗi JSON nguyên bản do ZaloPay ký.
+        mac:
+          type: string
+          pattern: "^[a-fA-F0-9]{64}$"
+        type: { type: integer }
+    ZaloPayCallbackResponse:
+      type: object
+      required: [return_code, return_message]
+      properties:
+        return_code: { type: integer, enum: [-1, 0, 1] }
+        return_message: { type: string }
+    RecipeSummary:
+      type: object
+      required: [slug, title, summary, baseServings, prepMinutes, bakeMinutes, totalMinutes, difficulty, difficultyLabel]
+      properties:
+        slug: { type: string }
+        title: { type: string }
+        summary: { type: string }
+        imageUrl: { type: [string, "null"], format: uri }
+        baseServings: { type: integer }
+        prepMinutes: { type: integer }
+        bakeMinutes: { type: integer }
+        totalMinutes: { type: integer }
+        difficulty: { type: string, enum: [EASY, MEDIUM, HARD] }
+        difficultyLabel: { type: string }
+    RecipeDetail:
+      allOf:
+        - $ref: "#/components/schemas/RecipeSummary"
+        - type: object
+          required: [story, servings, temperatureC, steps, ingredients, tools]
+          properties:
+            story: { type: string }
+            servings: { type: integer }
+            temperatureC: { type: [integer, "null"] }
+            steps:
+              type: array
+              items:
+                type: object
+                required: [id, stepNumber, title, instruction, durationMinutes, temperatureC]
+                properties:
+                  id: { type: string }
+                  stepNumber: { type: integer }
+                  title: { type: [string, "null"] }
+                  instruction: { type: string }
+                  durationMinutes: { type: [integer, "null"] }
+                  temperatureC: { type: [integer, "null"] }
+            ingredients:
+              type: array
+              items:
+                $ref: "#/components/schemas/IngredientPlan"
+            tools:
+              type: array
+              items:
+                $ref: "#/components/schemas/ToolPlan"
+    IngredientPlan:
+      type: object
+      required: [id, name, unit, requiredQuantity, recommendation]
+      properties:
+        id: { type: string }
+        name: { type: string }
+        unit: { type: string, enum: [g, ml, cái] }
+        requiredQuantity: { type: string, description: Số thập phân truyền dưới dạng chuỗi }
+        note: { type: [string, "null"] }
+        recommendation:
+          oneOf:
+            - $ref: "#/components/schemas/PackageSelection"
+            - type: "null"
+    PackageSelection:
+      type: object
+      required: [packages, suppliedQuantity, surplusQuantity, totalPrice, totalPacks]
+      properties:
+        packages:
+          type: array
+          items:
+            type: object
+            required: [id, label, packageQuantity, price, stockQuantity, count]
+            properties:
+              id: { type: string }
+              label: { type: string }
+              packageQuantity: { type: string }
+              price: { type: string }
+              stockQuantity: { type: integer }
+              count: { type: integer }
+        suppliedQuantity: { type: string }
+        surplusQuantity: { type: string }
+        totalPrice: { type: string }
+        totalPacks: { type: integer }
+    ToolPlan:
+      type: object
+      required: [id, name, required, product]
+      properties:
+        id: { type: string }
+        name: { type: string }
+        required: { type: boolean }
+        product:
+          oneOf:
+            - type: object
+              required: [variantId, name, label, price, currency]
+              properties:
+                variantId: { type: string }
+                name: { type: string }
+                label: { type: string }
+                price: { type: string }
+                currency: { type: string }
+            - type: "null"
