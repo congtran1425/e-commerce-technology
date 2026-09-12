@@ -1,6 +1,7 @@
 :root {
   --font-display: "Fraunces", Georgia, serif;
   --font-body: "IBM Plex Sans", "Segoe UI", sans-serif;
+  --font-mono: "IBM Plex Mono", "Cascadia Mono", monospace;
 
   --color-paper: oklch(95% 0.015 82);
   --color-paper-raised: oklch(97.5% 0.012 82);
@@ -16,6 +17,8 @@
   --color-error-surface: oklch(93% 0.035 30);
   --color-success: oklch(42% 0.08 145);
   --color-success-surface: oklch(93% 0.035 145);
+  --color-warning: oklch(40% 0.1 72);
+  --color-warning-surface: oklch(92% 0.04 78);
 
   --space-1: 0.25rem;
   --space-2: 0.5rem;
@@ -33,5 +36,7 @@
   --ease-in: cubic-bezier(0.7, 0, 0.84, 0);
   --duration-micro: 120ms;
   --duration-short: 160ms;
+  --z-dropdown: 100;
+  --z-sticky: 200;
   --z-toast: 500;
 }

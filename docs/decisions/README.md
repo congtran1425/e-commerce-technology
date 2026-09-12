@@ -35,3 +35,4 @@ Không sửa lịch sử của một ADR đã được thay thế; tạo ADR m�
 - [0004 — Phiên đăng nhập phía máy chủ](0004-server-side-sessions.md)
 - [0005 — Triển khai backend trên máy ảo Oracle Cloud](0005-oracle-cloud-vm.md)
 - [0006 — Tích hợp ZaloPay qua backend](0006-zalopay-backend-integration.md)
+- [0007 — Quản lý tồn kho bằng sổ biến động](0007-inventory-movement-ledger.md)

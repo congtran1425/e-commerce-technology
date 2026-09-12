@@ -13,6 +13,20 @@ enum Difficulty {
   HARD
 }
 
+enum RecipeYieldUnit {
+  PERSON
+  PORTION
+  PIECE
+  LOAF
+}
+
+enum RecipeCategory {
+  COOKIE
+  CAKE
+  DESSERT
+  BREAD
+}
+
 enum MeasurementUnit {
   GRAM
   MILLILITER
@@ -53,6 +67,16 @@ enum PaymentStatus {
   REFUNDED
 }
 
+enum InventoryMovementReason {
+  INITIAL_STOCK
+  RESTOCK
+  CORRECTION
+  DAMAGED
+  RETURNED
+  ORDER_RESERVED
+  ORDER_RELEASED
+}
+
 model Recipe {
   id           BigInt             @id @default(autoincrement())
   slug         String             @unique @db.VarChar(160)
@@ -61,6 +85,8 @@ model Recipe {
   story        String             @db.Text
   imageUrl     String?            @map("image_url") @db.VarChar(500)
   baseServings Int                @map("base_servings") @db.SmallInt
+  yieldUnit    RecipeYieldUnit    @default(PERSON) @map("yield_unit")
+  category     RecipeCategory     @default(CAKE)
   prepMinutes  Int                @map("prep_minutes") @db.SmallInt
   bakeMinutes  Int                @map("bake_minutes") @db.SmallInt
   temperatureC Int?               @map("temperature_c") @db.SmallInt
@@ -170,6 +196,7 @@ model ProductVariant {
   ingredientMappings IngredientVariant[]
   toolMappings       ToolVariant[]
   orderItems         OrderItem[]
+  inventoryMovements InventoryMovement[]
 
   @@index([productId, active])
   @@map("product_variants")
@@ -210,6 +237,7 @@ model User {
   updatedAt    DateTime  @updatedAt @map("updated_at") @db.Timestamptz(3)
   sessions     Session[]
   orders       Order[]
+  inventoryMovements InventoryMovement[]
 
   @@map("users")
 }
@@ -249,10 +277,32 @@ model Order {
   user               User        @relation(fields: [userId], references: [id], onDelete: Restrict)
   items              OrderItem[]
   payments           Payment[]
+  inventoryMovements InventoryMovement[]
 
   @@index([userId, createdAt])
   @@index([status, createdAt])
   @@map("orders")
+}
+
+model InventoryMovement {
+  id               BigInt                  @id @default(autoincrement())
+  productVariantId BigInt                  @map("product_variant_id")
+  actorUserId      BigInt?                 @map("actor_user_id")
+  orderId          BigInt?                 @map("order_id")
+  quantityDelta    Int                     @map("quantity_delta")
+  stockBefore      Int                     @map("stock_before")
+  stockAfter       Int                     @map("stock_after")
+  reason           InventoryMovementReason
+  note             String?                 @db.VarChar(300)
+  createdAt        DateTime                @default(now()) @map("created_at") @db.Timestamptz(3)
+  productVariant   ProductVariant          @relation(fields: [productVariantId], references: [id], onDelete: Restrict)
+  actorUser        User?                   @relation(fields: [actorUserId], references: [id], onDelete: Restrict)
+  order            Order?                  @relation(fields: [orderId], references: [id], onDelete: Restrict)
+
+  @@index([productVariantId, createdAt])
+  @@index([actorUserId])
+  @@index([orderId])
+  @@map("inventory_movements")
 }
 
 model OrderItem {

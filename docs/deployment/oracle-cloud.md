@@ -1,6 +1,6 @@
 # Triển khai API lên Oracle Cloud
 
-Hướng dẫn này dành cho cấu hình giai đoạn đầu: một máy ảo Oracle Cloud chạy Caddy, Express API và PostgreSQL bằng Docker Compose. Trong khi tên thương hiệu chưa chốt, hostname tạm thời là `api.ecomtech.congtc145.id.vn`; frontend hiện ở `ecomtech.congtc145.id.vn`.
+Hướng dẫn này dành cho cấu hình giai đoạn đầu: một máy ảo Oracle Cloud chạy Caddy, Express API và PostgreSQL bằng Docker Compose. Tên thương hiệu chính thức là `Bếp Đủ Bánh`, nhưng hostname hạ tầng vẫn tạm giữ `api.ecomtech.congtc145.id.vn`; frontend hiện ở `ecomtech.congtc145.id.vn`. Không tự đổi hostname trước khi chốt tên miền mới và kế hoạch chuyển DNS.
 
 ## 0. Kiểm tra trước khi đẩy GitHub
 
@@ -170,7 +170,7 @@ Trước khi có người dùng thật, đơn hàng thật hoặc nội dung th�
 Trạng thái được ghi riêng cho từng mục. Các mục chưa chốt cần được trả lời trước khi chúng trở thành điều kiện vận hành thực tế:
 
 1. **Đã chốt:** Singapore West là Home Region. Khi tạo máy vẫn phải kiểm tra `VM.Standard.A1.Flex` có nhãn Always Free-eligible và còn khả năng cung cấp hay không.
-2. **Đã chốt tạm thời:** dùng `api.ecomtech.congtc145.id.vn` khi nhận diện hiện tại còn hiệu lực. Khi đổi thương hiệu, hostname API cũng đổi theo cấu trúc `api.<tên-thương-hiệu>.congtc145.id.vn`.
+2. **Còn mở:** thương hiệu đã chốt là `Bếp Đủ Bánh`, nhưng hostname triển khai vẫn tạm là `api.ecomtech.congtc145.id.vn`. Cần chốt tên miền frontend và API mới trước khi đổi đồng bộ DNS, Caddy, CORS, cookie và callback thanh toán.
 3. **Đã chốt:** repository GitHub là public; máy Oracle clone qua HTTPS và không cần token cho thao tác đọc.
 4. **Đã chốt:** đăng ký và dùng bộ APP_ID, KEY1, KEY2 Sandbox chính thức dành cho ứng dụng trước; không dựa vào bộ khóa ghi cứng trong `server.js`.
 5. **Tạm hoãn có điều kiện:** chưa tự động sao lưu ngoài máy khi toàn bộ dữ liệu còn là dữ liệu thử và có thể tạo lại bằng migration/seed. Phải triển khai sao lưu trước khi có người dùng thật, đơn hàng thật hoặc nội dung thủ công tốn công tái tạo; đồng thời tạo bản sao thủ công trước migration rủi ro.

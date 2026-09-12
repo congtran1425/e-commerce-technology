@@ -4,6 +4,10 @@ export type RecipeSummary = {
   summary: string;
   imageUrl: string | null;
   baseServings: number;
+  yieldUnit: 'PERSON' | 'PORTION' | 'PIECE' | 'LOAF';
+  yieldUnitLabel: string;
+  category: 'COOKIE' | 'CAKE' | 'DESSERT' | 'BREAD';
+  categoryLabel: string;
   prepMinutes: number;
   bakeMinutes: number;
   totalMinutes: number;

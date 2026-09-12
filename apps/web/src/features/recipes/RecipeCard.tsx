@@ -2,9 +2,17 @@ import { ArrowRight, Clock3 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import type { RecipeSummary } from './types';
 
-export function RecipeCard({ recipe, index }: { recipe: RecipeSummary; index: number }) {
+export function RecipeCard({
+  recipe,
+  index,
+  variant = 'feature',
+}: {
+  recipe: RecipeSummary;
+  index: number;
+  variant?: 'feature' | 'index';
+}) {
   return (
-    <article className="recipe-card">
+    <article className={`recipe-card recipe-card--${variant}`}>
       <Link className="recipe-card__media" to={`/cong-thuc/${recipe.slug}`} aria-label={`Xem ${recipe.title}`}>
         {recipe.imageUrl ? (
           <img src={recipe.imageUrl} alt={recipe.title} width="720" height="540" loading="lazy" />
@@ -22,7 +30,7 @@ export function RecipeCard({ recipe, index }: { recipe: RecipeSummary; index: nu
         <div className="recipe-card__meta">
           <span><Clock3 aria-hidden="true" size={16} /> {recipe.totalMinutes} phút</span>
           <span>{recipe.difficultyLabel}</span>
-          <span>{recipe.baseServings} người</span>
+          <span>{recipe.baseServings} {recipe.yieldUnitLabel}</span>
         </div>
         <Link className="text-link" to={`/cong-thuc/${recipe.slug}`}>
           Chọn khẩu phần <ArrowRight aria-hidden="true" size={16} />
@@ -31,4 +39,3 @@ export function RecipeCard({ recipe, index }: { recipe: RecipeSummary; index: nu
     </article>
   );
 }
-

@@ -1,4 +1,4 @@
-# E-commerce Technology
+# Bếp Đủ Bánh
 
 Dự án thương mại điện tử cá nhân dành cho người Việt muốn tự làm bánh tại nhà, từ người mới bắt đầu đến người đã có kinh nghiệm.
 
@@ -8,7 +8,7 @@ Giá trị cốt lõi:
 chọn món bánh → chọn khẩu phần → mua đủ nguyên liệu và dụng cụ
 ```
 
-Tên `E-commerce Technology` và nhận diện hiện tại chỉ là tạm thời. Việc đổi thương hiệu sẽ được thực hiện sau.
+`Bếp Đủ Bánh` là tên thương hiệu chính thức của sản phẩm. Tên repository và các định danh kỹ thuật cũ được giữ lại để tránh làm hỏng cấu hình triển khai và lịch sử phát triển.
 
 ## Thành phần hệ thống
 
@@ -64,6 +64,7 @@ Backend luôn là nơi kiểm tra quyền thực sự. Chặn đường dẫn �
 |   |-- architecture/
 |   |-- api/
 |   |-- database/
+|   |-- data/
 |   |-- decisions/
 |   |-- design/
 |   |-- legal/
@@ -84,11 +85,15 @@ Backend luôn là nơi kiểm tra quyền thực sự. Chặn đường dẫn �
 
 - [Tầm nhìn sản phẩm](docs/product/vision.md)
 - [Định hướng trải nghiệm và giao diện](docs/design/direction.md)
+- [Nền tảng câu chuyện thương hiệu](docs/content/brand-story.md)
+- [Rà soát nguồn công thức](docs/content/recipe-source-review.md)
 - [Danh mục mã nguồn giao diện tham khảo](docs/design/reference-catalog.md)
 - [Tổng quan kiến trúc](docs/architecture/overview.md)
 - [Xác thực và phân quyền](docs/architecture/authentication.md)
 - [Triển khai](docs/architecture/deployment.md)
 - [Triển khai Oracle Cloud](docs/deployment/oracle-cloud.md)
+- [Mở API cục bộ bằng ngrok](docs/deployment/local-ngrok.md)
+- [Nguồn và quy tắc nhập công thức](docs/data/recipe-import.md)
 - [Tích hợp ZaloPay Sandbox](docs/payments/zalopay.md)
 - [Quy ước API](docs/api/conventions.md)
 - [Quy tắc sử dụng mã nguồn bên thứ ba](docs/legal/source-policy.md)
@@ -148,6 +153,8 @@ npm run dev:web
 - Web: `http://localhost:5173`
 - API health check: `http://localhost:3000/api/health`
 - PostgreSQL cục bộ: `localhost:5433`
+
+Để ZaloPay Sandbox gọi được API cục bộ, làm theo [hướng dẫn ngrok](docs/deployment/local-ngrok.md). Không mở cổng PostgreSQL ra Internet.
 
 ## Quyết định còn mở
 

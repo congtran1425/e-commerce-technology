@@ -8,7 +8,7 @@ Mọi thay đổi schema phải đi kèm migration, cập nhật tài liệu và
 
 ## Lược đồ lát cắt công thức
 
-- `recipes` và `recipe_steps`: dữ liệu công thức có cấu trúc, khẩu phần gốc, thời gian, nhiệt độ, độ khó và từng bước làm theo thứ tự.
+- `recipes` và `recipe_steps`: dữ liệu công thức có cấu trúc, loại bánh, định lượng gốc, đơn vị thành phẩm (`người`, `phần`, `cái`, `ổ bánh`), thời gian, nhiệt độ, độ khó và từng bước làm theo thứ tự.
 - `ingredients` và `recipe_ingredients`: nguyên liệu chuẩn cùng định lượng cho khẩu phần gốc.
 - `tools` và `recipe_tools`: dụng cụ bắt buộc hoặc tùy chọn của công thức.
 - `products` và `product_variants`: mặt hàng cùng từng quy cách bán, giá và tồn kho.
@@ -18,6 +18,8 @@ Mọi thay đổi schema phải đi kèm migration, cập nhật tài liệu và
 Khóa chính dùng `BIGINT`; API chuyển chúng thành chuỗi trước khi trả JSON. Định lượng và tiền dùng kiểu `DECIMAL`, không dùng số thực. Các migration có ràng buộc kiểm tra để định lượng, khẩu phần và quy cách luôn dương; giá và tồn kho không âm.
 
 Thuật toán gợi ý quy cách không nằm trong database. Backend lọc biến thể còn bán/còn hàng rồi chọn theo thứ tự: đủ định lượng → tổng giá thấp nhất → ít dư → ít gói.
+
+Dữ liệu Word ban đầu có công thức tính theo phần, cái và ổ bánh nên `recipes.yield_unit` không được mặc định diễn giải mọi `base_servings` là số người. Chi tiết chuẩn hóa và phần còn thiếu nằm tại [tài liệu nhập công thức](../data/recipe-import.md).
 
 ## Giỏ tạm trong giai đoạn đầu
 
@@ -45,3 +47,16 @@ Hiện mỗi lần tạo đơn sinh một lần thanh toán ZaloPay. Mô hình v
 Khi tạo đơn, backend khóa logic bằng phép cập nhật có điều kiện `stock_quantity >= quantity`, trừ kho và tạo `order`/`order_items`/`payment` trong cùng một giao dịch ngắn. Các biến thể được xử lý theo thứ tự mã tăng dần để giảm nguy cơ khóa chéo. Nếu không đủ hàng hoặc không tạo được giao dịch ZaloPay, backend đổi trạng thái đơn và hoàn lại chính xác phần tồn kho đã giữ. Các thao tác hoàn kho và xác nhận thanh toán đều có điều kiện trạng thái để callback gửi lặp không làm cộng hoặc trừ kho nhiều lần.
 
 Các ràng buộc database bảo đảm số lượng mặt hàng dương, tiền không âm và không có phần lẻ với VND, `line_total = unit_price × quantity`, `total = subtotal + shipping_fee`, tiền tệ hiện là `VND`, và mã giao dịch cửa hàng là duy nhất. Chỉ mục được đặt trên khóa ngoại cùng các cặp trường dùng để tìm đơn, giao dịch chờ và tác vụ đối soát.
+
+## Sổ biến động tồn kho
+
+`product_variants.stock_quantity` là số dư hiện tại để kiểm tra mua hàng nhanh. `inventory_movements` là sổ giải thích mọi lần số dư thay đổi, gồm biến thể, lượng tăng/giảm, số dư trước–sau, lý do, thời điểm và liên kết tùy chọn đến quản trị viên hoặc đơn hàng.
+
+- `INITIAL_STOCK`, `RESTOCK`, `CORRECTION`, `DAMAGED` và `RETURNED` ghi các thao tác quản trị.
+- `ORDER_RESERVED` ghi lần trừ kho khi tạo đơn; `ORDER_RELEASED` ghi lần hoàn kho khi giao dịch không hoàn tất.
+- Ràng buộc kiểm tra buộc lượng thay đổi khác 0, số dư không âm và `stock_after = stock_before + quantity_delta`.
+- Chỉ mục `(product_variant_id, created_at)` phục vụ trang sổ kho gần nhất; các khóa ngoại đến người dùng và đơn hàng cũng có chỉ mục.
+
+Backend cập nhật số dư và thêm dòng sổ kho trong cùng một giao dịch ngắn. Giao diện không có API ghi đè trực tiếp `stock_quantity`; điều chỉnh thủ công phải gửi lượng chênh lệch và lý do. Cách này tạo khả năng truy vết nhưng chưa phải hệ thống kế toán kho đầy đủ: chưa quản lý lô hàng, giá vốn, vị trí kho hoặc kiểm kê nhiều bước.
+
+Migration mở sổ tạo một dòng `INITIAL_STOCK` cho mỗi biến thể đã có số dư trước khi chức năng này tồn tại. Dòng chuyển đổi không có người thao tác; các sản phẩm hoặc quy cách tạo sau đó ghi người quản trị ngay trong giao dịch tạo dữ liệu.

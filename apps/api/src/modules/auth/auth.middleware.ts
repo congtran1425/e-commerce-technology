@@ -42,3 +42,21 @@ export const requireAuthentication: RequestHandler = async (request, response, n
     next(error);
   }
 };
+
+export function requireRole(...allowedRoles: AuthUser['role'][]): RequestHandler {
+  return (_request, response, next) => {
+    const user = response.locals.authUser as AuthUser | undefined;
+
+    if (!user) {
+      next(new AppError(401, 'AUTHENTICATION_REQUIRED', 'Bạn cần đăng nhập để tiếp tục.'));
+      return;
+    }
+
+    if (!allowedRoles.includes(user.role)) {
+      next(new AppError(403, 'FORBIDDEN', 'Tài khoản này không có quyền thực hiện thao tác quản trị.'));
+      return;
+    }
+
+    next();
+  };
+}

@@ -1,6 +1,6 @@
 openapi: 3.1.0
 info:
-  title: E-commerce Technology API
+  title: Bếp Đủ Bánh API
   version: 0.1.0
   description: API cho danh mục công thức và kế hoạch mua nguyên liệu theo khẩu phần.
   license:
@@ -138,7 +138,7 @@ paths:
         - name: servings
           in: query
           required: false
-          description: Số người, từ 1 đến 50. Bỏ trống để dùng khẩu phần gốc.
+          description: Số đơn vị thành phẩm (người, phần, cái hoặc ổ bánh), từ 1 đến 50. Bỏ trống để dùng định lượng gốc.
           schema:
             type: integer
             minimum: 1
@@ -251,6 +251,318 @@ paths:
           description: Không tìm thấy đơn hoặc đơn không thuộc tài khoản
         "502":
           description: Chưa thể kết nối tới ZaloPay
+  /admin/overview:
+    get:
+      summary: Đọc số liệu điều hành có thể kiểm chứng
+      operationId: getAdminOverview
+      description: Doanh thu ở đây là tổng giao dịch thành công, chưa phải lợi nhuận hay doanh thu kế toán.
+      security:
+        - sessionCookie: []
+      responses:
+        "200":
+          description: Số đơn theo trạng thái, tiền đã thu, cảnh báo tồn kho và đơn gần nhất.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/AdminOverviewResponse" }
+        "401": { description: Chưa đăng nhập }
+        "403": { description: Tài khoản không có vai trò quản trị }
+  /admin/orders:
+    get:
+      summary: Tìm, lọc và phân trang đơn hàng
+      operationId: listAdminOrders
+      security:
+        - sessionCookie: []
+      parameters:
+        - name: q
+          in: query
+          schema: { type: string, maxLength: 80 }
+        - name: status
+          in: query
+          schema: { type: string, enum: [ALL, AWAITING_PAYMENT, CONFIRMED, PAYMENT_REVIEW, PREPARING, SHIPPING, DELIVERED, CANCELLED], default: ALL }
+        - name: cursor
+          in: query
+          schema: { type: string, pattern: "^[1-9]\\d*$" }
+        - name: limit
+          in: query
+          schema: { type: integer, minimum: 1, maximum: 50, default: 20 }
+      responses:
+        "200":
+          description: Danh sách đơn mới nhất trước, dùng con trỏ để tải tiếp.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/AdminOrderListResponse" }
+        "401": { description: Chưa đăng nhập }
+        "403": { description: Tài khoản không có vai trò quản trị }
+  /admin/orders/{orderNumber}:
+    get:
+      summary: Đọc chi tiết một đơn hàng
+      operationId: getAdminOrder
+      security:
+        - sessionCookie: []
+      parameters:
+        - $ref: "#/components/parameters/OrderNumber"
+      responses:
+        "200":
+          description: Người nhận, địa chỉ, dòng hàng và các lần thanh toán của đơn.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/AdminOrderDetailResponse" }
+        "401": { description: Chưa đăng nhập }
+        "403": { description: Tài khoản không có vai trò quản trị }
+        "404": { description: Không tìm thấy đơn hàng }
+    patch:
+      summary: Chuyển đơn sang bước hoàn tất kế tiếp
+      operationId: updateAdminOrderStatus
+      description: Chỉ cho phép đối soát → xác nhận → chuẩn bị → đang giao → đã giao; không cho bỏ bước hoặc lùi trạng thái.
+      security:
+        - sessionCookie: []
+      parameters:
+        - $ref: "#/components/parameters/OrderNumber"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/UpdateAdminOrderStatusRequest" }
+      responses:
+        "200":
+          description: Đơn hàng sau khi đổi trạng thái.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/AdminOrderSummaryResponse" }
+        "400": { description: Trạng thái đích không hợp lệ }
+        "401": { description: Chưa đăng nhập }
+        "403": { description: Tài khoản không có vai trò quản trị }
+        "404": { description: Không tìm thấy đơn hàng }
+        "409": { description: Chuyển trạng thái sai thứ tự hoặc dữ liệu vừa bị thay đổi ở phiên khác }
+  /admin/payments:
+    get:
+      summary: Đọc sổ giao dịch thanh toán
+      operationId: listAdminPayments
+      security:
+        - sessionCookie: []
+      parameters:
+        - name: q
+          in: query
+          schema: { type: string, maxLength: 80 }
+        - name: status
+          in: query
+          schema: { type: string, enum: [ALL, PENDING, SUCCEEDED, FAILED, EXPIRED, CANCELLED, REFUND_PENDING, REFUNDED], default: ALL }
+        - name: cursor
+          in: query
+          schema: { type: string, pattern: "^[1-9]\\d*$" }
+        - name: limit
+          in: query
+          schema: { type: integer, minimum: 1, maximum: 50, default: 20 }
+      responses:
+        "200":
+          description: Giao dịch mới nhất trước; không trả token hay địa chỉ thanh toán.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/AdminPaymentListResponse" }
+        "401": { description: Chưa đăng nhập }
+        "403": { description: Tài khoản không có vai trò quản trị }
+  /admin/inventory:
+    get:
+      summary: Đọc cảnh báo tồn kho và biến động gần nhất
+      operationId: getAdminInventoryOverview
+      security:
+        - sessionCookie: []
+      parameters:
+        - name: limit
+          in: query
+          schema: { type: integer, minimum: 1, maximum: 50, default: 20 }
+      responses:
+        "200":
+          description: Quy cách có tồn kho không quá 5 và sổ biến động gần nhất.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/AdminInventoryOverviewResponse" }
+        "401": { description: Chưa đăng nhập }
+        "403": { description: Tài khoản không có vai trò quản trị }
+  /admin/products:
+    get:
+      summary: Tìm và phân trang sản phẩm dành cho quản trị
+      operationId: listAdminProducts
+      security:
+        - sessionCookie: []
+      parameters:
+        - name: q
+          in: query
+          description: Tìm theo tên sản phẩm hoặc mã hàng.
+          schema: { type: string, maxLength: 80 }
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [ALL, ACTIVE, INACTIVE]
+            default: ALL
+        - name: cursor
+          in: query
+          schema: { type: string, pattern: "^[1-9]\\d*$" }
+        - name: limit
+          in: query
+          schema: { type: integer, minimum: 1, maximum: 50, default: 20 }
+      responses:
+        "200":
+          description: Danh sách gồm cả sản phẩm đang bán và ngừng bán.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminProductListResponse"
+        "401": { description: Chưa đăng nhập }
+        "403": { description: Tài khoản không có vai trò quản trị }
+    post:
+      summary: Tạo sản phẩm cùng ít nhất một quy cách bán
+      operationId: createAdminProduct
+      description: >-
+        Backend tự sinh đường dẫn ổn định. Tồn đầu của mỗi quy cách được ghi vào sổ kho;
+        mã hàng không thể sửa sau khi tạo trong phiên bản này.
+      security:
+        - sessionCookie: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateAdminProductRequest"
+      responses:
+        "201":
+          description: Sản phẩm đã được tạo.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/AdminProductResponse" }
+        "400": { description: Dữ liệu sản phẩm hoặc quy cách không hợp lệ }
+        "401": { description: Chưa đăng nhập }
+        "403": { description: Tài khoản không có vai trò quản trị }
+        "409": { description: Đường dẫn hoặc mã hàng đã tồn tại }
+  /admin/products/{productId}:
+    patch:
+      summary: Sửa thông tin hoặc trạng thái bán của sản phẩm
+      operationId: updateAdminProduct
+      description: Không xóa cứng và không đổi đường dẫn sản phẩm trong phiên bản này.
+      security:
+        - sessionCookie: []
+      parameters:
+        - $ref: "#/components/parameters/ProductId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateAdminProductRequest"
+      responses:
+        "200":
+          description: Sản phẩm sau khi cập nhật.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/AdminProductResponse" }
+        "400": { description: Không có thay đổi hoặc dữ liệu không hợp lệ }
+        "401": { description: Chưa đăng nhập }
+        "403": { description: Tài khoản không có vai trò quản trị }
+        "404": { description: Không tìm thấy sản phẩm }
+  /admin/products/{productId}/variants:
+    post:
+      summary: Thêm một quy cách bán vào sản phẩm
+      operationId: createAdminProductVariant
+      security:
+        - sessionCookie: []
+      parameters:
+        - $ref: "#/components/parameters/ProductId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateAdminVariantRequest"
+      responses:
+        "201":
+          description: Trả về sản phẩm cùng toàn bộ quy cách sau khi thêm.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/AdminProductResponse" }
+        "400": { description: Dữ liệu quy cách không hợp lệ }
+        "401": { description: Chưa đăng nhập }
+        "403": { description: Tài khoản không có vai trò quản trị }
+        "404": { description: Không tìm thấy sản phẩm }
+        "409": { description: Mã hàng đã được sử dụng }
+  /admin/product-variants/{variantId}:
+    patch:
+      summary: Sửa thông tin hoặc trạng thái bán của quy cách
+      operationId: updateAdminProductVariant
+      description: Mã hàng và tồn kho không được sửa qua endpoint này.
+      security:
+        - sessionCookie: []
+      parameters:
+        - $ref: "#/components/parameters/VariantId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateAdminVariantRequest"
+      responses:
+        "200":
+          description: Trả về sản phẩm chứa quy cách sau khi cập nhật.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/AdminProductResponse" }
+        "400": { description: Không có thay đổi hoặc dữ liệu không hợp lệ }
+        "401": { description: Chưa đăng nhập }
+        "403": { description: Tài khoản không có vai trò quản trị }
+        "404": { description: Không tìm thấy quy cách }
+  /admin/product-variants/{variantId}/inventory-movements:
+    get:
+      summary: Đọc các biến động kho gần nhất của một quy cách
+      operationId: listAdminInventoryMovements
+      security:
+        - sessionCookie: []
+      parameters:
+        - $ref: "#/components/parameters/VariantId"
+        - name: limit
+          in: query
+          schema: { type: integer, minimum: 1, maximum: 50, default: 20 }
+      responses:
+        "200":
+          description: Các biến động mới nhất trước.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    type: array
+                    items: { $ref: "#/components/schemas/InventoryMovement" }
+        "401": { description: Chưa đăng nhập }
+        "403": { description: Tài khoản không có vai trò quản trị }
+        "404": { description: Không tìm thấy quy cách }
+  /admin/product-variants/{variantId}/inventory-adjustments:
+    post:
+      summary: Tăng hoặc giảm tồn kho và ghi sổ biến động
+      operationId: createAdminInventoryAdjustment
+      description: Không hỗ trợ ghi đè số dư tuyệt đối; cập nhật số dư và ghi sổ trong cùng giao dịch.
+      security:
+        - sessionCookie: []
+      parameters:
+        - $ref: "#/components/parameters/VariantId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AdjustInventoryRequest"
+      responses:
+        "201":
+          description: Số dư mới cùng dòng biến động vừa tạo.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InventoryAdjustmentResponse"
+        "400": { description: Lượng thay đổi hoặc lý do không hợp lệ }
+        "401": { description: Chưa đăng nhập }
+        "403": { description: Tài khoản không có vai trò quản trị }
+        "404": { description: Không tìm thấy quy cách }
+        "409": { description: Điều chỉnh sẽ làm tồn kho âm }
   /payments/zalopay/callback:
     post:
       summary: Nhận thông báo thanh toán trực tiếp từ ZaloPay
@@ -284,7 +596,312 @@ components:
       schema:
         type: string
         pattern: "^EC\\d{6}[A-Z0-9]{8}$"
+    ProductId:
+      name: productId
+      in: path
+      required: true
+      schema: { type: string, pattern: "^[1-9]\\d*$", maxLength: 19 }
+    VariantId:
+      name: variantId
+      in: path
+      required: true
+      schema: { type: string, pattern: "^[1-9]\\d*$", maxLength: 19 }
   schemas:
+    OrderStatus:
+      type: string
+      enum: [AWAITING_PAYMENT, CONFIRMED, PAYMENT_REVIEW, PREPARING, SHIPPING, DELIVERED, CANCELLED]
+    PaymentStatus:
+      type: string
+      enum: [PENDING, SUCCEEDED, FAILED, EXPIRED, CANCELLED, REFUND_PENDING, REFUNDED]
+    AdminOverviewResponse:
+      type: object
+      required: [data]
+      properties:
+        data:
+          type: object
+          required: [ordersByStatus, collectedRevenue, inventory, recentOrders]
+          properties:
+            ordersByStatus: { type: object, additionalProperties: { type: integer, minimum: 0 } }
+            collectedRevenue:
+              type: object
+              required: [allTime, allTimePaymentCount, lastSevenDays, lastSevenDaysPaymentCount]
+              properties:
+                allTime: { type: string, pattern: "^\\d+(\\.\\d+)?$" }
+                allTimePaymentCount: { type: integer, minimum: 0 }
+                lastSevenDays: { type: string, pattern: "^\\d+(\\.\\d+)?$" }
+                lastSevenDaysPaymentCount: { type: integer, minimum: 0 }
+            inventory:
+              type: object
+              required: [outOfStockCount, lowStockCount, lowStockThreshold]
+              properties:
+                outOfStockCount: { type: integer, minimum: 0 }
+                lowStockCount: { type: integer, minimum: 0 }
+                lowStockThreshold: { type: integer, const: 5 }
+            recentOrders:
+              type: array
+              items: { $ref: "#/components/schemas/AdminOrderSummary" }
+    AdminOrderListResponse:
+      type: object
+      required: [data]
+      properties:
+        data:
+          type: object
+          required: [items, nextCursor]
+          properties:
+            items: { type: array, items: { $ref: "#/components/schemas/AdminOrderSummary" } }
+            nextCursor: { type: [string, "null"], pattern: "^[1-9]\\d*$" }
+    AdminOrderSummaryResponse:
+      type: object
+      required: [data]
+      properties:
+        data: { $ref: "#/components/schemas/AdminOrderSummary" }
+    AdminOrderSummary:
+      type: object
+      required: [id, orderNumber, status, currency, subtotal, shippingFee, total, recipientName, recipientPhone, province, itemCount, customer, latestPayment, createdAt, updatedAt]
+      properties:
+        id: { type: string, pattern: "^[1-9]\\d*$" }
+        orderNumber: { type: string }
+        status: { $ref: "#/components/schemas/OrderStatus" }
+        currency: { type: string, const: VND }
+        subtotal: { type: string, pattern: "^\\d+(\\.\\d+)?$" }
+        shippingFee: { type: string, pattern: "^\\d+(\\.\\d+)?$" }
+        total: { type: string, pattern: "^\\d+(\\.\\d+)?$" }
+        recipientName: { type: string }
+        recipientPhone: { type: string }
+        province: { type: string }
+        itemCount: { type: integer, minimum: 0 }
+        customer:
+          type: object
+          required: [displayName, email]
+          properties:
+            displayName: { type: string }
+            email: { type: string, format: email }
+        latestPayment:
+          anyOf:
+            - type: object
+              required: [status, amount, paidAt]
+              properties:
+                status: { $ref: "#/components/schemas/PaymentStatus" }
+                amount: { type: string, pattern: "^\\d+(\\.\\d+)?$" }
+                paidAt: { type: [string, "null"], format: date-time }
+            - type: "null"
+        createdAt: { type: string, format: date-time }
+        updatedAt: { type: string, format: date-time }
+    AdminOrderDetailResponse:
+      type: object
+      required: [data]
+      properties:
+        data:
+          allOf:
+            - $ref: "#/components/schemas/AdminOrderSummary"
+            - type: object
+              required: [address, note, items, payments]
+              properties:
+                address:
+                  type: object
+                  required: [addressLine, ward, district, province]
+                  properties:
+                    addressLine: { type: string }
+                    ward: { type: [string, "null"] }
+                    district: { type: string }
+                    province: { type: string }
+                note: { type: [string, "null"] }
+                items: { type: array, items: { type: object } }
+                payments: { type: array, items: { $ref: "#/components/schemas/AdminPayment" } }
+    UpdateAdminOrderStatusRequest:
+      type: object
+      additionalProperties: false
+      required: [status]
+      properties:
+        status: { type: string, enum: [CONFIRMED, PREPARING, SHIPPING, DELIVERED] }
+    AdminPaymentListResponse:
+      type: object
+      required: [data]
+      properties:
+        data:
+          type: object
+          required: [items, nextCursor]
+          properties:
+            items: { type: array, items: { $ref: "#/components/schemas/AdminPayment" } }
+            nextCursor: { type: [string, "null"], pattern: "^[1-9]\\d*$" }
+    AdminPayment:
+      type: object
+      required: [id, provider, status, amount, merchantTransactionId, providerTransactionId, returnCode, returnMessage, expiresAt, paidAt, createdAt, updatedAt, order]
+      properties:
+        id: { type: string, pattern: "^[1-9]\\d*$" }
+        provider: { type: string, const: ZALOPAY }
+        status: { $ref: "#/components/schemas/PaymentStatus" }
+        amount: { type: string, pattern: "^\\d+(\\.\\d+)?$" }
+        merchantTransactionId: { type: string }
+        providerTransactionId: { type: [string, "null"] }
+        returnCode: { type: [integer, "null"] }
+        returnMessage: { type: [string, "null"] }
+        expiresAt: { type: string, format: date-time }
+        paidAt: { type: [string, "null"], format: date-time }
+        createdAt: { type: string, format: date-time }
+        updatedAt: { type: string, format: date-time }
+        order:
+          type: object
+          required: [orderNumber, recipientName]
+          properties:
+            orderNumber: { type: string }
+            recipientName: { type: string }
+    AdminInventoryOverviewResponse:
+      type: object
+      required: [data]
+      properties:
+        data:
+          type: object
+          required: [lowStockThreshold, attentionVariants, recentMovements]
+          properties:
+            lowStockThreshold: { type: integer, const: 5 }
+            attentionVariants: { type: array, items: { type: object } }
+            recentMovements: { type: array, items: { type: object } }
+    AdminProductListResponse:
+      type: object
+      required: [data]
+      properties:
+        data:
+          type: object
+          required: [items, nextCursor]
+          properties:
+            items:
+              type: array
+              items: { $ref: "#/components/schemas/AdminProduct" }
+            nextCursor:
+              type: [string, "null"]
+              pattern: "^[1-9]\\d*$"
+    AdminProductResponse:
+      type: object
+      required: [data]
+      properties:
+        data: { $ref: "#/components/schemas/AdminProduct" }
+    AdminProduct:
+      type: object
+      required: [id, slug, name, description, kind, imageUrl, active, createdAt, updatedAt, stockQuantity, variants]
+      properties:
+        id: { type: string, pattern: "^[1-9]\\d*$" }
+        slug: { type: string }
+        name: { type: string }
+        description: { type: string }
+        kind: { $ref: "#/components/schemas/ProductKind" }
+        imageUrl: { type: [string, "null"], format: uri }
+        active: { type: boolean }
+        createdAt: { type: string, format: date-time }
+        updatedAt: { type: string, format: date-time }
+        stockQuantity: { type: integer, minimum: 0 }
+        variants:
+          type: array
+          items: { $ref: "#/components/schemas/AdminProductVariant" }
+    AdminProductVariant:
+      type: object
+      required: [id, sku, label, unit, packageQuantity, price, currency, stockQuantity, active]
+      properties:
+        id: { type: string, pattern: "^[1-9]\\d*$" }
+        sku: { type: string, maxLength: 80 }
+        label: { type: string, maxLength: 180 }
+        unit: { $ref: "#/components/schemas/MeasurementUnit" }
+        packageQuantity: { type: string, pattern: "^\\d+(\\.\\d+)?$" }
+        price: { type: string, pattern: "^\\d+(\\.\\d+)?$" }
+        currency: { type: string, const: VND }
+        stockQuantity: { type: integer, minimum: 0 }
+        active: { type: boolean }
+    ProductKind:
+      type: string
+      enum: [INGREDIENT, TOOL]
+    MeasurementUnit:
+      type: string
+      enum: [GRAM, MILLILITER, PIECE]
+    CreateAdminProductRequest:
+      type: object
+      additionalProperties: false
+      required: [name, description, kind, variants]
+      properties:
+        name: { type: string, minLength: 1, maxLength: 180 }
+        description: { type: string, minLength: 1, maxLength: 500 }
+        kind: { $ref: "#/components/schemas/ProductKind" }
+        imageUrl: { type: [string, "null"], format: uri, maxLength: 500 }
+        active: { type: boolean, default: true }
+        variants:
+          type: array
+          minItems: 1
+          maxItems: 20
+          items: { $ref: "#/components/schemas/CreateAdminVariantRequest" }
+    UpdateAdminProductRequest:
+      type: object
+      additionalProperties: false
+      minProperties: 1
+      properties:
+        name: { type: string, minLength: 1, maxLength: 180 }
+        description: { type: string, minLength: 1, maxLength: 500 }
+        imageUrl: { type: [string, "null"], format: uri, maxLength: 500 }
+        active: { type: boolean }
+    CreateAdminVariantRequest:
+      type: object
+      additionalProperties: false
+      required: [sku, label, unit, packageQuantity, price, stockQuantity]
+      properties:
+        sku:
+          type: string
+          minLength: 1
+          maxLength: 80
+          pattern: "^[A-Za-z0-9][A-Za-z0-9._-]*$"
+        label: { type: string, minLength: 1, maxLength: 180 }
+        unit: { $ref: "#/components/schemas/MeasurementUnit" }
+        packageQuantity: { type: number, exclusiveMinimum: 0, maximum: 1000000, multipleOf: 0.001 }
+        price: { type: integer, minimum: 0, maximum: 999999999 }
+        stockQuantity: { type: integer, minimum: 0, maximum: 1000000 }
+        active: { type: boolean, default: true }
+    UpdateAdminVariantRequest:
+      type: object
+      additionalProperties: false
+      minProperties: 1
+      properties:
+        label: { type: string, minLength: 1, maxLength: 180 }
+        unit: { $ref: "#/components/schemas/MeasurementUnit" }
+        packageQuantity: { type: number, exclusiveMinimum: 0, maximum: 1000000, multipleOf: 0.001 }
+        price: { type: integer, minimum: 0, maximum: 999999999 }
+        active: { type: boolean }
+    AdjustInventoryRequest:
+      type: object
+      additionalProperties: false
+      required: [quantityDelta, reason]
+      properties:
+        quantityDelta:
+          type: integer
+          minimum: -1000000
+          maximum: 1000000
+          not: { const: 0 }
+        reason:
+          type: string
+          enum: [RESTOCK, CORRECTION, DAMAGED, RETURNED]
+        note: { type: string, maxLength: 300 }
+    InventoryAdjustmentResponse:
+      type: object
+      required: [data]
+      properties:
+        data:
+          type: object
+          required: [variantId, stockQuantity, movement]
+          properties:
+            variantId: { type: string, pattern: "^[1-9]\\d*$" }
+            stockQuantity: { type: integer, minimum: 0 }
+            movement: { $ref: "#/components/schemas/InventoryMovement" }
+    InventoryMovement:
+      type: object
+      required: [id, quantityDelta, stockBefore, stockAfter, reason, note, createdAt, actorName, orderNumber]
+      properties:
+        id: { type: string, pattern: "^[1-9]\\d*$" }
+        quantityDelta: { type: integer }
+        stockBefore: { type: integer, minimum: 0 }
+        stockAfter: { type: integer, minimum: 0 }
+        reason:
+          type: string
+          enum: [INITIAL_STOCK, RESTOCK, CORRECTION, DAMAGED, RETURNED, ORDER_RESERVED, ORDER_RELEASED]
+        note: { type: [string, "null"] }
+        createdAt: { type: string, format: date-time }
+        actorName: { type: [string, "null"] }
+        orderNumber: { type: [string, "null"] }
     RegisterRequest:
       type: object
       additionalProperties: false
@@ -514,13 +1131,17 @@ components:
         return_message: { type: string }
     RecipeSummary:
       type: object
-      required: [slug, title, summary, baseServings, prepMinutes, bakeMinutes, totalMinutes, difficulty, difficultyLabel]
+      required: [slug, title, summary, baseServings, yieldUnit, yieldUnitLabel, category, categoryLabel, prepMinutes, bakeMinutes, totalMinutes, difficulty, difficultyLabel]
       properties:
         slug: { type: string }
         title: { type: string }
         summary: { type: string }
         imageUrl: { type: [string, "null"], format: uri }
         baseServings: { type: integer }
+        yieldUnit: { type: string, enum: [PERSON, PORTION, PIECE, LOAF] }
+        yieldUnitLabel: { type: string }
+        category: { type: string, enum: [COOKIE, CAKE, DESSERT, BREAD] }
+        categoryLabel: { type: string }
         prepMinutes: { type: integer }
         bakeMinutes: { type: integer }
         totalMinutes: { type: integer }

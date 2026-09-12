@@ -8,6 +8,20 @@ const difficultyLabels = {
   HARD: 'Khó',
 } as const;
 
+const categoryLabels = {
+  COOKIE: 'Bánh quy',
+  CAKE: 'Bánh ngọt',
+  DESSERT: 'Tráng miệng',
+  BREAD: 'Bánh mì',
+} as const;
+
+const yieldUnitLabels = {
+  PERSON: 'người',
+  PORTION: 'phần',
+  PIECE: 'cái',
+  LOAF: 'ổ bánh',
+} as const;
+
 const unitLabels = {
   GRAM: 'g',
   MILLILITER: 'ml',
@@ -19,6 +33,8 @@ export async function listRecipes() {
 
   return recipes.map((recipe) => ({
     ...recipe,
+    categoryLabel: categoryLabels[recipe.category],
+    yieldUnitLabel: yieldUnitLabels[recipe.yieldUnit],
     difficultyLabel: difficultyLabels[recipe.difficulty],
     totalMinutes: recipe.prepMinutes + recipe.bakeMinutes,
   }));
@@ -87,6 +103,10 @@ export async function getRecipePlan(slug: string, requestedServings?: number) {
     story: recipe.story,
     imageUrl: recipe.imageUrl,
     baseServings: recipe.baseServings,
+    yieldUnit: recipe.yieldUnit,
+    yieldUnitLabel: yieldUnitLabels[recipe.yieldUnit],
+    category: recipe.category,
+    categoryLabel: categoryLabels[recipe.category],
     servings,
     prepMinutes: recipe.prepMinutes,
     bakeMinutes: recipe.bakeMinutes,

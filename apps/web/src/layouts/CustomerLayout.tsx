@@ -1,6 +1,6 @@
 import { Menu, ShoppingBasket, X } from 'lucide-react';
 import { useState } from 'react';
-import { Link, Outlet } from 'react-router-dom';
+import { Link, NavLink, Outlet } from 'react-router-dom';
 import { useAuth } from '../features/auth/AuthContext';
 import { useCart } from '../features/cart/CartContext';
 
@@ -25,25 +25,27 @@ export function CustomerLayout() {
           <details className="mobile-menu">
             <summary aria-label="Mở điều hướng"><Menu aria-hidden="true" size={24} /></summary>
             <nav aria-label="Điều hướng trên điện thoại">
-              <Link to="/">Công thức</Link>
+              <NavLink to="/" end>Trang chủ</NavLink>
+              <NavLink to="/cong-thuc">Công thức</NavLink>
+              <NavLink to="/cau-chuyen">Câu chuyện</NavLink>
               <Link to="/dang-nhap">{accountLabel}</Link>
-              <Link to="/admin">Quản trị</Link>
+              {user?.role === 'ADMIN' ? <Link to="/admin">Quản trị</Link> : null}
             </nav>
           </details>
           <nav className="masthead__nav masthead__nav--left" aria-label="Điều hướng chính">
-            <Link to="/">Công thức</Link>
-            <span aria-disabled="true">Câu chuyện</span>
+            <NavLink to="/cong-thuc">Công thức</NavLink>
+            <NavLink to="/cau-chuyen">Câu chuyện</NavLink>
           </nav>
           <Link className="wordmark" to="/">
-            <strong>E·COMMERCE</strong>
-            <span>technology · sổ tay làm bánh</span>
+            <strong>Bếp Đủ Bánh</strong>
+            <span>công thức · nguyên liệu · dụng cụ</span>
           </Link>
           <Link className="mobile-cart-link cart-link" to="/gio-hang" aria-label={`Giỏ hàng có ${itemCount} sản phẩm`}>
             <ShoppingBasket aria-hidden="true" size={20} />
             <b>{itemCount}</b>
           </Link>
           <nav className="masthead__nav masthead__nav--right" aria-label="Tiện ích">
-            <Link to="/admin">Quản trị</Link>
+            {user?.role === 'ADMIN' ? <Link to="/admin">Quản trị</Link> : null}
             <Link className="account-link" to="/dang-nhap" title={user?.displayName}>{accountLabel}</Link>
             <Link className="cart-link" to="/gio-hang" aria-label={`Giỏ hàng có ${itemCount} sản phẩm`}>
               <ShoppingBasket aria-hidden="true" size={20} />
@@ -58,10 +60,14 @@ export function CustomerLayout() {
       <footer className="site-footer">
         <div className="page-frame">
           <p className="site-footer__masthead">Nướng một mẻ vừa đủ.</p>
-          <div className="site-footer__line">
-            <span>Dự án cá nhân đang phát triển</span>
-            <Link to="/">Đọc công thức</Link>
-          </div>
+          <nav className="site-footer__nav" aria-label="Điều hướng cuối trang">
+            <Link to="/">Trang chủ</Link>
+            <Link to="/cong-thuc">Công thức</Link>
+            <Link to="/cau-chuyen">Câu chuyện</Link>
+          </nav>
+          <p className="site-footer__colophon">
+            © <time dateTime="2026">2026</time> Bếp Đủ Bánh · Mã nguồn phát hành theo giấy phép MIT.
+          </p>
         </div>
       </footer>
     </div>

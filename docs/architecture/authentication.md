@@ -38,7 +38,7 @@ Cơ chế này đã được chọn thay cho việc để trình duyệt tự gi
 
 ## Bố trí tên miền
 
-Tạm thời dùng frontend `ecomtech.congtc145.id.vn` và API `api.ecomtech.congtc145.id.vn`. Hai origin (nguồn truy cập gồm giao thức, tên miền và cổng) khác nhau nhưng vẫn cùng site, nên cookie `SameSite=Lax` có thể đi cùng lời gọi API khi frontend dùng `credentials: include` và backend chỉ cho phép đúng origin frontend qua CORS. Khi chốt thương hiệu mới, phải đổi đồng bộ DNS, Caddy, CORS, callback ZaloPay và biến frontend.
+Tạm thời dùng frontend `ecomtech.congtc145.id.vn` và API `api.ecomtech.congtc145.id.vn`. Hai origin (nguồn truy cập gồm giao thức, tên miền và cổng) khác nhau nhưng vẫn cùng site, nên cookie `SameSite=Lax` có thể đi cùng lời gọi API khi frontend dùng `credentials: include` và backend chỉ cho phép đúng origin frontend qua CORS. Tên thương hiệu đã chốt là `Bếp Đủ Bánh`, nhưng tên miền mới chưa chốt; khi chuyển tên miền phải đổi đồng bộ DNS, Caddy, CORS, cookie, callback ZaloPay và biến frontend.
 
 Nếu API dùng tên miền hoàn toàn khác như `*.onrender.com`, cookie phải dùng `SameSite=None; Secure` và có thể bị chính sách chặn cookie bên thứ ba của trình duyệt ảnh hưởng. Không đổi sang cấu hình đó nếu chưa kiểm thử trên các trình duyệt mục tiêu.
 

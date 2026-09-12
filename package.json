@@ -18,6 +18,7 @@
     "db:stop": "docker compose stop postgres",
     "dev:api": "npm run dev --workspace=@ecommerce/api",
     "dev:web": "npm run dev --workspace=@ecommerce/web",
+    "preview:web": "npm run build --workspace=@ecommerce/web && npm run preview --workspace=@ecommerce/web",
     "test": "npm run test --workspaces --if-present",
     "deploy:oracle:config": "docker compose --env-file deploy/oracle/.env.example -f compose.production.yaml config --quiet",
     "deploy:oracle:build": "docker compose --env-file deploy/oracle/.env.example -f compose.production.yaml build"

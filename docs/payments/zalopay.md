@@ -28,6 +28,12 @@ ZALOPAY_QUERY_URL=https://sb-openapi.zalopay.vn/v2/query
 ZALOPAY_EXPIRE_SECONDS=900
 ```
 
+`ZALOPAY_CALLBACK_URL` và `ZALOPAY_REDIRECT_URL` phục vụ hai đối tượng khác nhau nên không được nhập cùng một URL gốc:
+
+- `ZALOPAY_CALLBACK_URL` là endpoint backend công khai để máy chủ ZaloPay gửi kết quả; khi thử cục bộ bằng ngrok, URL phải kết thúc bằng `/api/payments/zalopay/callback`.
+- `ZALOPAY_REDIRECT_URL` là trang frontend mà trình duyệt khách quay về. Khi thử cục bộ bằng một tunnel ngrok trỏ tới Vite, callback và redirect có thể dùng chung miền ngrok nhưng bắt buộc khác đường dẫn: callback kết thúc bằng `/api/payments/zalopay/callback`, redirect kết thúc bằng `/thanh-toan/ket-qua`.
+- Giá trị redirect được gắn vào giao dịch lúc tạo đơn. Đổi `.env` không sửa được giao dịch đã tạo trước đó; phải khởi động lại API và tạo một giao dịch thử mới.
+
 Không thêm tiền tố `VITE_` cho các khóa. Không ghi khóa vào mã, ảnh chụp màn hình, log, tài liệu hay Git. Khi xoay khóa, cập nhật biến môi trường rồi khởi động lại API.
 
 ## Quy tắc bảo mật và tính đúng

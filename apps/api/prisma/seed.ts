@@ -2,6 +2,7 @@ import { PrismaPg } from '@prisma/adapter-pg';
 import { PrismaClient, MeasurementUnit, ProductKind, UserRole } from '../src/generated/prisma/client.js';
 import { registerRequestSchema } from '../src/modules/auth/auth.schemas.js';
 import { hashPassword } from '../src/modules/auth/password.js';
+import { importedRecipeSeeds } from './recipe-seed-data.js';
 
 const databaseUrl = process.env.DATABASE_URL;
 
@@ -9,43 +10,48 @@ if (!databaseUrl) throw new Error('DATABASE_URL chưa được cấu hình.');
 
 const prisma = new PrismaClient({ adapter: new PrismaPg({ connectionString: databaseUrl }) });
 
-function readAdminSeedInput() {
-  const email = process.env.SEED_ADMIN_EMAIL?.trim();
-  const password = process.env.SEED_ADMIN_PASSWORD;
+function readUserSeedInput(prefix: 'SEED_ADMIN' | 'SEED_CUSTOMER', label: string, fallbackName: string) {
+  const email = process.env[`${prefix}_EMAIL`]?.trim();
+  const password = process.env[`${prefix}_PASSWORD`];
 
   if (!email && !password) return null;
   if (!email || !password) {
-    throw new Error('Cần cấu hình đồng thời SEED_ADMIN_EMAIL và SEED_ADMIN_PASSWORD.');
+    throw new Error(`Cần cấu hình đồng thời ${prefix}_EMAIL và ${prefix}_PASSWORD cho ${label}.`);
   }
 
   return registerRequestSchema.parse({
-    displayName: process.env.SEED_ADMIN_DISPLAY_NAME?.trim() || 'Quản trị viên',
+    displayName: process.env[`${prefix}_DISPLAY_NAME`]?.trim() || fallbackName,
     email,
     password,
   });
 }
 
-async function ensureAdmin() {
-  const input = readAdminSeedInput();
+async function ensureSeedUser(
+  prefix: 'SEED_ADMIN' | 'SEED_CUSTOMER',
+  role: UserRole,
+  label: string,
+  fallbackName: string,
+) {
+  const input = readUserSeedInput(prefix, label, fallbackName);
   if (!input) {
-    console.log('Chưa cấu hình SEED_ADMIN_EMAIL và SEED_ADMIN_PASSWORD; bỏ qua tài khoản quản trị.');
+    console.log(`Chưa cấu hình ${prefix}_EMAIL và ${prefix}_PASSWORD; bỏ qua ${label}.`);
     return;
   }
 
   const passwordHash = await hashPassword(input.password);
-  const admin = await prisma.$transaction(async (transaction) => {
+  const seededUser = await prisma.$transaction(async (transaction) => {
     const user = await transaction.user.upsert({
       where: { email: input.email },
       create: {
         email: input.email,
         displayName: input.displayName,
         passwordHash,
-        role: UserRole.ADMIN,
+        role,
       },
       update: {
         displayName: input.displayName,
         passwordHash,
-        role: UserRole.ADMIN,
+        role,
         active: true,
       },
     });
@@ -54,7 +60,15 @@ async function ensureAdmin() {
     return user;
   });
 
-  console.log(`Đã tạo hoặc cập nhật tài khoản quản trị: ${admin.email}`);
+  console.log(`Đã tạo hoặc cập nhật ${label}: ${seededUser.email}`);
+}
+
+async function ensureAdmin() {
+  await ensureSeedUser('SEED_ADMIN', UserRole.ADMIN, 'tài khoản quản trị', 'Quản trị viên');
+}
+
+async function ensureCustomer() {
+  await ensureSeedUser('SEED_CUSTOMER', UserRole.CUSTOMER, 'tài khoản khách hàng', 'Khách hàng thử nghiệm');
 }
 
 type VariantSeed = {
@@ -83,6 +97,19 @@ async function createIngredientWithProduct(
       },
     },
     include: { variants: true },
+  });
+
+  await prisma.inventoryMovement.createMany({
+    data: product.variants
+      .filter((variant) => variant.stockQuantity > 0)
+      .map((variant) => ({
+        productVariantId: variant.id,
+        quantityDelta: variant.stockQuantity,
+        stockBefore: 0,
+        stockAfter: variant.stockQuantity,
+        reason: 'INITIAL_STOCK' as const,
+        note: 'Tồn kho ban đầu của dữ liệu minh họa.',
+      })),
   });
 
   await prisma.ingredientVariant.createMany({
@@ -119,6 +146,17 @@ async function createToolWithProduct(slug: string, name: string, price: number) 
 
   const variant = product.variants[0];
   if (!variant) throw new Error(`Không tạo được biến thể dụng cụ ${slug}.`);
+
+  await prisma.inventoryMovement.create({
+    data: {
+      productVariantId: variant.id,
+      quantityDelta: variant.stockQuantity,
+      stockBefore: 0,
+      stockAfter: variant.stockQuantity,
+      reason: 'INITIAL_STOCK',
+      note: 'Tồn kho ban đầu của dữ liệu minh họa.',
+    },
+  });
 
   await prisma.toolVariant.create({
     data: { toolId: tool.id, productVariantId: variant.id },
@@ -159,12 +197,92 @@ async function ensureRecipeSteps() {
   }
 }
 
+async function ensureImportedRecipes() {
+  const uniqueIngredients = new Map(
+    importedRecipeSeeds.flatMap((recipe) => recipe.ingredients).map((ingredient) => [ingredient.slug, ingredient]),
+  );
+  const uniqueTools = new Map(
+    importedRecipeSeeds.flatMap((recipe) => recipe.tools).map((tool) => [tool.slug, tool]),
+  );
+
+  const ingredients = await Promise.all(
+    [...uniqueIngredients.values()].map((ingredient) =>
+      prisma.ingredient.upsert({
+        where: { slug: ingredient.slug },
+        create: { slug: ingredient.slug, name: ingredient.name, unit: ingredient.unit },
+        update: { name: ingredient.name, unit: ingredient.unit },
+      }),
+    ),
+  );
+  const tools = await Promise.all(
+    [...uniqueTools.values()].map((tool) =>
+      prisma.tool.upsert({
+        where: { slug: tool.slug },
+        create: { slug: tool.slug, name: tool.name },
+        update: { name: tool.name },
+      }),
+    ),
+  );
+  const ingredientIds = new Map(ingredients.map((ingredient) => [ingredient.slug, ingredient.id]));
+  const toolIds = new Map(tools.map((tool) => [tool.slug, tool.id]));
+
+  const difficultyLabels = { EASY: 'dễ', MEDIUM: 'vừa', HARD: 'khó' } as const;
+  const recipeOperations = importedRecipeSeeds.map((recipe) => {
+    const ingredientsData = recipe.ingredients.map((ingredient, sortOrder) => ({
+      ingredientId: ingredientIds.get(ingredient.slug)!,
+      quantity: ingredient.quantity,
+      note: ingredient.note,
+      sortOrder,
+    }));
+    const toolsData = recipe.tools.map((tool, sortOrder) => ({
+      toolId: toolIds.get(tool.slug)!,
+      required: tool.required ?? true,
+      sortOrder,
+    }));
+    const summary = `Định lượng cho ${recipe.sourceYield}; mức ${difficultyLabels[recipe.difficulty]}. Danh sách mua được ghép theo quy cách hiện có.`;
+    const story = `Dữ liệu thành phần và dụng cụ được nhập từ tài liệu “Nguyên liệu.docx” (${recipe.sourceTime}). Phần hướng dẫn từng bước và câu chuyện món bánh chưa được cung cấp nên chưa được tự viết thêm.`;
+    const sharedData = {
+      title: recipe.title,
+      summary,
+      story,
+      category: recipe.category,
+      baseServings: recipe.baseServings,
+      yieldUnit: recipe.yieldUnit,
+      prepMinutes: recipe.prepMinutes,
+      bakeMinutes: recipe.bakeMinutes,
+      temperatureC: null,
+      difficulty: recipe.difficulty,
+      published: true,
+    };
+
+    return prisma.recipe.upsert({
+      where: { slug: recipe.slug },
+      create: {
+        slug: recipe.slug,
+        ...sharedData,
+        ingredients: { create: ingredientsData },
+        tools: { create: toolsData },
+      },
+      update: {
+        ...sharedData,
+        ingredients: { deleteMany: {}, create: ingredientsData },
+        tools: { deleteMany: {}, create: toolsData },
+      },
+    });
+  });
+
+  await prisma.$transaction(recipeOperations);
+  console.log(`Đã nhập hoặc cập nhật ${importedRecipeSeeds.length} biến thể công thức từ tài liệu nguyên liệu.`);
+}
+
 async function main() {
   await ensureAdmin();
+  await ensureCustomer();
 
   if ((await prisma.recipe.count()) > 0) {
+    await ensureImportedRecipes();
     await ensureRecipeSteps();
-    console.log('Database đã có công thức; chỉ bổ sung bước làm còn thiếu.');
+    console.log('Database đã có dữ liệu; đã đồng bộ tài khoản, công thức và bước làm còn thiếu.');
     return;
   }
 
@@ -265,8 +383,9 @@ async function main() {
   });
 
   await ensureRecipeSteps();
+  await ensureImportedRecipes();
 
-  console.log('Đã tạo 2 công thức và danh mục sản phẩm minh họa.');
+  console.log('Đã tạo danh mục sản phẩm minh họa và đồng bộ bộ công thức đầu vào.');
 }
 
 main()

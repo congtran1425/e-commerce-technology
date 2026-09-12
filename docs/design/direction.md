@@ -1,10 +1,11 @@
 # Định hướng trải nghiệm và giao diện
 
-Trạng thái: Định hướng đã chấp nhận; nhận diện thương hiệu để quyết định sau
-Cập nhật: 2026-09-05
+Trạng thái: Định hướng và tên thương hiệu đã chấp nhận; logo và hệ nhận diện chi tiết chưa khóa
+Cập nhật: 2026-09-12
 
 ## Ba trụ cột đã chốt
 
+- **Tên thương hiệu:** Bếp Đủ Bánh.
 - **Đối tượng:** người Việt tự làm bánh tại nhà, từ người mới đến người có kinh nghiệm.
 - **Hành trình chính:** chọn món bánh → chọn khẩu phần → mua đủ nguyên liệu và dụng cụ.
 - **Cảm giác:** thủ công, ấm áp.
@@ -21,7 +22,7 @@ Cập nhật: 2026-09-05
 
 “Thủ công ấm áp” được hiểu là chất liệu và nhịp điệu có cảm giác con người làm ra: ảnh món bánh thật, bố cục mang tính biên tập, khoảng trắng dễ thở, chi tiết vừa phải và lời văn gần gũi. Không đồng nghĩa với dùng màu nâu/be cho mọi thứ, font viết tay tràn lan hoặc thêm họa tiết trang trí vô nghĩa.
 
-Tên thương hiệu, logo, bảng màu và cặp font chưa được khóa. Không tự chọn chúng như quyết định cuối cùng trước khi có vòng nghiên cứu tham khảo riêng.
+Tên `Bếp Đủ Bánh` đã được khóa. Logo, bảng màu và cặp font vẫn cần một vòng nghiên cứu nhận diện riêng; không tự xem cách trình bày chữ hiện tại là logo chính thức.
 
 ## Quy trình thiết kế
 
@@ -33,3 +34,12 @@ Tên thương hiệu, logo, bảng màu và cặp font chưa được khóa. Kh�
 6. Kiểm tra trên điện thoại, bàn phím, trạng thái tải/lỗi/rỗng/hết hàng và tốc độ cảm nhận.
 
 Nguồn tham khảo chỉ cung cấp “nguyên tắc cấu tạo”, không phải bản mẫu để sao chép theo từng điểm ảnh.
+
+## Hệ thống quản trị vận hành
+
+- Kiểu bố cục: bàn điều hành với thanh điều hướng bên trái trên màn hình rộng và menu thu gọn trên màn hình hẹp.
+- Ba nhóm thông tin: **Điều hành** (tổng quan, đơn hàng, vận chuyển, giao dịch), **Hàng hóa** (sản phẩm, kho vận) và **Phân tích** (báo cáo).
+- Tổng quan ưu tiên hàng đợi cần xử lý, không dùng biểu đồ trang trí hoặc chỉ số tự suy đoán.
+- Đơn hàng dùng danh sách–chi tiết. Chuyển trạng thái chỉ tiến theo luồng đã được backend kiểm tra; frontend không tự quyết định quy tắc nghiệp vụ.
+- Trên điện thoại, dữ liệu dài được chuyển thành các dòng hoặc thẻ đọc dọc, không ép bảng nhiều cột và không giấu thao tác sau trạng thái rê chuột.
+- Cùng dùng hệ kiểu chữ và tông giấy ấm hiện có, nhưng giảm chất trang trí để con số, trạng thái và tác vụ rõ hơn.

@@ -1,4 +1,6 @@
 import { useEffect, useState } from 'react';
+import { ArrowRight } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { RecipeCard } from '../../features/recipes/RecipeCard';
 import { fetchRecipes } from '../../features/recipes/api';
 import type { RecipeSummary } from '../../features/recipes/types';
@@ -33,13 +35,26 @@ export function HomePage() {
         </div>
         <p className="home-intro__note">
           Mỗi công thức được tính lại theo số người bạn muốn làm, rồi ghép với quy cách nguyên liệu vừa đủ.
+          <Link className="text-link" to="/cong-thuc">Mở sổ công thức <ArrowRight aria-hidden="true" size={16} /></Link>
         </p>
+      </section>
+
+      <section className="home-path page-frame" aria-labelledby="home-path-heading">
+        <div>
+          <p className="kicker">Từ ý định đến căn bếp</p>
+          <h2 id="home-path-heading">Không bắt đầu bằng một kệ hàng.</h2>
+        </div>
+        <ol>
+          <li><span>01</span><p>Chọn món bánh phù hợp với thời gian và mức độ quen tay.</p></li>
+          <li><span>02</span><p>Đổi số phần hoặc số bánh; định lượng được tính lại theo tỉ lệ.</p></li>
+          <li><span>03</span><p>Giữ món cần mua, bỏ dụng cụ đã có rồi mới đưa vào giỏ.</p></li>
+        </ol>
       </section>
 
       <section className="recipe-catalogue page-frame" aria-labelledby="recipe-heading">
         <div className="section-heading">
-          <h2 id="recipe-heading">Mẻ bánh đầu tiên</h2>
-          <p>Hai công thức minh họa để kiểm tra trọn vẹn luồng chọn món đến giỏ hàng.</p>
+          <h2 id="recipe-heading">Hai món để bắt đầu</h2>
+          <div><p>Trang chủ chỉ giữ một lựa chọn ngắn. Toàn bộ bộ sưu tập nằm trong sổ công thức riêng.</p><Link className="text-link" to="/cong-thuc">Xem tất cả công thức <ArrowRight aria-hidden="true" size={16} /></Link></div>
         </div>
 
         {status === 'loading' ? (
@@ -65,7 +80,7 @@ export function HomePage() {
 
         {status === 'ready' && recipes.length > 0 ? (
           <div className="recipe-list">
-            {recipes.map((recipe, index) => (
+            {recipes.slice(0, 2).map((recipe, index) => (
               <RecipeCard key={recipe.slug} recipe={recipe} index={index} />
             ))}
           </div>

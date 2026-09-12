@@ -114,25 +114,11 @@ export async function reserveOrder(input: ReserveOrderInput) {
       };
     }).sort((left, right) => left.variantId < right.variantId ? -1 : 1);
 
-    for (const item of reservedItems) {
-      const update = await transaction.productVariant.updateMany({
-        where: {
-          id: item.variantId,
-          active: true,
-          stockQuantity: { gte: item.quantity },
-        },
-        data: { stockQuantity: { decrement: item.quantity } },
-      });
-      if (update.count !== 1) {
-        throw new AppError(409, 'INSUFFICIENT_STOCK', `${item.productName} không còn đủ số lượng để đặt.`);
-      }
-    }
-
     const subtotalMinor = reservedItems.reduce((total, item) => total + item.lineTotalMinor, 0n);
     if (subtotalMinor <= 0n) throw new AppError(409, 'INVALID_ORDER_TOTAL', 'Tổng tiền đơn hàng không hợp lệ.');
     const subtotal = minorUnitsToDecimal(subtotalMinor);
 
-    return transaction.order.create({
+    const order = await transaction.order.create({
       data: {
         orderNumber: input.orderNumber,
         idempotencyKey: input.idempotencyKey,
@@ -169,6 +155,38 @@ export async function reserveOrder(input: ReserveOrderInput) {
       },
       include: orderInclude,
     });
+
+    for (const item of reservedItems) {
+      const update = await transaction.productVariant.updateMany({
+        where: {
+          id: item.variantId,
+          active: true,
+          stockQuantity: { gte: item.quantity },
+        },
+        data: { stockQuantity: { decrement: item.quantity } },
+      });
+      if (update.count !== 1) {
+        throw new AppError(409, 'INSUFFICIENT_STOCK', `${item.productName} không còn đủ số lượng để đặt.`);
+      }
+
+      const variant = await transaction.productVariant.findUniqueOrThrow({
+        where: { id: item.variantId },
+        select: { stockQuantity: true },
+      });
+      await transaction.inventoryMovement.create({
+        data: {
+          productVariantId: item.variantId,
+          orderId: order.id,
+          quantityDelta: -item.quantity,
+          stockBefore: variant.stockQuantity + item.quantity,
+          stockAfter: variant.stockQuantity,
+          reason: 'ORDER_RESERVED',
+          note: `Giữ hàng cho đơn ${order.orderNumber}.`,
+        },
+      });
+    }
+
+    return order;
   });
 }
 
@@ -222,9 +240,21 @@ export async function releaseOrderReservation(input: {
     });
     for (const item of items) {
       if (!item.productVariantId) continue;
-      await transaction.productVariant.update({
+      const variant = await transaction.productVariant.update({
         where: { id: item.productVariantId },
         data: { stockQuantity: { increment: item.quantity } },
+        select: { stockQuantity: true },
+      });
+      await transaction.inventoryMovement.create({
+        data: {
+          productVariantId: item.productVariantId,
+          orderId: input.orderId,
+          quantityDelta: item.quantity,
+          stockBefore: variant.stockQuantity - item.quantity,
+          stockAfter: variant.stockQuantity,
+          reason: 'ORDER_RELEASED',
+          note: 'Hoàn kho do lần thanh toán không hoàn tất.',
+        },
       });
     }
 

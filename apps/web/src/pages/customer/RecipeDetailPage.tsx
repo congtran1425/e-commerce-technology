@@ -38,6 +38,22 @@ export function RecipeDetailPage() {
   }, [servings, slug]);
 
   const selectedServings = servings ?? recipe?.servings ?? 1;
+  const yieldUnitLabel = recipe?.yieldUnitLabel ?? 'phần';
+  const servingQuestion = recipe?.yieldUnit === 'PERSON'
+    ? 'Bạn làm cho bao nhiêu người?'
+    : recipe?.yieldUnit === 'PIECE'
+      ? 'Bạn muốn làm bao nhiêu cái?'
+      : recipe?.yieldUnit === 'LOAF'
+        ? 'Bạn muốn làm bao nhiêu ổ bánh?'
+        : 'Bạn cần bao nhiêu phần?';
+  const unavailableItemCount = recipe
+    ? recipe.ingredients.filter((ingredient) => !ingredient.recommendation).length
+      + recipe.tools.filter((tool) => tool.required && !tool.product && !ownedTools.has(tool.id)).length
+    : 0;
+  const availableItemCount = recipe
+    ? recipe.ingredients.reduce((count, ingredient) => count + (ingredient.recommendation?.packages.length ?? 0), 0)
+      + recipe.tools.filter((tool) => !ownedTools.has(tool.id) && tool.product).length
+    : 0;
   const estimatedTotal = useMemo(() => {
     if (!recipe) return 0;
     const ingredientTotal = recipe.ingredients.reduce(
@@ -88,7 +104,11 @@ export function RecipeDetailPage() {
     );
 
     addItems([...ingredientItems, ...toolItems]);
-    setCartMessage(`Đã thêm nguyên liệu và dụng cụ cho ${selectedServings} người vào giỏ.`);
+    setCartMessage(
+      unavailableItemCount > 0
+        ? `Đã thêm các mặt hàng đang có cho ${selectedServings} ${yieldUnitLabel}. Vẫn còn ${unavailableItemCount} mục chưa có quy cách bán.`
+        : `Đã thêm đủ nguyên liệu và dụng cụ cho ${selectedServings} ${yieldUnitLabel} vào giỏ.`,
+    );
   }
 
   if (status === 'loading' && !recipe) {
@@ -100,7 +120,7 @@ export function RecipeDetailPage() {
       <div className="message-block page-frame" role="alert">
         <h1>Chưa mở được công thức.</h1>
         <p>API chưa phản hồi hoặc công thức không tồn tại.</p>
-        <Link className="text-link" to="/">Trở về danh sách</Link>
+        <Link className="text-link" to="/cong-thuc">Trở về danh sách</Link>
       </div>
     );
   }
@@ -109,12 +129,12 @@ export function RecipeDetailPage() {
     <article className="recipe-detail">
       <header className="recipe-hero page-frame">
         <div className="recipe-hero__copy">
-          <Link className="back-link" to="/">Danh sách công thức</Link>
+          <Link className="back-link" to="/cong-thuc">Danh sách công thức</Link>
           <h1>{recipe.title}</h1>
           <p className="recipe-deck">{recipe.summary}</p>
           <dl className="recipe-facts">
             <div><dt><Clock3 aria-hidden="true" size={18} /> Thời gian</dt><dd>{recipe.totalMinutes} phút</dd></div>
-            <div><dt><Thermometer aria-hidden="true" size={18} /> Nhiệt độ</dt><dd>{recipe.temperatureC ? `${recipe.temperatureC}°C` : 'Không dùng lò'}</dd></div>
+            <div><dt><Thermometer aria-hidden="true" size={18} /> Nhiệt độ</dt><dd>{recipe.temperatureC ? `${recipe.temperatureC}°C` : 'Chưa có dữ liệu'}</dd></div>
             <div><dt><ChefHat aria-hidden="true" size={18} /> Độ khó</dt><dd>{recipe.difficultyLabel}</dd></div>
           </dl>
         </div>
@@ -139,7 +159,7 @@ export function RecipeDetailPage() {
           <p className="kicker">Cách làm</p>
           <h2 id="method-heading">Từng bước, không vội.</h2>
         </div>
-        <ol className="method__steps">
+        {recipe.steps.length > 0 ? <ol className="method__steps">
           {recipe.steps.map((step) => (
             <li key={step.id}>
               <span>{String(step.stepNumber).padStart(2, '0')}</span>
@@ -156,27 +176,32 @@ export function RecipeDetailPage() {
               </div>
             </li>
           ))}
-        </ol>
+        </ol> : (
+          <div className="method__empty">
+            <h3>Chưa có hướng dẫn từng bước.</h3>
+            <p>Tài liệu đầu vào mới có định lượng, dụng cụ và thời gian. Nội dung cách làm sẽ chỉ được xuất bản sau khi có nguồn chính xác.</p>
+          </div>
+        )}
       </section>
 
       <section className="planner page-frame" aria-labelledby="planner-heading">
         <div className="planner__intro">
           <p className="kicker">Tính vừa đủ cho căn bếp</p>
-          <h2 id="planner-heading">Bạn làm cho bao nhiêu người?</h2>
+          <h2 id="planner-heading">{servingQuestion}</h2>
           <p>Định lượng và số gói bên dưới thay đổi cùng khẩu phần.</p>
-          <div className="serving-stepper" aria-label="Chọn số người">
+          <div className="serving-stepper" aria-label={`Chọn số ${yieldUnitLabel}`}>
             <button
               type="button"
               onClick={() => setServings(Math.max(1, selectedServings - 1))}
               disabled={selectedServings <= 1 || status === 'loading'}
-              aria-label="Giảm một người"
+              aria-label={`Giảm một ${yieldUnitLabel}`}
             ><Minus aria-hidden="true" size={20} /></button>
-            <output aria-live="polite"><strong>{selectedServings}</strong><span>người</span></output>
+            <output aria-live="polite"><strong>{selectedServings}</strong><span>{yieldUnitLabel}</span></output>
             <button
               type="button"
               onClick={() => setServings(Math.min(50, selectedServings + 1))}
               disabled={selectedServings >= 50 || status === 'loading'}
-              aria-label="Tăng một người"
+              aria-label={`Tăng một ${yieldUnitLabel}`}
             ><Plus aria-hidden="true" size={20} /></button>
           </div>
         </div>
@@ -225,9 +250,9 @@ export function RecipeDetailPage() {
 
           <aside className="cart-summary">
             <div><span>Tạm tính theo gợi ý</span><strong>{money.format(estimatedTotal)}</strong></div>
-            <p>Giá và dữ liệu sản phẩm hiện dùng để minh họa luồng.</p>
-            <button className="primary-button" type="button" onClick={addPlanToCart} disabled={status === 'loading'}>
-              <ShoppingBasket aria-hidden="true" size={20} /> Thêm cả bộ vào giỏ
+            <p>{unavailableItemCount > 0 ? `${unavailableItemCount} mục chưa có quy cách bán nên sẽ không được thêm vào giỏ.` : 'Mọi mục bắt buộc đều đã có quy cách bán.'}</p>
+            <button className="primary-button" type="button" onClick={addPlanToCart} disabled={status === 'loading' || availableItemCount === 0}>
+              <ShoppingBasket aria-hidden="true" size={20} /> {unavailableItemCount > 0 ? 'Thêm các món đang có' : 'Thêm cả bộ vào giỏ'}
             </button>
             <p className="cart-feedback" aria-live="polite">{cartMessage}</p>
           </aside>

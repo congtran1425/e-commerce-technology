@@ -4,6 +4,7 @@ import { cartRouter } from '../modules/cart/cart.routes.js';
 import { recipeRouter } from '../modules/recipes/recipe.routes.js';
 import { orderRouter } from '../modules/orders/order.routes.js';
 import { paymentRouter } from '../modules/payments/payment.routes.js';
+import { adminRouter } from '../modules/admin/admin.routes.js';
 
 export const apiRouter = Router();
 
@@ -20,3 +21,4 @@ apiRouter.use('/cart', cartRouter);
 apiRouter.use('/auth', authRouter);
 apiRouter.use('/orders', orderRouter);
 apiRouter.use('/payments', paymentRouter);
+apiRouter.use('/admin', adminRouter);

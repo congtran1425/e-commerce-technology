@@ -10,6 +10,8 @@ export function findPublishedRecipes() {
       summary: true,
       imageUrl: true,
       baseServings: true,
+      yieldUnit: true,
+      category: true,
       prepMinutes: true,
       bakeMinutes: true,
       difficulty: true,
