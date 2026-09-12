@@ -1,6 +1,5 @@
 import type { AuthUser, LoginInput, RegisterInput } from './types';
-
-const apiBaseUrl = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:3000/api';
+import { apiFetch } from '../../shared/api-client';
 
 type AuthResponse = { data: { user: AuthUser } };
 
@@ -28,9 +27,8 @@ async function readError(response: Response) {
 }
 
 async function sendCredentials(path: string, body: LoginInput | RegisterInput) {
-  const response = await fetch(`${apiBaseUrl}${path}`, {
+  const response = await apiFetch(path, {
     method: 'POST',
-    credentials: 'include',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(body),
   });
@@ -48,8 +46,7 @@ export function register(input: RegisterInput) {
 }
 
 export async function getCurrentUser(signal?: AbortSignal) {
-  const response = await fetch(`${apiBaseUrl}/auth/me`, {
-    credentials: 'include',
+  const response = await apiFetch('/auth/me', {
     signal,
   });
 
@@ -59,9 +56,8 @@ export async function getCurrentUser(signal?: AbortSignal) {
 }
 
 export async function logout() {
-  const response = await fetch(`${apiBaseUrl}/auth/logout`, {
+  const response = await apiFetch('/auth/logout', {
     method: 'POST',
-    credentials: 'include',
   });
 
   if (!response.ok) throw await readError(response);

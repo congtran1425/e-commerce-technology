@@ -43,7 +43,7 @@ Khách hàng và quản trị viên dùng chung một ứng dụng React nhưng 
 Tên miền dự kiến:
 
 ```text
-ecomtech.congtc145.id.vn       → frontend hiện tại
+bepdubanh.congtc145.id.vn      → frontend hiện tại
 api.ecomtech.congtc145.id.vn   → backend dự kiến
 ```
 

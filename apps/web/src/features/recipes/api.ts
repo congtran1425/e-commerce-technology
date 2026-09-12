@@ -1,6 +1,5 @@
 import type { RecipeDetail, RecipeSummary } from './types';
-
-const apiBaseUrl = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:3000/api';
+import { apiFetch } from '../../shared/api-client';
 
 type ApiResponse<T> = { data: T };
 
@@ -12,7 +11,7 @@ export class ApiError extends Error {
 }
 
 async function get<T>(path: string, signal?: AbortSignal) {
-  const response = await fetch(`${apiBaseUrl}${path}`, { signal, credentials: 'include' });
+  const response = await apiFetch(path, { signal });
 
   if (!response.ok) {
     const body = (await response.json().catch(() => null)) as

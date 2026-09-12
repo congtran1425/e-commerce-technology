@@ -1,6 +1,5 @@
 import type { CheckoutOrder, CreateOrderInput } from './types';
-
-const apiBaseUrl = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:3000/api';
+import { apiFetch } from '../../shared/api-client';
 
 type ApiResponse<T> = { data: T };
 
@@ -27,9 +26,8 @@ async function readError(response: Response) {
 }
 
 export async function createOrder(input: CreateOrderInput) {
-  const response = await fetch(`${apiBaseUrl}/orders`, {
+  const response = await apiFetch('/orders', {
     method: 'POST',
-    credentials: 'include',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(input),
   });
@@ -38,8 +36,7 @@ export async function createOrder(input: CreateOrderInput) {
 }
 
 export async function getOrder(orderNumber: string, signal?: AbortSignal) {
-  const response = await fetch(`${apiBaseUrl}/orders/${encodeURIComponent(orderNumber)}`, {
-    credentials: 'include',
+  const response = await apiFetch(`/orders/${encodeURIComponent(orderNumber)}`, {
     signal,
   });
   if (!response.ok) throw await readError(response);
@@ -47,9 +44,9 @@ export async function getOrder(orderNumber: string, signal?: AbortSignal) {
 }
 
 export async function syncOrderPayment(orderNumber: string, signal?: AbortSignal) {
-  const response = await fetch(
-    `${apiBaseUrl}/orders/${encodeURIComponent(orderNumber)}/payment-status`,
-    { method: 'POST', credentials: 'include', signal },
+  const response = await apiFetch(
+    `/orders/${encodeURIComponent(orderNumber)}/payment-status`,
+    { method: 'POST', signal },
   );
   if (!response.ok) throw await readError(response);
   return (await response.json() as ApiResponse<CheckoutOrder>).data;

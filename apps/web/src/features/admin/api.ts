@@ -12,8 +12,7 @@ import type {
   ProductInput,
   VariantInput,
 } from './types';
-
-const apiBaseUrl = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:3000/api';
+import { apiFetch } from '../../shared/api-client';
 
 type ApiResponse<T> = { data: T };
 
@@ -34,9 +33,8 @@ async function readError(response: Response) {
 }
 
 async function request<T>(path: string, init?: RequestInit) {
-  const response = await fetch(`${apiBaseUrl}${path}`, {
+  const response = await apiFetch(path, {
     ...init,
-    credentials: 'include',
     headers: init?.body ? { 'Content-Type': 'application/json', ...init.headers } : init?.headers,
   });
   if (!response.ok) throw await readError(response);

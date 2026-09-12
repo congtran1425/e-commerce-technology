@@ -30,6 +30,7 @@ Website vừa là nơi mua sắm vừa là nơi đọc. Công thức chứa dữ
 ## Quyết định sản phẩm đã chốt
 
 - Tên thương hiệu chính thức là `Bếp Đủ Bánh`. Tên repository và định danh kỹ thuật không bắt buộc đổi theo thương hiệu.
+- Tên miền frontend production là `bepdubanh.congtc145.id.vn`; tên miền backend chính thức chưa chốt.
 - Nội dung có ba lớp: câu chuyện thương hiệu, câu chuyện ngắn đi cùng từng công thức và bài viết chuyên sâu. Không nhập ba lớp này thành một loại nội dung duy nhất.
 - Ưu tiên giỏ hàng động theo công thức; bộ nguyên liệu đóng gói sẵn là giai đoạn sau.
 - Công thức được chuẩn hóa theo khẩu phần và có đơn vị tính toán được.
