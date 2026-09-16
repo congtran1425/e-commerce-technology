@@ -20,7 +20,7 @@ describe('listRecipes', () => {
         slug: 'banh-quy-bo',
         title: 'Bánh quy bơ',
         summary: 'Một mẻ bánh quy dễ bắt đầu.',
-        imageUrl: null,
+        imageUrl: '/images/recipes/thumbnails/cranberry-butter-cookies.png',
         baseServings: 24,
         yieldUnit: 'PIECE',
         category: 'COOKIE',
@@ -34,6 +34,7 @@ describe('listRecipes', () => {
       expect.objectContaining({
         categoryLabel: 'Bánh quy',
         difficultyLabel: 'Dễ',
+        imageUrl: '/images/recipes/thumbnails/cranberry-butter-cookies.png',
         totalMinutes: 35,
         yieldUnitLabel: 'cái',
       }),

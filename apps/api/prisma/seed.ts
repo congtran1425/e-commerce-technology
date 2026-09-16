@@ -260,6 +260,7 @@ async function ensureImportedRecipes() {
       create: {
         slug: recipe.slug,
         ...sharedData,
+        imageUrl: recipe.imageUrl,
         ingredients: { create: ingredientsData },
         tools: { create: toolsData },
       },
@@ -327,6 +328,7 @@ async function main() {
     data: {
       slug: 'basque-cheesecake',
       title: 'Basque cheesecake cháy cạnh',
+      imageUrl: '/images/recipes/basque-cheesecake.png',
       summary: 'Mặt bánh nâu sẫm, bên trong mềm mượt và có vị kem phô mai rõ ràng.',
       story: 'Chiếc bánh nổi tiếng từ khu phố cổ San Sebastián không cần đế bánh quy. Nhiệt cao tạo lớp mặt cháy thơm, trong khi phần giữa vẫn mềm và rung nhẹ khi vừa ra lò.',
       baseServings: 4,

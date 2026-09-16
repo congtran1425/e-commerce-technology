@@ -9,6 +9,7 @@ export function CustomerLayout() {
   const { status: authStatus, user } = useAuth();
   const [showNotice, setShowNotice] = useState(true);
   const accountLabel = user?.displayName.split(/\s+/)[0] || (authStatus === 'loading' ? 'Tài khoản' : 'Đăng nhập');
+  const accountPath = user ? (user.role === 'ADMIN' ? '/admin' : '/tai-khoan') : '/dang-nhap';
 
   return (
     <div className="app-shell">
@@ -28,7 +29,7 @@ export function CustomerLayout() {
               <NavLink to="/" end>Trang chủ</NavLink>
               <NavLink to="/cong-thuc">Công thức</NavLink>
               <NavLink to="/cau-chuyen">Câu chuyện</NavLink>
-              <Link to="/dang-nhap">{accountLabel}</Link>
+              <Link to={accountPath}>{accountLabel}</Link>
               {user?.role === 'ADMIN' ? <Link to="/admin">Quản trị</Link> : null}
             </nav>
           </details>
@@ -46,7 +47,7 @@ export function CustomerLayout() {
           </Link>
           <nav className="masthead__nav masthead__nav--right" aria-label="Tiện ích">
             {user?.role === 'ADMIN' ? <Link to="/admin">Quản trị</Link> : null}
-            <Link className="account-link" to="/dang-nhap" title={user?.displayName}>{accountLabel}</Link>
+            <Link className="account-link" to={accountPath} title={user?.displayName}>{accountLabel}</Link>
             <Link className="cart-link" to="/gio-hang" aria-label={`Giỏ hàng có ${itemCount} sản phẩm`}>
               <ShoppingBasket aria-hidden="true" size={20} />
               <b>{itemCount}</b>
@@ -64,6 +65,7 @@ export function CustomerLayout() {
             <Link to="/">Trang chủ</Link>
             <Link to="/cong-thuc">Công thức</Link>
             <Link to="/cau-chuyen">Câu chuyện</Link>
+            {user?.role === 'CUSTOMER' ? <Link to="/tai-khoan">Sổ bếp</Link> : null}
           </nav>
           <p className="site-footer__colophon">
             © <time dateTime="2026">2026</time> Bếp Đủ Bánh · Mã nguồn phát hành theo giấy phép MIT.

@@ -251,6 +251,146 @@ paths:
           description: Không tìm thấy đơn hoặc đơn không thuộc tài khoản
         "502":
           description: Chưa thể kết nối tới ZaloPay
+  /account/overview:
+    get:
+      summary: Đọc tổng quan sổ bếp của khách hàng
+      operationId: getAccountOverview
+      security:
+        - sessionCookie: []
+      responses:
+        "200":
+          description: Hồ sơ, số địa chỉ, số đơn và các đơn gần đây.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/AccountOverviewResponse" }
+        "401": { description: Chưa đăng nhập }
+        "403": { description: Phiên hiện tại không thuộc tài khoản khách hàng }
+  /account/profile:
+    patch:
+      summary: Cập nhật tên hiển thị hoặc số điện thoại của khách hàng
+      operationId: updateAccountProfile
+      security:
+        - sessionCookie: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/UpdateAccountProfileRequest" }
+      responses:
+        "200":
+          description: Hồ sơ sau khi cập nhật.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/AccountProfileResponse" }
+        "400": { description: Tên hoặc số điện thoại không hợp lệ }
+        "401": { description: Chưa đăng nhập }
+        "403": { description: Sai nguồn gửi yêu cầu hoặc không phải tài khoản khách hàng }
+        "404": { description: Không tìm thấy tài khoản }
+  /account/orders:
+    get:
+      summary: Đọc lịch sử đơn của khách hàng hiện tại
+      operationId: listAccountOrders
+      description: Đơn mới nhất trước; mỗi trang tiếp theo dùng con trỏ là mã nội bộ của dòng cuối trang trước.
+      security:
+        - sessionCookie: []
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [AWAITING_PAYMENT, CONFIRMED, PAYMENT_REVIEW, PREPARING, SHIPPING, DELIVERED, CANCELLED]
+        - name: cursor
+          in: query
+          schema: { type: string, pattern: "^[1-9]\\d*$", maxLength: 19 }
+        - name: limit
+          in: query
+          schema: { type: integer, minimum: 1, maximum: 20, default: 10 }
+      responses:
+        "200":
+          description: Một trang lịch sử đơn chỉ thuộc tài khoản hiện tại.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/AccountOrderPageResponse" }
+        "400": { description: "Trạng thái, con trỏ hoặc giới hạn không hợp lệ" }
+        "401": { description: Chưa đăng nhập }
+        "403": { description: Phiên hiện tại không thuộc tài khoản khách hàng }
+  /account/addresses:
+    get:
+      summary: Đọc sổ địa chỉ của khách hàng hiện tại
+      operationId: listAccountAddresses
+      security:
+        - sessionCookie: []
+      responses:
+        "200":
+          description: Địa chỉ mặc định đứng trước, sau đó đến địa chỉ mới cập nhật.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    type: array
+                    items: { $ref: "#/components/schemas/AccountAddress" }
+        "401": { description: Chưa đăng nhập }
+        "403": { description: Phiên hiện tại không thuộc tài khoản khách hàng }
+    post:
+      summary: Thêm địa chỉ vào sổ của khách hàng hiện tại
+      operationId: createAccountAddress
+      description: Địa chỉ đầu tiên tự trở thành mặc định; mỗi khách chỉ có tối đa một địa chỉ mặc định.
+      security:
+        - sessionCookie: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/CreateAccountAddressRequest" }
+      responses:
+        "201":
+          description: Địa chỉ đã được tạo.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/AccountAddressResponse" }
+        "400": { description: Thông tin nơi nhận không hợp lệ }
+        "401": { description: Chưa đăng nhập }
+        "403": { description: Sai nguồn gửi yêu cầu hoặc không phải tài khoản khách hàng }
+  /account/addresses/{addressId}:
+    parameters:
+      - name: addressId
+        in: path
+        required: true
+        schema: { type: string, pattern: "^[1-9]\\d*$", maxLength: 19 }
+    patch:
+      summary: Sửa hoặc đặt địa chỉ mặc định
+      operationId: updateAccountAddress
+      security:
+        - sessionCookie: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/UpdateAccountAddressRequest" }
+      responses:
+        "200":
+          description: Địa chỉ sau khi cập nhật.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/AccountAddressResponse" }
+        "400": { description: Thông tin nơi nhận không hợp lệ }
+        "401": { description: Chưa đăng nhập }
+        "403": { description: Sai nguồn gửi yêu cầu hoặc không phải tài khoản khách hàng }
+        "404": { description: Địa chỉ không thuộc tài khoản hiện tại }
+    delete:
+      summary: Xóa địa chỉ khỏi sổ của khách hàng hiện tại
+      operationId: deleteAccountAddress
+      description: Nếu xóa địa chỉ mặc định, địa chỉ được cập nhật gần nhất còn lại sẽ thành mặc định.
+      security:
+        - sessionCookie: []
+      responses:
+        "204": { description: Đã xóa địa chỉ }
+        "401": { description: Chưa đăng nhập }
+        "403": { description: Sai nguồn gửi yêu cầu hoặc không phải tài khoản khách hàng }
+        "404": { description: Địa chỉ không thuộc tài khoản hiện tại }
   /admin/overview:
     get:
       summary: Đọc số liệu điều hành có thể kiểm chứng
@@ -946,7 +1086,7 @@ components:
               $ref: "#/components/schemas/AuthUser"
     AuthUser:
       type: object
-      required: [id, email, displayName, role]
+      required: [id, email, displayName, phone, role]
       properties:
         id:
           type: string
@@ -956,9 +1096,128 @@ components:
           format: email
         displayName:
           type: string
+        phone:
+          type: [string, "null"]
+          description: Số điện thoại Việt Nam đã chuẩn hóa hoặc null nếu chưa bổ sung.
         role:
           type: string
           enum: [CUSTOMER, ADMIN]
+    AccountProfile:
+      type: object
+      required: [id, email, displayName, phone, createdAt]
+      properties:
+        id: { type: string, pattern: "^[1-9]\\d*$" }
+        email: { type: string, format: email }
+        displayName: { type: string }
+        phone: { type: [string, "null"] }
+        createdAt: { type: string, format: date-time }
+    AccountProfileResponse:
+      type: object
+      required: [data]
+      properties:
+        data: { $ref: "#/components/schemas/AccountProfile" }
+    UpdateAccountProfileRequest:
+      type: object
+      additionalProperties: false
+      minProperties: 1
+      properties:
+        displayName: { type: string, minLength: 2, maxLength: 100 }
+        phone:
+          type: [string, "null"]
+          description: Số Việt Nam bắt đầu bằng 0 hoặc +84; gửi null hoặc chuỗi rỗng để xóa.
+    AccountAddress:
+      type: object
+      required: [id, label, recipientName, phone, addressLine, ward, district, province, isDefault, createdAt, updatedAt]
+      properties:
+        id: { type: string, pattern: "^[1-9]\\d*$" }
+        label: { type: string, maxLength: 40 }
+        recipientName: { type: string, maxLength: 100 }
+        phone: { type: string, maxLength: 20 }
+        addressLine: { type: string, maxLength: 250 }
+        ward: { type: [string, "null"], maxLength: 120 }
+        district: { type: string, maxLength: 120 }
+        province: { type: string, maxLength: 120 }
+        isDefault: { type: boolean }
+        createdAt: { type: string, format: date-time }
+        updatedAt: { type: string, format: date-time }
+    AccountAddressResponse:
+      type: object
+      required: [data]
+      properties:
+        data: { $ref: "#/components/schemas/AccountAddress" }
+    CreateAccountAddressRequest:
+      type: object
+      additionalProperties: false
+      required: [label, recipientName, phone, addressLine, district, province]
+      properties:
+        label: { type: string, minLength: 1, maxLength: 40 }
+        recipientName: { type: string, minLength: 1, maxLength: 100 }
+        phone:
+          type: string
+          maxLength: 20
+          description: Số Việt Nam bắt đầu bằng 0 hoặc +84; khoảng trắng, dấu chấm và gạch ngang được chuẩn hóa.
+        addressLine: { type: string, minLength: 1, maxLength: 250 }
+        ward: { type: string, maxLength: 120 }
+        district: { type: string, minLength: 1, maxLength: 120 }
+        province: { type: string, minLength: 1, maxLength: 120 }
+        isDefault: { type: boolean, default: false }
+    UpdateAccountAddressRequest:
+      type: object
+      additionalProperties: false
+      minProperties: 1
+      properties:
+        label: { type: string, minLength: 1, maxLength: 40 }
+        recipientName: { type: string, minLength: 1, maxLength: 100 }
+        phone: { type: string, maxLength: 20 }
+        addressLine: { type: string, minLength: 1, maxLength: 250 }
+        ward: { type: [string, "null"], maxLength: 120 }
+        district: { type: string, minLength: 1, maxLength: 120 }
+        province: { type: string, minLength: 1, maxLength: 120 }
+        isDefault:
+          type: boolean
+          const: true
+    AccountOrderSummary:
+      type: object
+      required: [orderNumber, status, currency, total, recipientName, itemCount, paymentStatus, createdAt]
+      properties:
+        orderNumber: { type: string }
+        status:
+          type: string
+          enum: [AWAITING_PAYMENT, CONFIRMED, PAYMENT_REVIEW, PREPARING, SHIPPING, DELIVERED, CANCELLED]
+        currency: { type: string, const: VND }
+        total: { type: string, example: "160000.00" }
+        recipientName: { type: string }
+        itemCount: { type: integer, minimum: 0 }
+        paymentStatus:
+          type: [string, "null"]
+          enum: [PENDING, SUCCEEDED, FAILED, EXPIRED, CANCELLED, REFUND_PENDING, REFUNDED, null]
+        createdAt: { type: string, format: date-time }
+    AccountOrderPageResponse:
+      type: object
+      required: [data]
+      properties:
+        data:
+          type: object
+          required: [items, nextCursor]
+          properties:
+            items:
+              type: array
+              items: { $ref: "#/components/schemas/AccountOrderSummary" }
+            nextCursor: { type: [string, "null"] }
+    AccountOverviewResponse:
+      type: object
+      required: [data]
+      properties:
+        data:
+          type: object
+          required: [profile, addressCount, orderCount, recentOrders]
+          properties:
+            profile: { $ref: "#/components/schemas/AccountProfile" }
+            addressCount: { type: integer, minimum: 0 }
+            orderCount: { type: integer, minimum: 0 }
+            recentOrders:
+              type: array
+              items: { $ref: "#/components/schemas/AccountOrderSummary" }
     CartQuoteRequest:
       type: object
       required: [items]
@@ -1131,12 +1390,15 @@ components:
         return_message: { type: string }
     RecipeSummary:
       type: object
-      required: [slug, title, summary, baseServings, yieldUnit, yieldUnitLabel, category, categoryLabel, prepMinutes, bakeMinutes, totalMinutes, difficulty, difficultyLabel]
+      required: [slug, title, summary, imageUrl, baseServings, yieldUnit, yieldUnitLabel, category, categoryLabel, prepMinutes, bakeMinutes, totalMinutes, difficulty, difficultyLabel]
       properties:
         slug: { type: string }
         title: { type: string }
         summary: { type: string }
-        imageUrl: { type: [string, "null"], format: uri }
+        imageUrl:
+          type: [string, "null"]
+          format: uri-reference
+          description: Đường dẫn bắt đầu bằng / được trình duyệt lấy từ miền frontend; null khi chưa có ảnh.
         baseServings: { type: integer }
         yieldUnit: { type: string, enum: [PERSON, PORTION, PIECE, LOAF] }
         yieldUnitLabel: { type: string }

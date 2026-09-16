@@ -125,6 +125,9 @@ export function RecipeDetailPage() {
     );
   }
 
+  const isThumbnail = recipe.imageUrl?.startsWith('/images/recipes/thumbnails/') ?? false;
+  const isBasqueImage = recipe.imageUrl === '/images/recipes/basque-cheesecake.png';
+
   return (
     <article className="recipe-detail">
       <header className="recipe-hero page-frame">
@@ -138,9 +141,15 @@ export function RecipeDetailPage() {
             <div><dt><ChefHat aria-hidden="true" size={18} /> Độ khó</dt><dd>{recipe.difficultyLabel}</dd></div>
           </dl>
         </div>
-        <div className="recipe-hero__media">
+        <div className={`recipe-hero__media${isThumbnail ? ' recipe-hero__media--thumbnail' : ''}`}>
           {recipe.imageUrl ? (
-            <img src={recipe.imageUrl} alt={recipe.title} width="900" height="1080" fetchPriority="high" />
+            <img
+              src={recipe.imageUrl}
+              alt={recipe.title}
+              width={isThumbnail ? 352 : isBasqueImage ? 1254 : 900}
+              height={isThumbnail ? 352 : isBasqueImage ? 1254 : 1080}
+              fetchPriority="high"
+            />
           ) : (
             <div className="image-placeholder image-placeholder--portrait" aria-hidden="true">
               <span>Ảnh thành phẩm</span><small>Tỉ lệ 4:5 · sẽ bổ sung</small>

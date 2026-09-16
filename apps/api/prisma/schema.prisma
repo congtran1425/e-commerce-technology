@@ -230,6 +230,7 @@ model User {
   id           BigInt    @id @default(autoincrement())
   email        String    @unique @db.VarChar(254)
   displayName  String    @map("display_name") @db.VarChar(100)
+  phone        String?   @db.VarChar(20)
   passwordHash String    @map("password_hash") @db.VarChar(255)
   role         UserRole  @default(CUSTOMER)
   active       Boolean   @default(true)
@@ -237,9 +238,29 @@ model User {
   updatedAt    DateTime  @updatedAt @map("updated_at") @db.Timestamptz(3)
   sessions     Session[]
   orders       Order[]
+  addresses    CustomerAddress[]
   inventoryMovements InventoryMovement[]
 
   @@map("users")
+}
+
+model CustomerAddress {
+  id            BigInt   @id @default(autoincrement())
+  userId        BigInt   @map("user_id")
+  label         String   @db.VarChar(40)
+  recipientName String   @map("recipient_name") @db.VarChar(100)
+  phone         String   @db.VarChar(20)
+  addressLine   String   @map("address_line") @db.VarChar(250)
+  ward          String?  @db.VarChar(120)
+  district      String   @db.VarChar(120)
+  province      String   @db.VarChar(120)
+  isDefault     Boolean  @default(false) @map("is_default")
+  createdAt     DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt     DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+  @@map("customer_addresses")
 }
 
 model Session {
@@ -280,6 +301,7 @@ model Order {
   inventoryMovements InventoryMovement[]
 
   @@index([userId, createdAt])
+  @@index([userId, id])
   @@index([status, createdAt])
   @@map("orders")
 }

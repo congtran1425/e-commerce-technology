@@ -15,7 +15,7 @@ export function RecipeCard({
     <article className={`recipe-card recipe-card--${variant}`}>
       <Link className="recipe-card__media" to={`/cong-thuc/${recipe.slug}`} aria-label={`Xem ${recipe.title}`}>
         {recipe.imageUrl ? (
-          <img src={recipe.imageUrl} alt={recipe.title} width="720" height="540" loading="lazy" />
+          <img src={recipe.imageUrl} alt={recipe.title} width="352" height="352" loading="lazy" decoding="async" />
         ) : (
           <div className="image-placeholder" aria-hidden="true">
             <span>Ảnh món bánh</span>

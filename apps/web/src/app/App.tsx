@@ -20,6 +20,12 @@ const AdminInventoryPage = lazy(() => import('../pages/admin/AdminInventoryPage'
 const AdminOrdersPage = lazy(() => import('../pages/admin/AdminOrdersPage').then((module) => ({ default: module.AdminOrdersPage })));
 const AdminPaymentsPage = lazy(() => import('../pages/admin/AdminPaymentsPage').then((module) => ({ default: module.AdminPaymentsPage })));
 const AdminReportsPage = lazy(() => import('../pages/admin/AdminReportsPage').then((module) => ({ default: module.AdminReportsPage })));
+const AccountLayout = lazy(() => import('../layouts/AccountLayout').then((module) => ({ default: module.AccountLayout })));
+const AccountOverviewPage = lazy(() => import('../pages/account/AccountOverviewPage').then((module) => ({ default: module.AccountOverviewPage })));
+const AccountOrdersPage = lazy(() => import('../pages/account/AccountOrdersPage').then((module) => ({ default: module.AccountOrdersPage })));
+const AccountOrderDetailPage = lazy(() => import('../pages/account/AccountOrderDetailPage').then((module) => ({ default: module.AccountOrderDetailPage })));
+const AccountAddressesPage = lazy(() => import('../pages/account/AccountAddressesPage').then((module) => ({ default: module.AccountAddressesPage })));
+const AccountProfilePage = lazy(() => import('../pages/account/AccountProfilePage').then((module) => ({ default: module.AccountProfilePage })));
 
 export function App() {
   return (
@@ -33,6 +39,13 @@ export function App() {
         <Route path="dang-nhap" element={<AuthPage />} />
         <Route path="thanh-toan" element={<RequireAuth><CheckoutPage /></RequireAuth>} />
         <Route path="thanh-toan/ket-qua" element={<RequireAuth><PaymentResultPage /></RequireAuth>} />
+        <Route path="tai-khoan" element={<RequireAuth allowedRoles={['CUSTOMER']}><Suspense fallback={<div className="route-loading" role="status">Đang mở sổ bếp…</div>}><AccountLayout /></Suspense></RequireAuth>}>
+          <Route index element={<Suspense fallback={<div className="route-loading" role="status">Đang tải tổng quan…</div>}><AccountOverviewPage /></Suspense>} />
+          <Route path="don-hang" element={<Suspense fallback={<div className="route-loading" role="status">Đang tải đơn hàng…</div>}><AccountOrdersPage /></Suspense>} />
+          <Route path="don-hang/:orderNumber" element={<Suspense fallback={<div className="route-loading" role="status">Đang mở đơn hàng…</div>}><AccountOrderDetailPage /></Suspense>} />
+          <Route path="dia-chi" element={<Suspense fallback={<div className="route-loading" role="status">Đang tải sổ địa chỉ…</div>}><AccountAddressesPage /></Suspense>} />
+          <Route path="ho-so" element={<Suspense fallback={<div className="route-loading" role="status">Đang tải hồ sơ…</div>}><AccountProfilePage /></Suspense>} />
+        </Route>
       </Route>
 
       <Route path="admin" element={<RequireAuth allowedRoles={['ADMIN']}><Suspense fallback={<div className="route-loading" role="status">Đang mở bàn quản trị…</div>}><AdminLayout /></Suspense></RequireAuth>}>

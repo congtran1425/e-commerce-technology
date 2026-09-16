@@ -1,7 +1,7 @@
 # Tầm nhìn và phạm vi sản phẩm
 
 Trạng thái: Đã chấp nhận
-Cập nhật: 2026-09-12
+Cập nhật: 2026-09-13
 
 ## Đối tượng
 
@@ -46,6 +46,7 @@ Website vừa là nơi mua sắm vừa là nơi đọc. Công thức chứa dữ
 - Frontend React/Vite được triển khai trên Vercel.
 - Trong giai đoạn phát triển, PostgreSQL chạy cục bộ bằng Docker; production trước mắt đặt Caddy, Express và PostgreSQL trên cùng một máy ảo Oracle Cloud tại Singapore.
 - Giai đoạn đầu chỉ lưu URL ảnh, chưa xây chức năng tải ảnh lên.
+- Cửa hàng chỉ bán nguyên liệu và dụng cụ làm bánh, không bán bánh thành phẩm. Ảnh bánh minh họa cho `Recipe`, không gán cho `Product` nguyên liệu hoặc dụng cụ.
 - Trang chủ chỉ giới thiệu ngắn và dẫn vào `/cong-thuc`; danh mục đầy đủ cùng tìm kiếm/lọc nằm ở trang công thức riêng. `/cau-chuyen` là không gian biên tập giải thích lý do và nguyên tắc của sản phẩm.
 - Ảnh nội dung tĩnh do chủ dự án chọn có thể lưu tối ưu trong `apps/web/public/images` ở giai đoạn phát triển. Ảnh do quản trị viên tải lên vẫn cần dịch vụ lưu trữ đối tượng trước khi có dữ liệu thật.
 - Bản quản trị vận hành đầu tiên gồm tổng quan, đơn hàng, vận chuyển theo trạng thái, giao dịch ZaloPay, sản phẩm, cảnh báo tồn kho, sổ biến động và báo cáo tiền đã thu. Quản trị công thức, bài viết, khuyến mãi, thuế và nhập hàng đầy đủ được mở ở các lát cắt sau.
@@ -55,6 +56,9 @@ Website vừa là nơi mua sắm vừa là nơi đọc. Công thức chứa dữ
 - Quản trị đầy đủ trên máy tính và máy tính bảng. Điện thoại ưu tiên xem nhanh, đổi trạng thái và ghi biến động kho; biểu mẫu phải không tràn ngang ở 320 px.
 - Quản trị viên chỉ được đẩy đơn theo chuỗi `PAYMENT_REVIEW → CONFIRMED → PREPARING → SHIPPING → DELIVERED`; backend từ chối bỏ bước, lùi bước hoặc ghi đè khi trạng thái vừa thay đổi ở phiên khác.
 - “Tiền đã thu” là tổng giao dịch có trạng thái thành công. Không gọi số này là lợi nhuận; lợi nhuận, chiết khấu, thuế và giá trị nhập hàng chỉ được hiển thị sau khi có dữ liệu nguồn và quy tắc tính rõ ràng.
+- Khu vực tài khoản khách hàng gồm tổng quan, lịch sử và chi tiết đơn, hồ sơ cùng sổ địa chỉ. Địa chỉ mặc định chỉ điền trước lúc thanh toán; đơn đã tạo luôn giữ ảnh chụp nơi nhận ban đầu.
+- Mỗi khách chỉ có tối đa một địa chỉ mặc định. Địa chỉ đầu tiên tự trở thành mặc định; nếu xóa địa chỉ đó, hệ thống chọn địa chỉ được cập nhật gần nhất còn lại.
+- Email đăng nhập chưa cho tự đổi cho đến khi có luồng xác minh địa chỉ mới. Yêu cầu hủy đơn và hoàn tiền chưa nằm trong lát cắt tài khoản đầu tiên vì quy tắc nghiệp vụ vẫn còn mở.
 
 ## Phạm vi dự kiến
 

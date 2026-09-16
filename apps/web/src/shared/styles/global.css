@@ -42,8 +42,9 @@ button:disabled { opacity: 0.5; cursor: not-allowed; }
 .section-heading p { max-width: 34rem; color: var(--color-ink-soft); line-height: 1.55; }
 .recipe-list { display: grid; gap: var(--space-7); }
 .recipe-card { display: grid; min-width: 0; border-block-start: 1px solid var(--color-rule); }
-.recipe-card__media { display: block; min-width: 0; aspect-ratio: 4 / 3; overflow: hidden; background: var(--color-paper-deep); }
-.recipe-card__media img { width: 100%; height: 100%; object-fit: cover; }
+.recipe-card__media { display: block; min-width: 0; aspect-ratio: 1; overflow: hidden; background: var(--color-paper-deep); }
+.recipe-card__media img { width: 100%; height: 100%; object-fit: contain; }
+.recipe-card--feature .recipe-card__media { width: min(100%, 28rem); justify-self: center; }
 .image-placeholder { width: 100%; height: 100%; min-height: 15rem; display: grid; align-content: center; justify-items: center; gap: var(--space-2); padding: var(--space-5); background: repeating-linear-gradient(-45deg, transparent 0 10px, color-mix(in srgb, var(--color-accent) 7%, transparent) 10px 11px), var(--color-paper-deep); color: var(--color-ink-soft); text-align: center; }
 .image-placeholder span { font-family: var(--font-display); font-size: clamp(1.5rem, 4vw, 2.6rem); }
 .image-placeholder small { font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase; }
@@ -61,7 +62,9 @@ button:disabled { opacity: 0.5; cursor: not-allowed; }
 .recipe-facts { margin-block-start: var(--space-6); }
 .recipe-facts div { display: grid; gap: var(--space-1); }
 .recipe-facts dd { color: var(--color-ink); font-weight: 600; }
-.recipe-hero__media { min-width: 0; aspect-ratio: 4 / 5; }
+.recipe-hero__media { width: min(100%, 30rem); min-width: 0; justify-self: center; align-self: center; }
+.recipe-hero__media--thumbnail { width: min(100%, 22rem); }
+.recipe-hero__media img { width: 100%; height: auto; object-fit: contain; }
 .image-placeholder--portrait { min-height: 28rem; }
 .recipe-story { display: grid; gap: var(--space-4); padding-block: var(--space-7); }
 .recipe-story > p:last-child { max-width: 58rem; font-family: var(--font-display); font-size: clamp(1.5rem, 4vw, 2.6rem); line-height: 1.35; }
@@ -523,6 +526,191 @@ button:disabled { opacity: 0.5; cursor: not-allowed; }
   .admin-skeleton-list span, .spin { animation: none; }
 }
 
+/* Hallmark · genre: editorial account ledger · tone: warm personal utility · macrostructure: Index-First · theme: Atelier preserved · nav: N6 + internal index · footer: Ft4 preserved · enrichment: none · pre-emit critique: P5 H5 E5 S5 R5 V5 · contrast: pass (40–41) · slop: pass (42–49) · mobile: pass (34, 49, 50–57) */
+.account-page { padding-block: var(--space-7) var(--space-9); }
+.account-page__mast { display: grid; gap: var(--space-4); padding-block-end: var(--space-7); border-block-end: 3px solid var(--color-ink); }
+.account-page__mast > div { display: grid; gap: var(--space-3); }
+.account-page__mast > div > p { color: var(--color-accent-deep); font-size: 0.72rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; }
+.account-page__mast h1 { max-width: 12ch; font-size: clamp(2.6rem, 10vw, 5.5rem); line-height: 0.94; }
+.account-page__mast > p { max-width: 60ch; color: var(--color-ink-soft); line-height: 1.6; }
+.account-workspace { min-width: 0; display: grid; gap: var(--space-7); padding-block-start: var(--space-5); }
+.account-index { min-width: 0; display: grid; gap: var(--space-3); align-content: start; }
+.account-index nav { display: flex; overflow-x: auto; border-block: 1px solid var(--color-rule); scrollbar-width: thin; }
+.account-index nav a, .account-index > button { min-width: max-content; min-height: 3rem; display: inline-flex; align-items: center; gap: var(--space-2); padding-inline: var(--space-3); border: 0; background: transparent; color: var(--color-ink); font-weight: 600; line-height: 1; text-decoration: none; white-space: nowrap; cursor: pointer; }
+.account-index nav a.active { background: var(--color-ink); color: var(--color-paper-raised); }
+.account-index > button { width: fit-content; color: var(--color-accent-deep); }
+.account-index > p { color: var(--color-error); font-size: 0.78rem; line-height: 1.5; }
+.account-content { min-width: 0; }
+.account-overview, .account-orders, .account-profile, .account-addresses, .account-order-detail { min-width: 0; display: grid; gap: var(--space-6); }
+.account-section-heading { display: grid; gap: var(--space-3); }
+.account-section-heading h2 { max-width: 15ch; font-size: clamp(2rem, 7vw, 3.75rem); line-height: 1; }
+.account-section-heading p { max-width: 68ch; color: var(--color-ink-soft); line-height: 1.6; }
+.account-section-heading--with-control { gap: var(--space-4); }
+.account-section-heading--with-control > div { display: grid; gap: var(--space-3); }
+.account-section-heading--with-control > label { display: grid; gap: var(--space-2); color: var(--color-ink-soft); font-size: 0.78rem; }
+.account-section-heading select { min-width: min(100%, 13rem); min-height: 3rem; padding-inline: var(--space-3); border: 1px solid var(--color-rule); border-radius: 0; outline: 2px solid transparent; outline-offset: 1px; background: var(--color-paper-raised); color: var(--color-ink); }
+.account-section-heading select:focus-visible { outline-color: var(--color-focus); }
+.account-button { width: fit-content; min-height: 3rem; display: inline-flex; align-items: center; justify-content: center; gap: var(--space-2); padding-inline: var(--space-4); border: 1px solid var(--color-accent); border-radius: 0; background: var(--color-accent); color: var(--color-accent-ink); font-weight: 600; line-height: 1; text-decoration: none; white-space: nowrap; cursor: pointer; }
+.account-button svg, .account-text-button svg, .account-address-actions svg, .account-toast svg { width: 1rem; height: 1rem; flex: 0 0 auto; }
+.account-button svg[data-lucide="loader-circle"], .account-detail-loading svg, .account-load-more svg { animation: cart-spin 1s linear infinite; }
+.account-text-button, .account-load-more { min-height: 3rem; padding: 0; border: 0; background: transparent; color: var(--color-accent-deep); font-weight: 600; text-decoration: underline; text-underline-offset: 0.2em; cursor: pointer; }
+.account-fact-strip { display: grid; margin: 0; border-block: 1px solid var(--color-rule); }
+.account-fact-strip > div { min-width: 0; display: grid; gap: var(--space-2); padding-block: var(--space-4); border-block-end: 1px solid var(--color-rule); }
+.account-fact-strip > div:last-child { border-block-end: 0; }
+.account-fact-strip dt, .account-order-totals dt, .account-payment-facts dt { color: var(--color-ink-soft); font-size: 0.75rem; }
+.account-fact-strip dd { margin: 0; overflow-wrap: anywhere; font-family: var(--font-display); font-size: clamp(1.7rem, 6vw, 2.75rem); font-variant-numeric: tabular-nums; }
+.account-fact-strip dd[data-textual="true"] { font-family: var(--font-body); font-size: 1rem; font-weight: 600; }
+.account-ledger-section { min-width: 0; display: grid; gap: var(--space-3); }
+.account-ledger-section > header { min-height: 3rem; display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); border-block-end: 1px solid var(--color-ink); }
+.account-ledger-section > header h3 { font-size: clamp(1.35rem, 5vw, 1.9rem); }
+.account-ledger-section > header a { min-height: 2.75rem; display: inline-flex; align-items: center; gap: var(--space-1); color: var(--color-accent-deep); font-size: 0.78rem; font-weight: 600; white-space: nowrap; }
+.account-order-list { min-width: 0; display: grid; }
+.account-order-list > a { min-width: 0; min-height: 6.25rem; display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "identity arrow" "state state" "total total"; align-items: center; gap: var(--space-2) var(--space-3); padding-block: var(--space-4); border-block-end: 1px solid var(--color-rule); color: var(--color-ink); text-decoration: none; content-visibility: auto; contain-intrinsic-size: 0 6.25rem; }
+.account-order-list > a > span:first-child { grid-area: identity; min-width: 0; display: grid; gap: var(--space-1); }
+.account-order-list strong, .account-order-list small { overflow-wrap: anywhere; }
+.account-order-list small { color: var(--color-ink-soft); line-height: 1.4; }
+.account-order-list .account-state-label { grid-area: state; }
+.account-order-list b { grid-area: total; font-family: var(--font-display); font-size: 1.2rem; font-variant-numeric: tabular-nums; }
+.account-order-list > a > svg { grid-area: arrow; }
+.account-state-label { width: fit-content; display: inline-flex; align-items: center; gap: var(--space-2); color: var(--color-ink-soft); font-size: 0.75rem; font-weight: 600; white-space: nowrap; }
+.account-state-label::before { content: ""; width: 0.5rem; height: 0.5rem; border: 1px solid currentColor; }
+.account-state-label--confirmed, .account-state-label--delivered { color: var(--color-success); }
+.account-state-label--awaiting_payment, .account-state-label--preparing, .account-state-label--shipping, .account-state-label--payment_review { color: var(--color-warning); }
+.account-state-label--cancelled { color: var(--color-error); }
+.account-empty-inline { min-width: 0; display: grid; grid-template-columns: auto minmax(0, 1fr); gap: var(--space-3); align-items: start; padding-block: var(--space-5); border-block-end: 1px solid var(--color-rule); }
+.account-empty-inline > div { display: grid; gap: var(--space-1); }
+.account-empty-inline p { color: var(--color-ink-soft); line-height: 1.5; }
+.account-empty-inline > a { grid-column: 2; width: fit-content; min-height: 2.75rem; display: inline-flex; align-items: center; color: var(--color-accent-deep); font-weight: 600; }
+.account-next-actions { display: grid; border-block-start: 1px solid var(--color-rule); }
+.account-next-actions > a { min-width: 0; min-height: 5.5rem; display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: var(--space-3); align-items: center; padding-block: var(--space-3); border-block-end: 1px solid var(--color-rule); color: var(--color-ink); text-decoration: none; }
+.account-next-actions > a > span { min-width: 0; display: grid; gap: var(--space-1); }
+.account-next-actions small { color: var(--color-ink-soft); line-height: 1.4; }
+.account-state { display: grid; justify-items: start; gap: var(--space-3); padding-block: var(--space-7); border-block: 1px solid var(--color-rule); }
+.account-state > svg { color: var(--color-accent-deep); }
+.account-state h2, .account-state h3 { font-size: clamp(1.8rem, 6vw, 2.8rem); }
+.account-state p { max-width: 60ch; color: var(--color-ink-soft); line-height: 1.6; }
+.account-feedback { min-height: 3rem; display: flex; align-items: center; gap: var(--space-2); padding: var(--space-3); border-block: 1px solid currentColor; line-height: 1.5; }
+.account-feedback svg { flex: 0 0 auto; }
+.account-feedback--error { background: var(--color-error-surface); color: var(--color-error); }
+.account-feedback--success { background: var(--color-success-surface); color: var(--color-success); }
+.account-skeleton, .account-list-skeleton { display: grid; gap: var(--space-3); }
+.account-skeleton { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.account-skeleton span, .account-list-skeleton span { min-height: 6rem; background: var(--color-paper-deep); animation: admin-skeleton 1.6s var(--ease-out) infinite alternate; }
+.account-skeleton span:last-child { grid-column: 1 / -1; min-height: 15rem; }
+.account-detail-loading { min-height: 15rem; display: flex; align-items: center; justify-content: center; gap: var(--space-2); color: var(--color-ink-soft); }
+.account-load-more { justify-self: start; display: inline-flex; align-items: center; gap: var(--space-2); }
+.account-form, .account-address-form { max-width: 46rem; display: grid; gap: var(--space-4); padding-block-start: var(--space-5); border-block-start: 1px solid var(--color-rule); }
+.account-address-form { max-width: none; align-content: start; padding: var(--space-5); border: 1px solid var(--color-rule); background: var(--color-paper-raised); }
+.account-address-form > header { display: grid; gap: var(--space-2); }
+.account-address-form > header h3 { font-size: clamp(1.5rem, 5vw, 2.25rem); }
+.account-address-form > header p { max-width: 65ch; color: var(--color-ink-soft); font-size: 0.85rem; line-height: 1.55; }
+.account-address-fields { display: grid; gap: var(--space-3) var(--space-4); }
+.account-field { min-width: 0; display: grid; gap: var(--space-2); color: var(--color-ink-soft); font-size: 0.78rem; }
+.account-field > span { font-weight: 600; }
+.account-field input { width: 100%; min-width: 0; min-height: 3rem; padding-inline: var(--space-3); border: 1px solid var(--color-rule); border-radius: 0; outline: 2px solid transparent; outline-offset: 1px; background: var(--color-paper-raised); color: var(--color-ink); }
+.account-field input:focus-visible { outline-color: var(--color-focus); }
+.account-field input:disabled { background: var(--color-paper-deep); color: var(--color-ink-soft); opacity: 0.55; cursor: not-allowed; }
+.account-field input[aria-invalid="true"] { border-color: var(--color-error); }
+.account-field small { min-height: 1.25rem; color: var(--color-ink-soft); line-height: 1.4; }
+.account-field small[data-error="true"] { color: var(--color-error); }
+.account-default-check { position: relative; min-height: 3rem; display: grid; grid-template-columns: 1.4rem minmax(0, 1fr); align-items: center; gap: var(--space-3); cursor: pointer; }
+.account-default-check input { width: 1.4rem; min-height: 1.4rem; margin: 0; accent-color: var(--color-accent); }
+.account-form-actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-3); }
+.account-member-note { color: var(--color-ink-soft); font-size: 0.82rem; line-height: 1.5; }
+.account-address-workspace { min-width: 0; display: grid; gap: var(--space-6); }
+.account-address-list { min-width: 0; display: grid; align-content: start; }
+.account-address-list > article { min-width: 0; display: grid; gap: var(--space-3); padding-block: var(--space-4); border-block-end: 1px solid var(--color-rule); }
+.account-address-list > article[data-selected="true"] { padding-inline: var(--space-3); background: var(--color-paper-deep); }
+.account-address-list article > header { display: grid; gap: var(--space-1); }
+.account-address-list article > header > div { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: var(--space-2); }
+.account-address-list article h3 { font-size: 1.35rem; }
+.account-address-list article header span { display: inline-flex; align-items: center; gap: var(--space-1); color: var(--color-success); font-size: 0.72rem; font-weight: 600; }
+.account-address-list article p { color: var(--color-ink-soft); line-height: 1.55; overflow-wrap: anywhere; }
+.account-address-actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-1) var(--space-4); }
+.account-address-actions button { min-height: 2.75rem; display: inline-flex; align-items: center; gap: var(--space-1); padding: 0; border: 0; background: transparent; color: var(--color-accent-deep); font-size: 0.8rem; font-weight: 600; line-height: 1; text-decoration: underline; text-underline-offset: 0.2em; white-space: nowrap; cursor: pointer; }
+.account-address-actions button:last-child { color: var(--color-error); }
+.account-address-note { display: grid; align-content: start; gap: var(--space-2); padding: var(--space-4); border-block: 1px solid var(--color-rule); background: var(--color-paper-deep); }
+.account-address-note p { color: var(--color-ink-soft); line-height: 1.55; }
+.account-toast { position: fixed; z-index: var(--z-toast); inset-inline: var(--space-4); inset-block-end: var(--space-4); display: flex; align-items: center; justify-content: space-between; gap: var(--space-4); padding: var(--space-3) var(--space-4); background: var(--color-ink); color: var(--color-paper-raised); box-shadow: 0 0.75rem 2rem color-mix(in srgb, var(--color-ink) 25%, transparent); }
+.account-toast button { min-height: 2.75rem; display: inline-flex; align-items: center; gap: var(--space-1); padding: 0; border: 0; background: transparent; color: var(--color-paper-raised); font-weight: 600; line-height: 1; text-decoration: underline; text-underline-offset: 0.2em; white-space: nowrap; cursor: pointer; }
+.account-back-link { width: fit-content; min-height: 2.75rem; display: inline-flex; align-items: center; gap: var(--space-2); color: var(--color-accent-deep); font-weight: 600; white-space: nowrap; }
+.account-order-detail > header { display: flex; flex-wrap: wrap; align-items: start; justify-content: space-between; gap: var(--space-4); padding-block-end: var(--space-5); border-block-end: 3px solid var(--color-ink); }
+.account-order-detail > header > div { min-width: 0; display: grid; gap: var(--space-2); }
+.account-order-detail > header h2 { font-size: clamp(2rem, 8vw, 4rem); overflow-wrap: anywhere; }
+.account-order-detail > header p { color: var(--color-ink-soft); }
+.account-order-block { min-width: 0; display: grid; gap: var(--space-3); }
+.account-order-block > h3 { min-height: 3rem; display: flex; align-items: center; border-block-end: 1px solid var(--color-ink); font-size: 1.45rem; }
+.account-order-lines { display: grid; }
+.account-order-lines > div { min-width: 0; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: var(--space-2) var(--space-3); padding-block: var(--space-3); border-block-end: 1px solid var(--color-rule); }
+.account-order-lines > div > span { min-width: 0; display: grid; gap: var(--space-1); }
+.account-order-lines small { color: var(--color-ink-soft); }
+.account-order-lines b { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.account-order-totals { display: grid; margin: 0; margin-inline-start: auto; width: min(100%, 24rem); }
+.account-order-totals > div, .account-payment-facts > div { min-width: 0; display: flex; justify-content: space-between; gap: var(--space-4); padding-block: var(--space-2); border-block-end: 1px solid var(--color-rule); }
+.account-order-totals dd, .account-payment-facts dd { margin: 0; overflow-wrap: anywhere; text-align: end; font-variant-numeric: tabular-nums; }
+.account-order-totals > div:last-child { font-weight: 700; }
+.account-order-recipient { grid-template-columns: auto minmax(0, 1fr); padding: var(--space-4); border-block: 1px solid var(--color-rule); background: var(--color-paper-deep); }
+.account-order-recipient > svg { color: var(--color-accent-deep); }
+.account-order-recipient > div { display: grid; gap: var(--space-2); }
+.account-order-recipient p, .account-order-recipient small { color: var(--color-ink-soft); line-height: 1.55; }
+.account-payment-facts { display: grid; margin: 0; }
+.checkout-saved-address { display: grid; gap: var(--space-2); margin-block-end: var(--space-4); padding: var(--space-4); border-block: 1px solid var(--color-rule); background: var(--color-paper-deep); }
+.checkout-saved-address label { display: grid; gap: var(--space-2); color: var(--color-ink-soft); font-size: 0.78rem; font-weight: 600; }
+.checkout-saved-address select { width: 100%; min-height: 3rem; padding-inline: var(--space-3); border: 1px solid var(--color-rule); border-radius: 0; outline: 2px solid transparent; outline-offset: 1px; background: var(--color-paper-raised); color: var(--color-ink); }
+.checkout-saved-address select:focus-visible { outline-color: var(--color-focus); }
+.checkout-saved-address a { width: fit-content; min-height: 2.75rem; display: inline-flex; align-items: center; color: var(--color-accent-deep); font-size: 0.78rem; font-weight: 600; }
+.checkout-address-note { margin-block-end: var(--space-4); color: var(--color-error); font-size: 0.82rem; line-height: 1.5; }
+
+@media (hover: hover) and (pointer: fine) {
+  .account-index nav a:hover, .account-next-actions > a:hover, .account-order-list > a:hover { background: var(--color-paper-deep); color: var(--color-ink); }
+  .account-index nav a.active:hover { background: var(--color-ink); color: var(--color-paper-raised); }
+  .account-button:hover { background: var(--color-accent-deep); }
+  .account-text-button:hover, .account-load-more:hover, .account-address-actions button:hover, .account-back-link:hover { color: var(--color-accent); }
+}
+
+@media (min-width: 40rem) {
+  .account-page__mast { grid-template-columns: minmax(0, 1fr) minmax(17rem, 0.6fr); align-items: end; }
+  .account-fact-strip { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .account-fact-strip > div { padding-inline: var(--space-4); border-block-end: 0; border-inline-end: 1px solid var(--color-rule); }
+  .account-fact-strip > div:first-child { padding-inline-start: 0; }
+  .account-fact-strip > div:last-child { border-inline-end: 0; }
+  .account-section-heading--with-control { grid-template-columns: minmax(0, 1fr) auto; align-items: end; }
+  .account-order-list > a { grid-template-columns: minmax(0, 1fr) minmax(7rem, auto) minmax(7rem, auto) auto; grid-template-areas: "identity state total arrow"; }
+  .account-order-list b { justify-self: end; }
+  .account-next-actions { grid-template-columns: repeat(2, minmax(0, 1fr)); border-inline-start: 1px solid var(--color-rule); }
+  .account-next-actions > a { padding-inline: var(--space-4); border-inline-end: 1px solid var(--color-rule); }
+  .account-address-fields { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .account-field--full { grid-column: 1 / -1; }
+  .account-toast { inset-inline: auto var(--space-5); width: min(calc(100% - 3rem), 27rem); }
+}
+
+@media (min-width: 60rem) {
+  .account-workspace { grid-template-columns: 13.5rem minmax(0, 1fr); gap: var(--space-8); }
+  .account-index { position: sticky; inset-block-start: var(--space-5); }
+  .account-index nav { display: grid; overflow: visible; border-block-end: 0; }
+  .account-index nav a, .account-index > button { width: 100%; min-width: 0; }
+  .account-index > button { border-block-start: 1px solid var(--color-rule); }
+  .account-content { padding-inline-start: var(--space-7); border-inline-start: 1px solid var(--color-rule); }
+  .account-address-workspace { grid-template-columns: minmax(17rem, 0.8fr) minmax(24rem, 1.2fr); align-items: start; }
+  .account-address-form, .account-address-note { position: sticky; inset-block-start: var(--space-5); }
+}
+
+@media (max-width: 24rem) {
+  .account-skeleton { grid-template-columns: 1fr; }
+  .account-skeleton span:last-child { grid-column: auto; }
+  .account-order-lines > div { grid-template-columns: 1fr; }
+  .account-order-lines b { justify-self: start; }
+  .account-toast { align-items: flex-start; }
+}
+
+@media (pointer: coarse) {
+  .account-index nav a, .account-index > button, .account-button, .account-text-button, .account-load-more, .account-address-actions button, .account-back-link, .account-toast button { min-height: 3rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .account-skeleton span, .account-list-skeleton span, .account-button svg[data-lucide="loader-circle"], .account-detail-loading svg, .account-load-more svg { animation: none; }
+}
+
 /* Hallmark · genre: editorial · macrostructure: Ecosystem Index · theme: Atelier · nav: N6 · footer: Ft4 · enrichment: labelled image placeholders · pre-emit critique: P5 H5 E4 S5 R4 V5 · contrast: pass (40–41) · slop: pass (42–49) · mobile: pass (34, 49, 50–57) */
 .home-intro__note .text-link { margin-block-start: var(--space-4); }
 .home-path { display: grid; gap: var(--space-7); padding-block: var(--space-8); border-block-end: 1px solid var(--color-rule); }
@@ -544,7 +732,7 @@ button:disabled { opacity: 0.5; cursor: not-allowed; }
 .recipe-index-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr)); gap: var(--space-7) var(--space-5); }
 .recipe-card--index { content-visibility: auto; contain-intrinsic-size: 0 28rem; display: grid; grid-template-columns: minmax(0, 1fr) !important; gap: 0 !important; border-block-start: 1px solid var(--color-rule); }
 .recipe-card--index:nth-child(even) .recipe-card__media { order: initial; }
-.recipe-card--index .recipe-card__media { aspect-ratio: 4 / 3; }
+.recipe-card--index .recipe-card__media { aspect-ratio: 1; }
 .recipe-card--index .image-placeholder { min-height: 12rem; }
 .recipe-card--index .recipe-card__body { gap: var(--space-3); padding-block: var(--space-4); }
 .recipe-card--index h2 { font-size: clamp(1.55rem, 4vw, 2.15rem); }

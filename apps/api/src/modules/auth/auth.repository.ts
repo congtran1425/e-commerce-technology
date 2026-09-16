@@ -4,6 +4,7 @@ const publicUserSelect = {
   id: true,
   email: true,
   displayName: true,
+  phone: true,
   role: true,
 } as const;
 
@@ -11,6 +12,7 @@ export type PublicUserRecord = {
   id: bigint;
   email: string;
   displayName: string;
+  phone: string | null;
   role: 'CUSTOMER' | 'ADMIN';
 };
 

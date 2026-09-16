@@ -6,6 +6,8 @@ import { CheckoutApiError, createOrder } from '../../features/checkout/api';
 import { useCart } from '../../features/cart/CartContext';
 import { quoteCart } from '../../features/cart/api';
 import type { CartQuote } from '../../features/cart/types';
+import { fetchAccountAddresses } from '../../features/account/api';
+import type { AccountAddress } from '../../features/account/types';
 
 const money = new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' });
 
@@ -41,7 +43,7 @@ export function CheckoutPage() {
   const { items } = useCart();
   const [recipient, setRecipient] = useState<Recipient>({
     name: user?.displayName ?? '',
-    phone: '',
+    phone: user?.phone ?? '',
     addressLine: '',
     ward: '',
     district: '',
@@ -53,6 +55,9 @@ export function CheckoutPage() {
   const [quoteStatus, setQuoteStatus] = useState<QuoteStatus>('loading');
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState('');
+  const [savedAddresses, setSavedAddresses] = useState<AccountAddress[]>([]);
+  const [selectedAddressId, setSelectedAddressId] = useState('');
+  const [addressLoadError, setAddressLoadError] = useState('');
   const [idempotencyKey, setIdempotencyKey] = useState(() => crypto.randomUUID());
   const errors = useMemo(() => validateRecipient(recipient), [recipient]);
 
@@ -75,6 +80,51 @@ export function CheckoutPage() {
       });
     return () => controller.abort();
   }, [items]);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    void fetchAccountAddresses(controller.signal)
+      .then((addresses) => {
+        setSavedAddresses(addresses);
+        const defaultAddress = addresses.find((address) => address.isDefault);
+        if (!defaultAddress) return;
+        setSelectedAddressId(defaultAddress.id);
+        setRecipient((current) => {
+          if (current.addressLine || current.district || current.province) return current;
+          return {
+            ...current,
+            name: defaultAddress.recipientName,
+            phone: defaultAddress.phone,
+            addressLine: defaultAddress.addressLine,
+            ward: defaultAddress.ward ?? '',
+            district: defaultAddress.district,
+            province: defaultAddress.province,
+          };
+        });
+      })
+      .catch((requestError: unknown) => {
+        if (!(requestError instanceof DOMException && requestError.name === 'AbortError')) {
+          setAddressLoadError('Chưa đọc được sổ địa chỉ; bạn vẫn có thể nhập nơi nhận bên dưới.');
+        }
+      });
+    return () => controller.abort();
+  }, []);
+
+  function chooseSavedAddress(addressId: string) {
+    setSelectedAddressId(addressId);
+    const address = savedAddresses.find((item) => item.id === addressId);
+    if (!address) return;
+    setRecipient((current) => ({
+      ...current,
+      name: address.recipientName,
+      phone: address.phone,
+      addressLine: address.addressLine,
+      ward: address.ward ?? '',
+      district: address.district,
+      province: address.province,
+    }));
+    setTouched({});
+  }
 
   function updateField(field: RecipientField, value: string) {
     setRecipient((current) => ({ ...current, [field]: value }));
@@ -133,6 +183,8 @@ export function CheckoutPage() {
           value={recipient[name]}
           autoComplete={options.autoComplete}
           placeholder={options.placeholder}
+          maxLength={name === 'name' ? 100 : name === 'phone' ? 20 : name === 'addressLine' ? 250 : name === 'note' ? 500 : 120}
+          inputMode={name === 'phone' ? 'tel' : undefined}
           disabled={submitting}
           aria-invalid={error ? 'true' : undefined}
           aria-describedby={`${name}-message`}
@@ -171,6 +223,13 @@ export function CheckoutPage() {
             <p>Địa chỉ này được lưu cùng đơn để việc giao nhận không thay đổi theo hồ sơ sau này.</p>
           </div>
         </div>
+        {savedAddresses.length > 0 ? (
+          <div className="checkout-saved-address">
+            <label><span>Điền từ sổ địa chỉ</span><select value={selectedAddressId} onChange={(event) => chooseSavedAddress(event.target.value)}><option value="">Chọn nơi nhận đã lưu</option>{savedAddresses.map((address) => <option key={address.id} value={address.id}>{address.label}{address.isDefault ? ' — mặc định' : ''}</option>)}</select></label>
+            <Link to="/tai-khoan/dia-chi">Quản lý sổ địa chỉ</Link>
+          </div>
+        ) : null}
+        {addressLoadError ? <p className="checkout-address-note" role="status">{addressLoadError}</p> : null}
         <div className="checkout-fields">
           {field('name', 'Họ tên người nhận', { autoComplete: 'name' })}
           {field('phone', 'Số điện thoại', { autoComplete: 'tel', placeholder: '090 123 4567' })}

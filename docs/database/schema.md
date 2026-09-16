@@ -29,12 +29,20 @@ Lớp báo giá này không ghi database và không giữ tồn kho. Khi có đ�
 
 ## Tài khoản và phiên đăng nhập
 
-- `users`: email đã chuẩn hóa chữ thường, tên hiển thị, mật khẩu đã băm, vai trò và trạng thái hoạt động. Vai trò mới tạo luôn do backend đặt là `CUSTOMER`; client không được gửi vai trò.
+- `users`: email đã chuẩn hóa chữ thường, tên hiển thị, số điện thoại tùy chọn, mật khẩu đã băm, vai trò và trạng thái hoạt động. Vai trò mới tạo luôn do backend đặt là `CUSTOMER`; client không được gửi vai trò.
 - `sessions`: mỗi dòng là một phiên trên một thiết bị, gồm khóa ngoại `user_id`, bản băm `token_hash` và `expires_at` có múi giờ.
 - `sessions.user_id` và `sessions.expires_at` có chỉ mục riêng; `token_hash` có chỉ mục duy nhất để tìm một phiên mà không quét toàn bảng.
 - Xóa người dùng sẽ xóa các phiên liên quan. Khóa tài khoản làm mọi phiên hiện có không còn xác thực được dù dòng phiên chưa bị dọn.
 
 Mật khẩu dùng Argon2id; mã phiên chỉ lưu dưới dạng SHA-256. API chuyển `BIGINT` của người dùng thành chuỗi khi trả JSON.
+
+## Sổ địa chỉ khách hàng
+
+- `customer_addresses` lưu tên gợi nhớ, người nhận, số điện thoại và các phần địa chỉ thường dùng. Mỗi dòng luôn thuộc đúng một `user`; xóa người dùng sẽ xóa sổ địa chỉ của họ.
+- Chỉ mục `(user_id, created_at)` phục vụ việc đọc sổ theo tài khoản. Chỉ mục duy nhất có điều kiện trên `user_id WHERE is_default = true` bảo đảm một khách không thể có hai địa chỉ mặc định, kể cả khi có hai yêu cầu đồng thời.
+- Backend tự đặt địa chỉ đầu tiên làm mặc định. Khi khách chọn mặc định mới, thao tác bỏ cờ cũ và đặt cờ mới nằm trong một giao dịch ngắn. Nếu xóa địa chỉ mặc định, địa chỉ được cập nhật gần nhất còn lại được chọn thay thế.
+- Sổ địa chỉ là dữ liệu điền trước, không phải nguồn tham chiếu sống của đơn hàng. `orders` vẫn lưu ảnh chụp nơi nhận độc lập để việc sửa hoặc xóa địa chỉ không viết lại lịch sử giao dịch.
+- Số điện thoại được chuẩn hóa bỏ khoảng trắng, dấu chấm và gạch ngang trước khi lưu; ràng buộc database chỉ chấp nhận dạng Việt Nam bắt đầu bằng `0` hoặc `+84`.
 
 ## Đơn hàng, giữ tồn kho và thanh toán
 
@@ -46,7 +54,7 @@ Hiện mỗi lần tạo đơn sinh một lần thanh toán ZaloPay. Mô hình v
 
 Khi tạo đơn, backend khóa logic bằng phép cập nhật có điều kiện `stock_quantity >= quantity`, trừ kho và tạo `order`/`order_items`/`payment` trong cùng một giao dịch ngắn. Các biến thể được xử lý theo thứ tự mã tăng dần để giảm nguy cơ khóa chéo. Nếu không đủ hàng hoặc không tạo được giao dịch ZaloPay, backend đổi trạng thái đơn và hoàn lại chính xác phần tồn kho đã giữ. Các thao tác hoàn kho và xác nhận thanh toán đều có điều kiện trạng thái để callback gửi lặp không làm cộng hoặc trừ kho nhiều lần.
 
-Các ràng buộc database bảo đảm số lượng mặt hàng dương, tiền không âm và không có phần lẻ với VND, `line_total = unit_price × quantity`, `total = subtotal + shipping_fee`, tiền tệ hiện là `VND`, và mã giao dịch cửa hàng là duy nhất. Chỉ mục được đặt trên khóa ngoại cùng các cặp trường dùng để tìm đơn, giao dịch chờ và tác vụ đối soát.
+Các ràng buộc database bảo đảm số lượng mặt hàng dương, tiền không âm và không có phần lẻ với VND, `line_total = unit_price × quantity`, `total = subtotal + shipping_fee`, tiền tệ hiện là `VND`, và mã giao dịch cửa hàng là duy nhất. Chỉ mục được đặt trên khóa ngoại cùng các cặp trường dùng để tìm đơn, giao dịch chờ và tác vụ đối soát. Chỉ mục `(user_id, id)` phục vụ lịch sử đơn mới nhất theo từng khách mà không cần bỏ qua số lượng lớn bản ghi.
 
 ## Sổ biến động tồn kho
 

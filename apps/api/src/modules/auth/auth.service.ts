@@ -24,6 +24,7 @@ export type AuthUser = {
   id: string;
   email: string;
   displayName: string;
+  phone: string | null;
   role: 'CUSTOMER' | 'ADMIN';
 };
 
@@ -37,6 +38,7 @@ function toAuthUser(user: PublicUserRecord): AuthUser {
     id: user.id.toString(),
     email: user.email,
     displayName: user.displayName,
+    phone: user.phone,
     role: user.role,
   };
 }

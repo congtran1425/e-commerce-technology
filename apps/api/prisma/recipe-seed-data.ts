@@ -22,6 +22,7 @@ export type RecipeSeedTool = {
 export type RecipeSeedDefinition = {
   slug: string;
   title: string;
+  imageUrl: string;
   category: RecipeCategory;
   baseServings: number;
   yieldUnit: RecipeYieldUnit;
@@ -42,6 +43,7 @@ export const importedRecipeSeeds: RecipeSeedDefinition[] = [
   {
     slug: 'cookie-socola',
     title: 'Bánh quy Chocolate Chip',
+    imageUrl: '/images/recipes/thumbnails/chocolate-chip-cookies.png',
     category: RecipeCategory.COOKIE,
     baseServings: 30,
     yieldUnit: RecipeYieldUnit.PIECE,
@@ -74,6 +76,7 @@ export const importedRecipeSeeds: RecipeSeedDefinition[] = [
   {
     slug: 'banh-quy-bo-tra-xanh',
     title: 'Bánh quy bơ vị trà xanh',
+    imageUrl: '/images/recipes/thumbnails/matcha-meltaways-cookies.png',
     category: RecipeCategory.COOKIE,
     baseServings: 32,
     yieldUnit: RecipeYieldUnit.PIECE,
@@ -107,6 +110,7 @@ export const importedRecipeSeeds: RecipeSeedDefinition[] = [
   {
     slug: 'banh-quy-bo-cranberry',
     title: 'Bánh quy bơ nhân cranberry',
+    imageUrl: '/images/recipes/thumbnails/cranberry-butter-cookies.png',
     category: RecipeCategory.COOKIE,
     baseServings: 30,
     yieldUnit: RecipeYieldUnit.PIECE,
@@ -137,6 +141,7 @@ export const importedRecipeSeeds: RecipeSeedDefinition[] = [
   {
     slug: 'cheesecake-khong-nuong',
     title: 'Cheesecake không nướng',
+    imageUrl: '/images/recipes/thumbnails/no-bake-cheesecake.png',
     category: RecipeCategory.CAKE,
     baseServings: 10,
     yieldUnit: RecipeYieldUnit.PORTION,
@@ -165,6 +170,7 @@ export const importedRecipeSeeds: RecipeSeedDefinition[] = [
   {
     slug: 'red-velvet-cake',
     title: 'Red Velvet Cake',
+    imageUrl: '/images/recipes/thumbnails/red-velvet-cake.png',
     category: RecipeCategory.CAKE,
     baseServings: 8,
     yieldUnit: RecipeYieldUnit.PORTION,
@@ -203,6 +209,7 @@ export const importedRecipeSeeds: RecipeSeedDefinition[] = [
   {
     slug: 'sponge-cake-3-trung',
     title: 'Bánh bông lan 3 trứng',
+    imageUrl: '/images/recipes/thumbnails/sponge-cake.png',
     category: RecipeCategory.CAKE,
     baseServings: 6,
     yieldUnit: RecipeYieldUnit.PORTION,
@@ -234,6 +241,7 @@ export const importedRecipeSeeds: RecipeSeedDefinition[] = [
   {
     slug: 'sponge-cake-4-trung',
     title: 'Bánh bông lan 4 trứng',
+    imageUrl: '/images/recipes/thumbnails/sponge-cake.png',
     category: RecipeCategory.CAKE,
     baseServings: 8,
     yieldUnit: RecipeYieldUnit.PORTION,
@@ -265,6 +273,7 @@ export const importedRecipeSeeds: RecipeSeedDefinition[] = [
   {
     slug: 'tiramisu',
     title: 'Tiramisu',
+    imageUrl: '/images/recipes/thumbnails/tiramisu.png',
     category: RecipeCategory.DESSERT,
     baseServings: 8,
     yieldUnit: RecipeYieldUnit.PORTION,
@@ -295,6 +304,7 @@ export const importedRecipeSeeds: RecipeSeedDefinition[] = [
   {
     slug: 'flan-caramel',
     title: 'Flan Caramel',
+    imageUrl: '/images/recipes/thumbnails/flan-caramel.png',
     category: RecipeCategory.DESSERT,
     baseServings: 10,
     yieldUnit: RecipeYieldUnit.PIECE,
@@ -323,6 +333,7 @@ export const importedRecipeSeeds: RecipeSeedDefinition[] = [
   {
     slug: 'mousse-socola-dau-tay',
     title: 'Mousse sô-cô-la và dâu tây',
+    imageUrl: '/images/recipes/thumbnails/chocolate-strawberry-mousse.png',
     category: RecipeCategory.DESSERT,
     baseServings: 4,
     yieldUnit: RecipeYieldUnit.PORTION,
@@ -351,6 +362,7 @@ export const importedRecipeSeeds: RecipeSeedDefinition[] = [
   {
     slug: 'banh-mi-sua-hokkaido',
     title: 'Bánh mì sữa Hokkaido',
+    imageUrl: '/images/recipes/thumbnails/hokkaido-milk-bread.png',
     category: RecipeCategory.BREAD,
     baseServings: 1,
     yieldUnit: RecipeYieldUnit.LOAF,
@@ -383,6 +395,7 @@ export const importedRecipeSeeds: RecipeSeedDefinition[] = [
   {
     slug: 'croissant',
     title: 'Croissant',
+    imageUrl: '/images/recipes/thumbnails/croissant.png',
     category: RecipeCategory.BREAD,
     baseServings: 10,
     yieldUnit: RecipeYieldUnit.PIECE,
@@ -414,6 +427,7 @@ export const importedRecipeSeeds: RecipeSeedDefinition[] = [
   {
     slug: 'papparoti',
     title: 'Papparoti',
+    imageUrl: '/images/recipes/thumbnails/papparoti-coffee-bun.png',
     category: RecipeCategory.BREAD,
     baseServings: 12,
     yieldUnit: RecipeYieldUnit.PIECE,

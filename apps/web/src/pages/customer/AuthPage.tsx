@@ -17,7 +17,7 @@ const INITIAL_VALUES: FormValues = { displayName: '', email: '', password: '' };
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 function safeNextPath(value: string | null) {
-  return value && value.startsWith('/') && !value.startsWith('//') ? value : '/thanh-toan';
+  return value && value.startsWith('/') && !value.startsWith('//') ? value : null;
 }
 
 function validateField(name: FieldName, value: string, mode: Mode) {
@@ -45,7 +45,7 @@ export function AuthPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
 
-  const nextPath = safeNextPath(searchParams.get('next'));
+  const requestedNextPath = safeNextPath(searchParams.get('next'));
   const fieldErrors = useMemo(() => ({
     displayName: validateField('displayName', values.displayName, mode),
     email: validateField('email', values.email, mode),
@@ -80,16 +80,14 @@ export function AuthPage() {
     setFormError(null);
 
     try {
-      if (mode === 'register') {
-        await register({
+      const nextUser = mode === 'register'
+        ? await register({
           displayName: values.displayName.trim(),
           email: values.email.trim(),
           password: values.password,
-        });
-      } else {
-        await login({ email: values.email.trim(), password: values.password });
-      }
-      navigate(nextPath, { replace: true });
+        })
+        : await login({ email: values.email.trim(), password: values.password });
+      navigate(requestedNextPath ?? (nextUser.role === 'ADMIN' ? '/admin' : '/tai-khoan'), { replace: true });
     } catch (error) {
       setFormError(error instanceof AuthApiError ? error.message : 'Chưa thể kết nối đến máy chủ tài khoản. Hãy thử lại.');
     } finally {
@@ -114,12 +112,13 @@ export function AuthPage() {
   }
 
   if (user) {
+    const signedInDestination = requestedNextPath ?? (user.role === 'ADMIN' ? '/admin' : '/tai-khoan');
     return (
       <section className="auth-page auth-page--signed-in page-frame" aria-labelledby="account-heading">
         <div className="auth-intro">
           <p className="kicker">Phiên hiện tại</p>
           <h1 id="account-heading">Chào {user.displayName}.</h1>
-          <p>Giỏ bánh vẫn nằm nguyên trên thiết bị này. Bạn có thể tiếp tục thanh toán hoặc kết thúc phiên hiện tại.</p>
+          <p>Phiên này vẫn đang hoạt động. Bạn có thể mở khu vực của mình hoặc kết thúc phiên trên thiết bị hiện tại.</p>
         </div>
         <div className="auth-session">
           <CheckCircle2 aria-hidden="true" size={22} />
@@ -127,7 +126,7 @@ export function AuthPage() {
             <strong>Đã đăng nhập</strong>
             <span>{user.email}</span>
           </div>
-          <Link className="primary-button" to={nextPath}>Tiếp tục thanh toán <ArrowRight aria-hidden="true" size={18} /></Link>
+          <Link className="primary-button" to={signedInDestination}>{requestedNextPath ? 'Tiếp tục công việc' : user.role === 'ADMIN' ? 'Mở bàn quản trị' : 'Mở sổ bếp'} <ArrowRight aria-hidden="true" size={18} /></Link>
           <button className="text-button" type="button" disabled={isSubmitting} onClick={() => void handleLogout()}>
             <LogOut aria-hidden="true" size={17} /> {isSubmitting ? 'Đang đăng xuất…' : 'Đăng xuất thiết bị này'}
           </button>
