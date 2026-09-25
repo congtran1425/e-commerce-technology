@@ -59,12 +59,12 @@ services:
       SESSION_TTL_DAYS: ${SESSION_TTL_DAYS:-30}
       TRUST_PROXY_HOPS: 1
       PUBLIC_WEB_URL: ${PUBLIC_WEB_URL:?PUBLIC_WEB_URL chưa được cấu hình}
-      SMTP_HOST: ${SMTP_HOST:?SMTP_HOST chưa được cấu hình}
+      SMTP_HOST: ${SMTP_HOST:-}
       SMTP_PORT: ${SMTP_PORT:-587}
       SMTP_SECURE: ${SMTP_SECURE:-false}
-      SMTP_USER: ${SMTP_USER:?SMTP_USER chưa được cấu hình}
-      SMTP_PASSWORD: ${SMTP_PASSWORD:?SMTP_PASSWORD chưa được cấu hình}
-      SMTP_FROM: ${SMTP_FROM:?SMTP_FROM chưa được cấu hình}
+      SMTP_USER: ${SMTP_USER:-}
+      SMTP_PASSWORD: ${SMTP_PASSWORD:-}
+      SMTP_FROM: ${SMTP_FROM:-}
       ZALOPAY_APP_ID: ${ZALOPAY_APP_ID:-}
       ZALOPAY_KEY1: ${ZALOPAY_KEY1:-}
       ZALOPAY_KEY2: ${ZALOPAY_KEY2:-}

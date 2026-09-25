@@ -1,6 +1,8 @@
 # Triển khai API lên Oracle Cloud
 
-Hướng dẫn này mô tả cấu hình giai đoạn đầu: một máy ảo Oracle Cloud chạy Caddy, Express API và PostgreSQL bằng Docker Compose. Tên thương hiệu chính thức là `Một Mẻ Bánh`; frontend production vẫn ở `bepdubanh.congtc145.id.vn` cho đến khi có kế hoạch chuyển miền riêng. Hostname API cuối cùng chưa chốt; không tự đổi hostname trong DNS, biến môi trường hoặc callback trước khi có kế hoạch chuyển đồng bộ.
+> Với VPS đang dùng chung Nginx, xem [quy trình VPS dùng chung](shared-vps.md). Các lệnh Caddy bên dưới chỉ dành cho VPS chạy riêng dự án này.
+
+Hướng dẫn bên dưới lưu phương án cũ: một máy ảo Oracle Cloud chạy riêng Caddy, Express API và PostgreSQL bằng Docker Compose. VPS hiện tại dùng chung và phải theo tài liệu liên kết ở trên. Tên thương hiệu chính thức là `Một Mẻ Bánh`; frontend production vẫn ở `bepdubanh.congtc145.id.vn`. Hostname API đã chốt là `apimotmebanh.congtc145.id.vn`, nhưng việc chuyển từ đường kết nối hiện tại sang VPS phải được kiểm tra và thực hiện đồng bộ.
 
 > **Lưu ý trước khi triển khai trên máy dùng chung:** cấu hình Caddy/Compose bên dưới là phương án cũ cho máy chỉ chạy một dự án. Máy Oracle hiện dùng chung với dự án khác và Nginx đã chiếm cổng công khai; **không chạy nguyên trạng `compose.production.yaml` trên máy này**. Cần chốt với người quản trị Nginx về hostname API, cổng nội bộ và cấu hình reverse proxy trước. Việc nâng Ubuntu 20.04 cũng không phải điều kiện tiên quyết để đưa API lên máy, nhưng phải có kế hoạch cập nhật bảo mật và thống nhất lịch bảo trì với người cùng dùng.
 
@@ -172,7 +174,7 @@ Trước khi có người dùng thật, đơn hàng thật hoặc nội dung th�
 Trạng thái được ghi riêng cho từng mục. Các mục chưa chốt cần được trả lời trước khi chúng trở thành điều kiện vận hành thực tế:
 
 1. **Đã chốt:** Singapore West là Home Region. Khi tạo máy vẫn phải kiểm tra `VM.Standard.A1.Flex` có nhãn Always Free-eligible và còn khả năng cung cấp hay không.
-2. **Đã chốt một phần:** frontend production dùng `bepdubanh.congtc145.id.vn`; hostname API vẫn tạm là `api.ecomtech.congtc145.id.vn`. Cần chốt tên API mới trước khi đổi đồng bộ DNS, Caddy, CORS, cookie và callback thanh toán.
+2. **Đã chốt:** frontend production vẫn dùng `bepdubanh.congtc145.id.vn`; hostname API mới là `apimotmebanh.congtc145.id.vn`. Cần chuyển đồng bộ đường DNS/Cloudflare hiện tại, Nginx, CORS, cookie và callback thanh toán sau khi API trên VPS qua kiểm tra nội bộ.
 3. **Đã chốt:** repository GitHub là public; máy Oracle clone qua HTTPS và không cần token cho thao tác đọc.
 4. **Đã chốt:** đăng ký và dùng bộ APP_ID, KEY1, KEY2 Sandbox chính thức dành cho ứng dụng trước; không dựa vào bộ khóa ghi cứng trong `server.js`.
 5. **Tạm hoãn có điều kiện:** chưa tự động sao lưu ngoài máy khi toàn bộ dữ liệu còn là dữ liệu thử và có thể tạo lại bằng migration/seed. Phải triển khai sao lưu trước khi có người dùng thật, đơn hàng thật hoặc nội dung thủ công tốn công tái tạo; đồng thời tạo bản sao thủ công trước migration rủi ro.

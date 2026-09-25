@@ -1,0 +1,12 @@
+# Dùng cùng compose.production.yaml trên VPS có Nginx và nhiều dự án.
+# Không khởi động Caddy; API chỉ nhận kết nối từ chính VPS.
+name: mot-me-banh
+
+services:
+  api:
+    ports:
+      - "127.0.0.1:${API_BIND_PORT:-3080}:3000"
+
+  caddy:
+    profiles:
+      - standalone
