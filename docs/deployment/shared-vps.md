@@ -41,6 +41,10 @@ Kỳ vọng: PostgreSQL `healthy`, tác vụ migration thoát mã `0`, API `heal
 
 ## Kết nối ra Internet sau khi API nội bộ ổn
 
-Người quản trị Nginx xác nhận tên miền API, định tuyến HTTPS đến `127.0.0.1:3080`, kiểm tra chứng chỉ và header IP thật. Sau đó kiểm tra `/api/health` qua HTTPS, CORS/cookie từ chính domain Vercel, đăng ký/đăng nhập, 401/403/429, ZaloPay callback và chuyển hướng kết quả. Chỉ sau khi đường HTTPS hoạt động mới cập nhật `VITE_API_BASE_URL` trên Vercel và triển khai lại frontend. Đừng trỏ Vercel vào cổng 3080: cổng này cố ý chỉ nghe ở localhost của VPS.
+Đường công khai hiện tại dùng **Cloudflare Tunnel trên máy cá nhân** đến API cục bộ, nên kiểm tra HTTPS ở hostname hiện tại không chứng minh VPS đã nhận yêu cầu. Khuyến nghị giữ Tunnel: tạo một Tunnel **riêng cho VPS**, thử trước bằng hostname phụ, rồi chuyển hostname chính thức sau khi quyết định chuyển hay bỏ dữ liệu đơn hàng/tài khoản ở máy cá nhân. Không chạy đồng thời hai connector của **cùng một Tunnel** ở hai máy có database khác nhau: lưu lượng có thể đến cả hai nơi.
+
+Nếu dùng Tunnel trực tiếp tới API trên VPS, Cloudflare xử lý HTTPS công khai và không cần đổi Nginx hoặc cấp chứng chỉ cho Nginx. Tunnel mới cần token kết nối riêng, do chủ tài khoản nhập trực tiếp trên VPS và lưu trong tệp quyền hạn chế; không gửi token qua chat hoặc Git. Token `Zone:DNS:Edit` để cấp chứng chỉ bằng DNS **không cần thiết** cho phương án này. Chỉ dùng Nginx nếu chủ dự án chọn rõ việc đặt nó làm trung gian.
+
+Sau khi đường VPS hoạt động qua hostname phụ, kiểm tra `/api/health`, danh sách công thức, CORS/cookie từ chính domain Vercel, 401/403/429 và luồng đơn hàng. Chỉ thử đăng ký và ZaloPay khi SMTP/khóa Sandbox và callback đã cấu hình. Sau khi chuyển hostname chính thức, xác nhận `VITE_API_BASE_URL` trên Vercel là `https://apimotmebanh.congtc145.id.vn/api` và triển khai lại frontend nếu giá trị thay đổi. Đừng trỏ Vercel vào cổng 3080: cổng này cố ý chỉ nghe ở localhost của VPS.
 
 Ubuntu 20.04 đã qua giai đoạn hỗ trợ tiêu chuẩn; cần kế hoạch bản vá bảo mật (ví dụ Ubuntu Pro/ESM) và lịch nâng cấp được cả hai người dùng máy thống nhất. Việc triển khai thử không có nghĩa hệ điều hành đã an toàn cho vận hành lâu dài.
