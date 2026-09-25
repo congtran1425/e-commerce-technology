@@ -24,7 +24,7 @@ type AuthContextValue = {
   user: AuthUser | null;
   status: AuthStatus;
   login: (input: LoginInput) => Promise<AuthUser>;
-  register: (input: RegisterInput) => Promise<AuthUser>;
+  register: (input: RegisterInput) => Promise<void>;
   logout: () => Promise<void>;
   refresh: () => Promise<void>;
 };
@@ -70,10 +70,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const register = useCallback(async (input: RegisterInput) => {
-    const nextUser = await registerRequest(input);
-    setUser(nextUser);
-    setStatus('authenticated');
-    return nextUser;
+    await registerRequest(input);
   }, []);
 
   const logout = useCallback(async () => {

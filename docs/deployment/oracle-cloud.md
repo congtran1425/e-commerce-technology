@@ -1,6 +1,8 @@
 # Triển khai API lên Oracle Cloud
 
-Hướng dẫn này dành cho cấu hình giai đoạn đầu: một máy ảo Oracle Cloud chạy Caddy, Express API và PostgreSQL bằng Docker Compose. Tên thương hiệu chính thức là `Bếp Đủ Bánh`; frontend production ở `bepdubanh.congtc145.id.vn`. Hostname API vẫn tạm giữ `api.ecomtech.congtc145.id.vn`; không tự đổi hostname này trước khi chốt tên mới và kế hoạch chuyển DNS.
+Hướng dẫn này mô tả cấu hình giai đoạn đầu: một máy ảo Oracle Cloud chạy Caddy, Express API và PostgreSQL bằng Docker Compose. Tên thương hiệu chính thức là `Một Mẻ Bánh`; frontend production vẫn ở `bepdubanh.congtc145.id.vn` cho đến khi có kế hoạch chuyển miền riêng. Hostname API cuối cùng chưa chốt; không tự đổi hostname trong DNS, biến môi trường hoặc callback trước khi có kế hoạch chuyển đồng bộ.
+
+> **Lưu ý trước khi triển khai trên máy dùng chung:** cấu hình Caddy/Compose bên dưới là phương án cũ cho máy chỉ chạy một dự án. Máy Oracle hiện dùng chung với dự án khác và Nginx đã chiếm cổng công khai; **không chạy nguyên trạng `compose.production.yaml` trên máy này**. Cần chốt với người quản trị Nginx về hostname API, cổng nội bộ và cấu hình reverse proxy trước. Việc nâng Ubuntu 20.04 cũng không phải điều kiện tiên quyết để đưa API lên máy, nhưng phải có kế hoạch cập nhật bảo mật và thống nhất lịch bảo trì với người cùng dùng.
 
 ## 0. Kiểm tra trước khi đẩy GitHub
 

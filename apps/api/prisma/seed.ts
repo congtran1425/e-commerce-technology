@@ -47,12 +47,14 @@ async function ensureSeedUser(
         displayName: input.displayName,
         passwordHash,
         role,
+        emailVerifiedAt: new Date(),
       },
       update: {
         displayName: input.displayName,
         passwordHash,
         role,
         active: true,
+        emailVerifiedAt: new Date(),
       },
     });
 
@@ -179,12 +181,46 @@ async function ensureRecipeSteps() {
     {
       slug: 'cookie-socola',
       steps: [
-        { stepNumber: 1, title: 'Trộn bơ và đường', instruction: 'Đánh bơ mềm với đường đến khi hỗn hợp hòa đều, sau đó thêm trứng và trộn vừa đủ.', durationMinutes: 8 },
-        { stepNumber: 2, title: 'Hoàn thiện bột', instruction: 'Trộn bột mì vào hỗn hợp bơ, cuối cùng gấp sô-cô-la đen vào. Không trộn quá lâu.', durationMinutes: 7 },
-        { stepNumber: 3, title: 'Chia bánh', instruction: 'Chia bột thành sáu phần, đặt cách nhau trên khay. Làm lạnh bột trong lúc làm nóng lò.', durationMinutes: 15 },
-        { stepNumber: 4, title: 'Nướng vừa tới', instruction: 'Nướng đến khi rìa bánh vàng nhưng giữa còn mềm. Để bánh trên khay 10 phút trước khi chuyển ra giá.', durationMinutes: 12, temperatureC: 175 },
+        { stepNumber: 1, title: 'Chuẩn bị lò và bơ đường', instruction: 'Làm nóng lò ở 175°C, lót giấy nến cho khay. Đánh 165 g bơ mềm với 80 g đường trắng và 80 g đường nâu đến khi hỗn hợp hòa đều.', temperatureC: 175 },
+        { stepNumber: 2, title: 'Trộn bột bánh', instruction: 'Cho lần lượt 2 quả trứng và 10 ml vani vào phần bơ. Rây 150 g bột mì với 3 g muối nở và 2 g muối, trộn vừa hết vệt bột; cuối cùng gấp 130 g sô-cô-la chip vào.' },
+        { stepNumber: 3, title: 'Làm lạnh và chia bánh', instruction: 'Làm lạnh bột ít nhất 20–30 phút vì tỷ lệ bơ trong mẻ này khá cao. Chia thành khoảng 25–30 viên nhỏ, đặt cách xa nhau trên khay; thử nướng một viên trước nếu bột có dấu hiệu chảy rộng.', durationMinutes: 30 },
+        { stepNumber: 4, title: 'Nướng và để ổn định', instruction: 'Nướng ở 175°C, bắt đầu kiểm tra sau 12 phút; lấy ra khi rìa vàng nhẹ còn giữa bánh mềm. Để trên khay 5–10 phút rồi chuyển lên giá. Số bánh thực tế phụ thuộc khối lượng mỗi viên và cần thử bếp để xác nhận.', durationMinutes: 15, temperatureC: 175 },
       ],
     },
+    {
+      slug: 'flan-caramel',
+      steps: [
+        { stepNumber: 1, title: 'Chuẩn bị cốc và lò', instruction: 'Làm nóng lò ở 160°C. Xếp 8–10 cốc sứ chịu nhiệt, mỗi cốc khoảng 100–120 ml, vào một khay sâu lòng.', temperatureC: 160 },
+        { stepNumber: 2, title: 'Làm caramel', instruction: 'Trộn 70 g đường với một ít nước và nước cốt chanh trước khi đun. Đun trên lửa vừa, không khuấy khi đường đang chuyển màu. Khi caramel có màu hổ phách, nhấc khỏi bếp và chia ngay vào đáy cốc. Cẩn thận vì caramel rất nóng.' },
+        { stepNumber: 3, title: 'Pha phần sữa trứng', instruction: 'Làm ấm sữa và kem tươi, không đun sôi. Khuấy nhẹ 5 quả trứng với 70 g đường còn lại và vani; rót sữa ấm từ từ vào, vừa rót vừa khuấy. Lọc hỗn hợp qua rây và hớt bọt.', durationMinutes: 10 },
+        { stepNumber: 4, title: 'Nướng cách thủy', instruction: 'Rót phần sữa trứng vào cốc. Đổ nước nóng vào khay đến khoảng nửa chiều cao cốc, tránh để nước rơi vào flan. Nướng và bắt đầu kiểm tra từ phút 25; phần rìa se lại nhưng giữa cốc còn rung nhẹ.', durationMinutes: 35, temperatureC: 160 },
+        { stepNumber: 5, title: 'Làm lạnh trước khi dùng', instruction: 'Nhấc cốc ra khỏi khay nước, để nguội rồi đậy kín và làm lạnh ít nhất 4 giờ. Dùng dao mảnh đi quanh mép cốc trước khi úp ra đĩa.', durationMinutes: 240 },
+      ],
+    },
+    {
+      slug: 'sponge-cake-3-trung',
+      steps: [
+        { stepNumber: 1, title: 'Chuẩn bị khuôn nhỏ', instruction: 'Làm nóng lò ở 160°C. Chuẩn bị khuôn tròn 15–18 cm; lót giấy ở đáy nhưng không phết dầu lên thành khuôn để bột có chỗ bám khi nở.', temperatureC: 160 },
+        { stepNumber: 2, title: 'Trộn lòng đỏ', instruction: 'Tách 3 quả trứng. Khuấy lòng đỏ với dầu ăn và sữa cho đều, sau đó rây bột mì và bột ngô vào; trộn đến khi không còn bột khô.' },
+        { stepNumber: 3, title: 'Đánh lòng trắng', instruction: 'Đánh lòng trắng với cream of tartar và muối đến khi nổi bọt mịn. Thêm đường làm 3 lần, tiếp tục đánh đến chóp gần cứng, bóng và không tách nước.' },
+        { stepNumber: 4, title: 'Trộn và nướng', instruction: 'Trộn một phần lòng trắng vào hỗn hợp lòng đỏ cho nhẹ bột, rồi nhẹ tay gấp phần còn lại. Rót vào khuôn, gõ nhẹ một lần để vỡ bọt khí lớn và nướng đến khi mặt đàn hồi, que thử rút ra khô; bắt đầu kiểm tra từ phút 25.', durationMinutes: 35, temperatureC: 160 },
+        { stepNumber: 5, title: 'Làm nguội', instruction: 'Lấy bánh ra và úp ngược khuôn trên giá thoáng cho đến khi nguội hẳn rồi mới gỡ bánh. Không tự tăng thời gian nướng theo số khẩu phần; nếu tăng mẻ, cần khuôn phù hợp.' },
+      ],
+    },
+    {
+      slug: 'sponge-cake-4-trung',
+      steps: [
+        { stepNumber: 1, title: 'Chuẩn bị khuôn', instruction: 'Làm nóng lò ở 160°C. Chuẩn bị khuôn tròn 18–21 cm; lót giấy ở đáy nhưng không phết dầu lên thành khuôn.', temperatureC: 160 },
+        { stepNumber: 2, title: 'Trộn lòng đỏ', instruction: 'Tách 4 quả trứng. Khuấy lòng đỏ với dầu ăn và sữa cho đều, sau đó rây bột mì và bột ngô vào; trộn đến khi không còn bột khô.' },
+        { stepNumber: 3, title: 'Đánh lòng trắng', instruction: 'Đánh lòng trắng với cream of tartar và muối đến khi nổi bọt mịn. Thêm đường làm 3 lần, tiếp tục đánh đến chóp gần cứng, bóng và không tách nước.' },
+        { stepNumber: 4, title: 'Trộn và nướng', instruction: 'Trộn một phần lòng trắng vào hỗn hợp lòng đỏ cho nhẹ bột, rồi nhẹ tay gấp phần còn lại. Rót vào khuôn, gõ nhẹ một lần để vỡ bọt khí lớn và nướng đến khi mặt đàn hồi, que thử rút ra khô; bắt đầu kiểm tra từ phút 25.', durationMinutes: 35, temperatureC: 160 },
+        { stepNumber: 5, title: 'Làm nguội', instruction: 'Úp ngược khuôn trên giá thoáng ngay khi lấy khỏi lò, chờ bánh nguội hoàn toàn rồi mới gỡ. Khuôn khác kích thước gợi ý có thể làm thay đổi thời gian nướng.' },
+      ],
+    },
+    ...importedRecipeSeeds.filter((recipe) => recipe.steps).map((recipe) => ({
+      slug: recipe.slug,
+      steps: recipe.steps!,
+    })),
   ];
 
   for (const stepSet of stepSets) {
@@ -227,6 +263,7 @@ async function ensureImportedRecipes() {
   const toolIds = new Map(tools.map((tool) => [tool.slug, tool.id]));
 
   const difficultyLabels = { EASY: 'dễ', MEDIUM: 'vừa', HARD: 'khó' } as const;
+  const draftedStepSlugs = new Set(['flan-caramel', 'sponge-cake-3-trung', 'sponge-cake-4-trung']);
   const recipeOperations = importedRecipeSeeds.map((recipe) => {
     const ingredientsData = recipe.ingredients.map((ingredient, sortOrder) => ({
       ingredientId: ingredientIds.get(ingredient.slug)!,
@@ -240,17 +277,15 @@ async function ensureImportedRecipes() {
       sortOrder,
     }));
     const summary = `Định lượng cho ${recipe.sourceYield}; mức ${difficultyLabels[recipe.difficulty]}. Danh sách mua được ghép theo quy cách hiện có.`;
-    const story = `Dữ liệu thành phần và dụng cụ được nhập từ tài liệu “Nguyên liệu.docx” (${recipe.sourceTime}). Phần hướng dẫn từng bước và câu chuyện món bánh chưa được cung cấp nên chưa được tự viết thêm.`;
     const sharedData = {
       title: recipe.title,
       summary,
-      story,
       category: recipe.category,
       baseServings: recipe.baseServings,
       yieldUnit: recipe.yieldUnit,
       prepMinutes: recipe.prepMinutes,
       bakeMinutes: recipe.bakeMinutes,
-      temperatureC: null,
+      temperatureC: recipe.steps?.find((step) => step.temperatureC)?.temperatureC ?? (draftedStepSlugs.has(recipe.slug) ? 160 : null),
       difficulty: recipe.difficulty,
       published: true,
     };
@@ -260,6 +295,7 @@ async function ensureImportedRecipes() {
       create: {
         slug: recipe.slug,
         ...sharedData,
+        story: recipe.story,
         imageUrl: recipe.imageUrl,
         ingredients: { create: ingredientsData },
         tools: { create: toolsData },
@@ -359,7 +395,7 @@ async function main() {
       slug: 'cookie-socola',
       title: 'Cookie sô-cô-la mềm giữa',
       summary: 'Rìa giòn nhẹ, ruột mềm và những mảng sô-cô-la còn tan khi bánh ấm.',
-      story: 'Cookie ngon không cần thật dày hay thật ngọt. Thời gian nghỉ bột giúp hương bơ rõ hơn và giữ cho bánh không lan quá nhanh trong lò.',
+      story: importedRecipeSeeds.find((recipe) => recipe.slug === 'cookie-socola')!.story,
       baseServings: 6,
       prepMinutes: 25,
       bakeMinutes: 12,
@@ -384,8 +420,8 @@ async function main() {
     },
   });
 
-  await ensureRecipeSteps();
   await ensureImportedRecipes();
+  await ensureRecipeSteps();
 
   console.log('Đã tạo danh mục sản phẩm minh họa và đồng bộ bộ công thức đầu vào.');
 }

@@ -65,7 +65,7 @@ GHTK cần thông tin nơi lấy hàng. Dự án chưa chốt địa chỉ gửi
 
 ### Bao gồm
 
-- Một điểm lấy hàng của Bếp Đủ Bánh.
+- Một điểm lấy hàng của Một Mẻ Bánh.
 - Một kiện hàng cho mỗi lần giao; mô hình dữ liệu cho phép thêm lần giao lại sau này.
 - Đơn được thanh toán trước bằng ZaloPay; GHTK không thu tiền hàng (`pick_money = 0`).
 - Khách trả phí vận chuyển trong tổng tiền website; với GHTK, shop là bên trả phí giao (`is_freeship = 1`) để tránh thu trùng.
@@ -100,7 +100,7 @@ Checkout / Trang quản trị / Trang tài khoản
  dùng khi phát triển         chỉ chứa chi tiết GHTK
 ```
 
-`ShippingService` giữ quy tắc nghiệp vụ của Bếp Đủ Bánh. `GhtkShippingProvider` chỉ chuyển đổi dữ liệu nội bộ sang request GHTK và chuyển response GHTK về kiểu dữ liệu nội bộ. Token, tên header, endpoint, mã trạng thái và lỗi của GHTK không được rò sang controller, repository hoặc frontend.
+`ShippingService` giữ quy tắc nghiệp vụ của Một Mẻ Bánh. `GhtkShippingProvider` chỉ chuyển đổi dữ liệu nội bộ sang request GHTK và chuyển response GHTK về kiểu dữ liệu nội bộ. Token, tên header, endpoint, mã trạng thái và lỗi của GHTK không được rò sang controller, repository hoặc frontend.
 
 Hợp đồng nội bộ tối thiểu:
 
@@ -191,7 +191,7 @@ Không coi các mã thông báo thao tác của shipper `123`, `127`, `128`, `45
 
 ### 7.4. Hủy
 
-1. Quy trình hủy đơn của Bếp Đủ Bánh kiểm tra trạng thái đơn, thanh toán và vận đơn.
+1. Quy trình hủy đơn của Một Mẻ Bánh kiểm tra trạng thái đơn, thanh toán và vận đơn.
 2. Nếu đã có vận đơn, backend yêu cầu GHTK hủy trước và lưu kết quả.
 3. Chỉ khi kết quả đủ chắc chắn mới chuyển trạng thái vận chuyển; hoàn tiền ZaloPay được tạo thành quy trình riêng.
 4. Nếu GHTK từ chối vì hàng đã được lấy, đơn không được giả vờ “đã hủy”; chuyển vào hàng đợi xử lý ngoại lệ.
@@ -313,4 +313,3 @@ Các mục dưới đây chưa được coi là yêu cầu chính thức:
 3. Có đồng ý với đề xuất chỉ tạo vận đơn khi quản trị viên bấm “Hàng đã sẵn sàng”, thay vì tự tạo ngay sau thanh toán hay không.
 4. Khi GHTK không phản hồi lúc checkout: chặn thanh toán và cho thử lại, hay dùng bảng phí dự phòng. Khuyến nghị ban đầu là chặn có thông báo rõ, vì phí 0 hoặc phí đoán có thể gây lỗ.
 5. Nếu một giỏ chứa sản phẩm được giao và sản phẩm bị hạn chế (ví dụ cần giữ lạnh), chặn toàn bộ đơn hay cho khách bỏ sản phẩm đó. Khuyến nghị bản đầu là chỉ rõ sản phẩm gây lỗi và yêu cầu bỏ khỏi giỏ; chưa tự tách kiện.
-

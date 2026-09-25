@@ -42,7 +42,32 @@ export function login(input: LoginInput) {
 }
 
 export function register(input: RegisterInput) {
-  return sendCredentials('/auth/register', input);
+  return sendAccountAction('/auth/register', input);
+}
+
+async function sendAccountAction(path: string, body: object) {
+  const response = await apiFetch(path, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  });
+  if (!response.ok) throw await readError(response);
+}
+
+export function resendVerification(email: string) {
+  return sendAccountAction('/auth/resend-verification', { email });
+}
+
+export function forgotPassword(email: string) {
+  return sendAccountAction('/auth/forgot-password', { email });
+}
+
+export function verifyEmail(token: string) {
+  return sendAccountAction('/auth/verify-email', { token });
+}
+
+export function resetPassword(token: string, password: string) {
+  return sendAccountAction('/auth/reset-password', { token, password });
 }
 
 export async function getCurrentUser(signal?: AbortSignal) {

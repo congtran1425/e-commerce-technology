@@ -1,8 +1,14 @@
 openapi: 3.1.0
 info:
-  title: Bếp Đủ Bánh API
+  title: Một Mẻ Bánh API
   version: 0.1.0
-  description: API cho danh mục công thức và kế hoạch mua nguyên liệu theo khẩu phần.
+  description: >-
+    API cho danh mục công thức và kế hoạch mua nguyên liệu theo khẩu phần.
+    Mọi yêu cầu thay đổi dữ liệu phải gửi header X-BDB-Client-Request: 1 để chống
+    yêu cầu giả mạo từ trình duyệt, trừ webhook POST /payments/zalopay/callback
+    được xác thực bằng chữ ký riêng. Origin của trình duyệt phải thuộc danh sách CORS.
+    Đăng ký và đăng nhập có thể trả 429 sau nhiều lần thử; các thao tác cần phiên
+    trả 401 nếu chưa xác thực và 403 nếu không đủ quyền.
   license:
     name: MIT
     identifier: MIT
@@ -38,7 +44,9 @@ paths:
                     format: date-time
   /auth/register:
     post:
-      summary: Tạo tài khoản khách hàng và mở phiên đăng nhập
+      parameters:
+        - $ref: "#/components/parameters/BrowserRequest"
+      summary: Tạo tài khoản khách hàng và gửi thư xác minh email (chưa đăng nhập)
       operationId: registerCustomer
       requestBody:
         required: true
@@ -47,22 +55,81 @@ paths:
             schema:
               $ref: "#/components/schemas/RegisterRequest"
       responses:
-        "201":
-          description: Tài khoản và phiên đã được tạo
-          headers:
-            Set-Cookie:
-              description: Cookie phiên HttpOnly; tên production có tiền tố `__Host-`.
-              schema: { type: string }
+        "202":
+          description: Đã nhận yêu cầu; không tiết lộ email đã tồn tại hay chưa
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/AuthResponse"
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      message: { type: string }
         "400":
           description: Tên, email hoặc mật khẩu không hợp lệ
-        "409":
-          description: Email đã được dùng
+        "503":
+          description: Chưa cấu hình dịch vụ gửi thư
+        "429":
+          description: Quá nhiều lần đăng ký trong 15 phút
+  /auth/resend-verification:
+    post:
+      summary: Gửi lại thư xác minh nếu tài khoản đang chờ xác minh
+      parameters:
+        - $ref: "#/components/parameters/BrowserRequest"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/EmailOnlyRequest" }
+      responses:
+        "202": { description: Phản hồi chung, không tiết lộ trạng thái tài khoản }
+        "429": { description: Quá nhiều yêu cầu }
+  /auth/verify-email:
+    post:
+      summary: Xác minh email bằng mã dùng một lần
+      parameters:
+        - $ref: "#/components/parameters/BrowserRequest"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/AccountTokenRequest" }
+      responses:
+        "204": { description: Xác minh thành công; cần đăng nhập riêng }
+        "400": { description: Mã không hợp lệ hoặc hết hạn }
+        "429": { description: Quá nhiều yêu cầu }
+  /auth/forgot-password:
+    post:
+      summary: Yêu cầu thư đặt lại mật khẩu
+      parameters:
+        - $ref: "#/components/parameters/BrowserRequest"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/EmailOnlyRequest" }
+      responses:
+        "202": { description: Phản hồi chung, không tiết lộ email có tài khoản }
+        "429": { description: Quá nhiều yêu cầu }
+  /auth/reset-password:
+    post:
+      summary: Đặt lại mật khẩu; thu hồi mọi phiên cũ
+      parameters:
+        - $ref: "#/components/parameters/BrowserRequest"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ResetPasswordRequest" }
+      responses:
+        "204": { description: Đổi mật khẩu thành công; cần đăng nhập lại }
+        "400": { description: Mã không hợp lệ hoặc hết hạn }
+        "429": { description: Quá nhiều yêu cầu }
   /auth/login:
     post:
+      parameters:
+        - $ref: "#/components/parameters/BrowserRequest"
       summary: Đăng nhập và tạo một phiên mới
       operationId: login
       requestBody:
@@ -86,6 +153,10 @@ paths:
           description: Dữ liệu gửi lên không hợp lệ
         "401":
           description: Email hoặc mật khẩu không đúng
+        "403":
+          description: Đúng mật khẩu nhưng email chưa xác minh
+        "429":
+          description: Quá nhiều lần đăng nhập thất bại trong 15 phút
   /auth/me:
     get:
       summary: Lấy tài khoản của phiên hiện tại
@@ -103,6 +174,8 @@ paths:
           description: Thiếu cookie, phiên hết hạn hoặc tài khoản không hoạt động
   /auth/logout:
     post:
+      parameters:
+        - $ref: "#/components/parameters/BrowserRequest"
       summary: Kết thúc phiên hiện tại và xóa cookie
       operationId: logout
       responses:
@@ -160,6 +233,8 @@ paths:
           description: Không tìm thấy công thức đã xuất bản
   /cart/quote:
     post:
+      parameters:
+        - $ref: "#/components/parameters/BrowserRequest"
       summary: Kiểm tra lại giá và tồn kho của giỏ tạm
       operationId: quoteCart
       description: >-
@@ -186,6 +261,8 @@ paths:
           description: Danh sách biến thể hoặc số lượng không hợp lệ
   /orders:
     post:
+      parameters:
+        - $ref: "#/components/parameters/BrowserRequest"
       summary: Giữ tồn kho, tạo đơn và tạo giao dịch ZaloPay Sandbox
       operationId: createOrder
       security:
@@ -238,6 +315,7 @@ paths:
         - sessionCookie: []
       parameters:
         - $ref: "#/components/parameters/OrderNumber"
+        - $ref: "#/components/parameters/BrowserRequest"
       responses:
         "200":
           description: Trạng thái đơn sau khi đối chiếu
@@ -267,6 +345,8 @@ paths:
         "403": { description: Phiên hiện tại không thuộc tài khoản khách hàng }
   /account/profile:
     patch:
+      parameters:
+        - $ref: "#/components/parameters/BrowserRequest"
       summary: Cập nhật tên hiển thị hoặc số điện thoại của khách hàng
       operationId: updateAccountProfile
       security:
@@ -335,6 +415,8 @@ paths:
         "401": { description: Chưa đăng nhập }
         "403": { description: Phiên hiện tại không thuộc tài khoản khách hàng }
     post:
+      parameters:
+        - $ref: "#/components/parameters/BrowserRequest"
       summary: Thêm địa chỉ vào sổ của khách hàng hiện tại
       operationId: createAccountAddress
       description: Địa chỉ đầu tiên tự trở thành mặc định; mỗi khách chỉ có tối đa một địa chỉ mặc định.
@@ -361,6 +443,8 @@ paths:
         required: true
         schema: { type: string, pattern: "^[1-9]\\d*$", maxLength: 19 }
     patch:
+      parameters:
+        - $ref: "#/components/parameters/BrowserRequest"
       summary: Sửa hoặc đặt địa chỉ mặc định
       operationId: updateAccountAddress
       security:
@@ -381,6 +465,8 @@ paths:
         "403": { description: Sai nguồn gửi yêu cầu hoặc không phải tài khoản khách hàng }
         "404": { description: Địa chỉ không thuộc tài khoản hiện tại }
     delete:
+      parameters:
+        - $ref: "#/components/parameters/BrowserRequest"
       summary: Xóa địa chỉ khỏi sổ của khách hàng hiện tại
       operationId: deleteAccountAddress
       description: Nếu xóa địa chỉ mặc định, địa chỉ được cập nhật gần nhất còn lại sẽ thành mặc định.
@@ -450,6 +536,7 @@ paths:
         "401": { description: Chưa đăng nhập }
         "403": { description: Tài khoản không có vai trò quản trị }
         "404": { description: Không tìm thấy đơn hàng }
+  /admin/orders/{orderNumber}/status:
     patch:
       summary: Chuyển đơn sang bước hoàn tất kế tiếp
       operationId: updateAdminOrderStatus
@@ -458,6 +545,7 @@ paths:
         - sessionCookie: []
       parameters:
         - $ref: "#/components/parameters/OrderNumber"
+        - $ref: "#/components/parameters/BrowserRequest"
       requestBody:
         required: true
         content:
@@ -552,6 +640,8 @@ paths:
         "401": { description: Chưa đăng nhập }
         "403": { description: Tài khoản không có vai trò quản trị }
     post:
+      parameters:
+        - $ref: "#/components/parameters/BrowserRequest"
       summary: Tạo sản phẩm cùng ít nhất một quy cách bán
       operationId: createAdminProduct
       description: >-
@@ -584,6 +674,7 @@ paths:
         - sessionCookie: []
       parameters:
         - $ref: "#/components/parameters/ProductId"
+        - $ref: "#/components/parameters/BrowserRequest"
       requestBody:
         required: true
         content:
@@ -608,6 +699,7 @@ paths:
         - sessionCookie: []
       parameters:
         - $ref: "#/components/parameters/ProductId"
+        - $ref: "#/components/parameters/BrowserRequest"
       requestBody:
         required: true
         content:
@@ -634,6 +726,7 @@ paths:
         - sessionCookie: []
       parameters:
         - $ref: "#/components/parameters/VariantId"
+        - $ref: "#/components/parameters/BrowserRequest"
       requestBody:
         required: true
         content:
@@ -685,6 +778,7 @@ paths:
         - sessionCookie: []
       parameters:
         - $ref: "#/components/parameters/VariantId"
+        - $ref: "#/components/parameters/BrowserRequest"
       requestBody:
         required: true
         content:
@@ -729,6 +823,14 @@ components:
       name: ecomtech_session
       description: Môi trường production dùng tên `__Host-ecomtech_session`.
   parameters:
+    BrowserRequest:
+      name: X-BDB-Client-Request
+      in: header
+      required: true
+      description: Giá trị cố định `1`; ngoại lệ duy nhất là webhook ZaloPay có chữ ký.
+      schema:
+        type: string
+        const: "1"
     OrderNumber:
       name: orderNumber
       in: path
@@ -1042,6 +1144,25 @@ components:
         createdAt: { type: string, format: date-time }
         actorName: { type: [string, "null"] }
         orderNumber: { type: [string, "null"] }
+    EmailOnlyRequest:
+      type: object
+      additionalProperties: false
+      required: [email]
+      properties:
+        email: { type: string, format: email, maxLength: 254 }
+    AccountTokenRequest:
+      type: object
+      additionalProperties: false
+      required: [token]
+      properties:
+        token: { type: string, minLength: 43, maxLength: 43 }
+    ResetPasswordRequest:
+      type: object
+      additionalProperties: false
+      required: [token, password]
+      properties:
+        token: { type: string, minLength: 43, maxLength: 43 }
+        password: { type: string, minLength: 10, maxLength: 128 }
     RegisterRequest:
       type: object
       additionalProperties: false

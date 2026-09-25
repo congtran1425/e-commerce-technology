@@ -17,6 +17,14 @@ const envSchema = z.object({
   DATABASE_URL: z.string().min(1, 'DATABASE_URL chưa được cấu hình.'),
   CORS_ORIGIN: z.string().default('http://localhost:5173,http://127.0.0.1:5173'),
   SESSION_TTL_DAYS: z.coerce.number().int().min(1).max(90).default(30),
+  TRUST_PROXY_HOPS: z.coerce.number().int().min(0).max(1).default(0),
+  PUBLIC_WEB_URL: optionalUrl,
+  SMTP_HOST: optionalString,
+  SMTP_PORT: z.coerce.number().int().min(1).max(65535).default(1025),
+  SMTP_SECURE: z.enum(['true', 'false']).default('false'),
+  SMTP_USER: optionalString,
+  SMTP_PASSWORD: optionalString,
+  SMTP_FROM: optionalString,
   ZALOPAY_APP_ID: optionalString,
   ZALOPAY_KEY1: optionalString,
   ZALOPAY_KEY2: optionalString,
@@ -62,6 +70,16 @@ export const env = {
   port: parsed.PORT,
   databaseUrl: parsed.DATABASE_URL,
   sessionTtlDays: parsed.SESSION_TTL_DAYS,
+  trustProxyHops: parsed.TRUST_PROXY_HOPS,
+  publicWebUrl: parsed.PUBLIC_WEB_URL,
+  smtp: parsed.SMTP_HOST && parsed.SMTP_FROM && parsed.PUBLIC_WEB_URL ? {
+    host: parsed.SMTP_HOST,
+    port: parsed.SMTP_PORT,
+    secure: parsed.SMTP_SECURE === 'true',
+    user: parsed.SMTP_USER,
+    password: parsed.SMTP_PASSWORD,
+    from: parsed.SMTP_FROM,
+  } : null,
   corsOrigins: parsed.CORS_ORIGIN
     .split(',')
     .map((origin) => origin.trim())

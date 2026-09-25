@@ -1,4 +1,4 @@
-# Bếp Đủ Bánh
+# Một Mẻ Bánh
 
 Dự án thương mại điện tử cá nhân dành cho người Việt muốn tự làm bánh tại nhà, từ người mới bắt đầu đến người đã có kinh nghiệm.
 
@@ -8,7 +8,7 @@ Giá trị cốt lõi:
 chọn món bánh → chọn khẩu phần → mua đủ nguyên liệu và dụng cụ
 ```
 
-`Bếp Đủ Bánh` là tên thương hiệu chính thức của sản phẩm. Tên repository và các định danh kỹ thuật cũ được giữ lại để tránh làm hỏng cấu hình triển khai và lịch sử phát triển.
+`Một Mẻ Bánh` là tên thương hiệu chính thức của sản phẩm. Tên repository, miền `bepdubanh.congtc145.id.vn` và các định danh kỹ thuật cũ được giữ lại để tránh làm hỏng cấu hình triển khai và lịch sử phát triển; việc đổi miền sẽ được quyết định riêng.
 
 ## Thành phần hệ thống
 
@@ -92,6 +92,9 @@ Backend luôn là nơi kiểm tra quyền thực sự. Chặn đường dẫn �
 - [Xác thực và phân quyền](docs/architecture/authentication.md)
 - [Triển khai](docs/architecture/deployment.md)
 - [Triển khai Oracle Cloud](docs/deployment/oracle-cloud.md)
+- [Gửi thư xác minh/khôi phục tài khoản trên local và Oracle](docs/deployment/email-delivery.md)
+- [Luồng tài khoản và giới hạn bảo mật hiện tại](docs/security/auth-flow.md)
+- [Cảnh báo phụ thuộc Prisma](docs/security/dependency-audit.md)
 - [Mở API cục bộ bằng ngrok](docs/deployment/local-ngrok.md)
 - [Nguồn và quy tắc nhập công thức](docs/data/recipe-import.md)
 - [Tích hợp ZaloPay Sandbox](docs/payments/zalopay.md)

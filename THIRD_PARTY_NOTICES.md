@@ -15,6 +15,18 @@ Hai repository trong danh mục nghiên cứu chỉ được quan sát, không c
 - Giấy phép: ISC.
 - Phần được sử dụng: biểu tượng giao diện thông qua package npm `lucide-react`.
 
+## express-rate-limit
+
+- Nguồn: <https://github.com/express-rate-limit/express-rate-limit>.
+- Giấy phép: MIT (theo package npm `express-rate-limit` 8.7.0).
+- Phần được sử dụng: thư viện npm giới hạn số lần đăng nhập và đăng ký trên API; không sao chép mã nguồn vào dự án.
+
+## Nodemailer
+
+- Nguồn: <https://github.com/nodemailer/nodemailer>.
+- Giấy phép: MIT-0 (xem `node_modules/nodemailer/LICENSE`).
+- Phần được sử dụng: thư viện npm gửi thư xác minh email và khôi phục mật khẩu qua SMTP; không sao chép mã nguồn vào dự án.
+
 Các package npm khác giữ nguyên giấy phép và thông báo đi kèm trong package tương ứng.
 
 Khi tái sử dụng có chọn lọc, thêm một mục theo mẫu:

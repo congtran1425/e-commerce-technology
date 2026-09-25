@@ -8,7 +8,7 @@ button, a, summary { -webkit-tap-highlight-color: transparent; }
 a { color: inherit; text-decoration-thickness: 1px; text-underline-offset: 0.2em; }
 img { display: block; max-width: 100%; }
 h1, h2, h3, h4, p, dl, dd { margin-block: 0; }
-h1, h2, h3, .wordmark strong, .site-footer__masthead { font-family: var(--font-display); font-style: normal; font-weight: 650; letter-spacing: -0.035em; }
+h1, h2, h3, .site-footer__masthead { font-family: var(--font-display); font-style: normal; font-weight: 650; letter-spacing: -0.035em; }
 h1, h2, h3 { min-width: 0; overflow-wrap: anywhere; }
 :focus-visible { outline: 2px solid var(--color-focus); outline-offset: 3px; }
 button:active, summary:active, a:active { transform: translateY(1px); }
@@ -19,10 +19,8 @@ button:disabled { opacity: 0.5; cursor: not-allowed; }
 .notice-bar p { flex: 1 1 auto; min-width: 0; max-width: 100%; white-space: normal; }
 .notice-bar button { position: absolute; inset-inline-end: var(--space-3); inset-block-start: 50%; width: 2.75rem; height: 2.75rem; display: grid; place-items: center; padding: 0; border: 0; background: transparent; color: inherit; cursor: pointer; transform: translateY(-50%); }
 .masthead { min-height: 7rem; display: grid; grid-template-columns: 2.75rem minmax(0, 1fr) 2.75rem; align-items: center; gap: var(--space-2); border-block-end: 1px solid var(--color-rule); }
-.wordmark { display: flex; flex-direction: column; align-items: center; min-width: 0; text-decoration: none; text-transform: uppercase; }
-.wordmark strong { max-width: 100%; font-size: 0; line-height: 0.9; white-space: nowrap; }
-.wordmark strong::after { content: "E·COM"; font-size: clamp(1rem, 5vw, 1.2rem); }
-.wordmark span { display: none; margin-block-start: var(--space-2); color: var(--color-ink-soft); font-size: 0.58rem; letter-spacing: 0.12em; }
+.wordmark { display: grid; place-items: center; min-width: 0; text-decoration: none; }
+.wordmark img { width: clamp(5.5rem, 21vw, 7rem); height: auto; }
 .masthead__nav { display: none; }
 .mobile-menu { position: relative; }
 .mobile-menu summary { width: 2.75rem; height: 2.75rem; display: grid; place-items: center; cursor: pointer; list-style: none; }
@@ -134,10 +132,6 @@ button:disabled { opacity: 0.5; cursor: not-allowed; }
   .masthead__nav a { min-height: 2.75rem; display: inline-flex; align-items: center; text-decoration: none; }
   .masthead__nav span[aria-disabled="true"] { color: var(--color-ink-soft); }
   .masthead__nav--right { justify-content: flex-end; }
-  .wordmark { align-items: center; }
-  .wordmark strong { font-size: clamp(1.75rem, 4vw, 2.5rem); }
-  .wordmark strong::after { content: none; }
-  .wordmark span { display: block; }
   .home-intro { grid-template-columns: minmax(0, 1.6fr) minmax(15rem, 0.7fr); min-height: 34rem; }
   .section-heading { grid-template-columns: minmax(0, 1fr) minmax(18rem, 0.6fr); align-items: end; }
   .recipe-card { grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr); gap: var(--space-6); }

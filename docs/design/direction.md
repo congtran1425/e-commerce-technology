@@ -1,11 +1,11 @@
 # Định hướng trải nghiệm và giao diện
 
-Trạng thái: Định hướng và tên thương hiệu đã chấp nhận; logo và hệ nhận diện chi tiết chưa khóa
-Cập nhật: 2026-09-12
+Trạng thái: Định hướng và tên thương hiệu đã chấp nhận; logo do chủ dự án cung cấp, hệ nhận diện chi tiết chưa khóa
+Cập nhật: 2026-09-25
 
 ## Ba trụ cột đã chốt
 
-- **Tên thương hiệu:** Bếp Đủ Bánh.
+- **Tên thương hiệu:** Một Mẻ Bánh.
 - **Đối tượng:** người Việt tự làm bánh tại nhà, từ người mới đến người có kinh nghiệm.
 - **Hành trình chính:** chọn món bánh → chọn khẩu phần → mua đủ nguyên liệu và dụng cụ.
 - **Cảm giác:** thủ công, ấm áp.
@@ -22,7 +22,7 @@ Cập nhật: 2026-09-12
 
 “Thủ công ấm áp” được hiểu là chất liệu và nhịp điệu có cảm giác con người làm ra: ảnh món bánh thật, bố cục mang tính biên tập, khoảng trắng dễ thở, chi tiết vừa phải và lời văn gần gũi. Không đồng nghĩa với dùng màu nâu/be cho mọi thứ, font viết tay tràn lan hoặc thêm họa tiết trang trí vô nghĩa.
 
-Tên `Bếp Đủ Bánh` đã được khóa. Logo, bảng màu và cặp font vẫn cần một vòng nghiên cứu nhận diện riêng; không tự xem cách trình bày chữ hiện tại là logo chính thức.
+Tên `Một Mẻ Bánh` đã được chốt. Logo vẽ tay do chủ dự án cung cấp; bản nền trong suốt trong `apps/web/public/images/brand/` dùng để hiển thị trên web. Bảng màu và cặp font hiện tại vẫn là hệ giao diện đang dùng, chưa mặc nhiên được xem là bộ nhận diện cuối cùng. Chưa đổi tên miền cũ để tránh ảnh hưởng triển khai.
 
 ## Quy trình thiết kế
 

@@ -1,7 +1,7 @@
 # Tầm nhìn và phạm vi sản phẩm
 
 Trạng thái: Đã chấp nhận
-Cập nhật: 2026-09-13
+Cập nhật: 2026-09-25
 
 ## Đối tượng
 
@@ -29,7 +29,9 @@ Website vừa là nơi mua sắm vừa là nơi đọc. Công thức chứa dữ
 
 ## Quyết định sản phẩm đã chốt
 
-- Tên thương hiệu chính thức là `Bếp Đủ Bánh`. Tên repository và định danh kỹ thuật không bắt buộc đổi theo thương hiệu.
+**Cập nhật tài khoản và công thức (17–18-09-2026):** Xác minh email là bắt buộc ngay sau đăng ký, trước khi đăng nhập/đặt hàng; hỗ trợ quên và đặt lại mật khẩu bằng email. Bản Tiramisu đầu tiên dự kiến theo công thức nguyên gốc Le Beccherie, nhưng **tạm giữ biến thể hiện tại** đến khi chốt nguyên liệu và an toàn trứng; không gọi biến thể này là bản gốc và chưa thêm hướng dẫn từng bước chưa khớp nguyên liệu. Công thức hiện mang tên “Bánh mì sữa Hokkaido” sẽ giữ định lượng nhưng đổi tên “Bánh mì sữa mềm” để không ngụ ý dùng kỹ thuật tangzhong. Công thức chưa thử bếp vẫn được hiển thị, không gắn nhãn “đang thử nghiệm”; việc hiển thị không có nghĩa là đã kiểm chứng thành phẩm, do đó nội dung không được tuyên bố chắc chắn về kết quả chưa đo được.
+
+- Tên thương hiệu chính thức là `Một Mẻ Bánh`. Tên repository và định danh kỹ thuật không bắt buộc đổi theo thương hiệu. Logo vẽ tay do chủ dự án cung cấp được dùng cho giao diện; bản nền trong suốt là tài sản dẫn xuất để hiển thị trên web.
 - Tên miền frontend production là `bepdubanh.congtc145.id.vn`; tên miền backend chính thức chưa chốt.
 - Nội dung có ba lớp: câu chuyện thương hiệu, câu chuyện ngắn đi cùng từng công thức và bài viết chuyên sâu. Không nhập ba lớp này thành một loại nội dung duy nhất.
 - Ưu tiên giỏ hàng động theo công thức; bộ nguyên liệu đóng gói sẵn là giai đoạn sau.
@@ -44,7 +46,7 @@ Website vừa là nơi mua sắm vừa là nơi đọc. Công thức chứa dữ
 - Thanh toán thử nghiệm dùng ZaloPay Sandbox; bí mật và chữ ký chỉ nằm ở backend.
 - PostgreSQL và Prisma ORM được dùng cho dữ liệu nghiệp vụ.
 - Frontend React/Vite được triển khai trên Vercel.
-- Trong giai đoạn phát triển, PostgreSQL chạy cục bộ bằng Docker; production trước mắt đặt Caddy, Express và PostgreSQL trên cùng một máy ảo Oracle Cloud tại Singapore.
+- Trong giai đoạn phát triển, PostgreSQL chạy cục bộ bằng Docker; production dự kiến đặt API và PostgreSQL trên máy ảo Oracle Cloud dùng chung. Phương án Caddy chiếm cổng 80/443 trong tài liệu cũ chưa phù hợp vì Nginx của dự án khác đang quản lý đầu vào công khai; cần chốt cấu hình trước khi triển khai.
 - Giai đoạn đầu chỉ lưu URL ảnh, chưa xây chức năng tải ảnh lên.
 - Cửa hàng chỉ bán nguyên liệu và dụng cụ làm bánh, không bán bánh thành phẩm. Ảnh bánh minh họa cho `Recipe`, không gán cho `Product` nguyên liệu hoặc dụng cụ.
 - Trang chủ chỉ giới thiệu ngắn và dẫn vào `/cong-thuc`; danh mục đầy đủ cùng tìm kiếm/lọc nằm ở trang công thức riêng. `/cau-chuyen` là không gian biên tập giải thích lý do và nguyên tắc của sản phẩm.
@@ -59,6 +61,7 @@ Website vừa là nơi mua sắm vừa là nơi đọc. Công thức chứa dữ
 - Khu vực tài khoản khách hàng gồm tổng quan, lịch sử và chi tiết đơn, hồ sơ cùng sổ địa chỉ. Địa chỉ mặc định chỉ điền trước lúc thanh toán; đơn đã tạo luôn giữ ảnh chụp nơi nhận ban đầu.
 - Mỗi khách chỉ có tối đa một địa chỉ mặc định. Địa chỉ đầu tiên tự trở thành mặc định; nếu xóa địa chỉ đó, hệ thống chọn địa chỉ được cập nhật gần nhất còn lại.
 - Email đăng nhập chưa cho tự đổi cho đến khi có luồng xác minh địa chỉ mới. Yêu cầu hủy đơn và hoàn tiền chưa nằm trong lát cắt tài khoản đầu tiên vì quy tắc nghiệp vụ vẫn còn mở.
+- Luồng tài khoản hiện dùng email/mật khẩu, phiên lưu ở máy chủ và cookie chỉ HTTP. Người chưa đăng nhập được hướng tới trang đăng nhập; người đã đăng nhập nhưng sai vai trò được thông báo không đủ quyền thay vì âm thầm đưa về trang chủ. Chi tiết lớp bảo vệ và giới hạn còn mở ở `docs/security/auth-flow.md`.
 
 ## Phạm vi dự kiến
 
@@ -70,10 +73,13 @@ Dự án không có thời hạn cố định. Tính năng được ưu tiên th
 
 ## Vấn đề còn mở
 
+- Xác thực nhiều lớp (MFA) và xác thực lại cho thao tác nhạy cảm của quản trị viên còn mở; dịch vụ gửi thư production dự kiến OCI Email Delivery nhưng chưa xác nhận hạn mức và cấu hình trên tài khoản Oracle thực tế.
+- Quy trình thử bếp/đối chiếu bởi người có kinh nghiệm, chuẩn công bố công thức và điều kiện cho phép gợi ý mua nguyên liệu vẫn cần hoàn thiện; quyết định hiển thị công thức không đồng nghĩa công thức đã được kiểm chứng.
+
 - “Món bánh tương thích” có cần trở thành bộ lọc bắt buộc hay không.
 - Phí và quy tắc vận chuyển.
 - Nhà cung cấp cùng chính sách lưu ảnh/tệp.
-- Khả năng bảo hộ nhãn hiệu và tên miền phù hợp với `Bếp Đủ Bánh`; tên chính thức trong sản phẩm không đồng nghĩa tên đã được bảo hộ pháp lý.
+- Khả năng bảo hộ nhãn hiệu và tên miền phù hợp với `Một Mẻ Bánh`; tên chính thức trong sản phẩm không đồng nghĩa tên đã được bảo hộ pháp lý. Miền `bepdubanh.congtc145.id.vn` hiện vẫn giữ nguyên.
 - Loại nội dung, quy trình biên tập và bản quyền.
 - Luồng duyệt hủy và hoàn tiền ZaloPay.
 - Giá bán đang hiển thị đã gồm thuế hay chưa; dự án có cần xuất hóa đơn VAT hay không.

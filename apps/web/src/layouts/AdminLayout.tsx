@@ -39,12 +39,12 @@ export function AdminLayout() {
   return (
     <div className="admin-shell" data-admin-shell>
       <aside className="admin-rail">
-        <Link className="admin-wordmark" to="/admin"><strong>E·COM</strong><span>Bàn quản trị</span></Link>
+        <Link className="admin-wordmark" to="/admin"><strong>Một Mẻ Bánh</strong><span>Bàn quản trị</span></Link>
         <nav aria-label="Điều hướng quản trị">{navigation}</nav>
         <Link className="admin-store-link" to="/">Mở cửa hàng ↗</Link>
       </aside>
       <header className="admin-mobile-header">
-        <Link className="admin-wordmark" to="/admin"><strong>E·COM</strong><span>Bàn quản trị</span></Link>
+        <Link className="admin-wordmark" to="/admin"><strong>Một Mẻ Bánh</strong><span>Bàn quản trị</span></Link>
         <details ref={mobileMenuRef} className="admin-mobile-menu">
           <summary aria-label="Mở điều hướng quản trị"><Menu aria-hidden="true" size={22} /></summary>
           <nav aria-label="Điều hướng quản trị trên điện thoại">{navigation}<Link to="/" onClick={closeMobileMenu}>Mở cửa hàng ↗</Link></nav>

@@ -31,6 +31,14 @@ export type RecipeSeedDefinition = {
   difficulty: Difficulty;
   sourceYield: string;
   sourceTime: string;
+  story: string;
+  steps?: {
+    stepNumber: number;
+    title: string;
+    instruction: string;
+    durationMinutes?: number;
+    temperatureC?: number;
+  }[];
   ingredients: RecipeSeedIngredient[];
   tools: RecipeSeedTool[];
 };
@@ -52,6 +60,7 @@ export const importedRecipeSeeds: RecipeSeedDefinition[] = [
     difficulty: Difficulty.EASY,
     sourceYield: '25–30 cái',
     sourceTime: 'Chuẩn bị 10–15 phút, nướng 12–15 phút',
+    story: 'Cuối thập niên 1930, Ruth Wakefield đưa bánh quy có mảnh sô-cô-la vào thực đơn Toll House; từ một món ăn kèm trà, chocolate chip cookie trở thành kiểu bánh quen thuộc trong nhiều căn bếp. Với mẻ bột nhiều bơ này, thời gian làm lạnh quan trọng hơn vẻ ngoài của từng viên bột: bánh cần đủ lạnh để không chảy tràn trên khay.',
     ingredients: [
       { slug: 'bot-mi', name: 'Bột mì đa dụng', unit: gram, quantity: 150 },
       { slug: 'bo-lat', name: 'Bơ lạt', unit: gram, quantity: 165 },
@@ -81,10 +90,17 @@ export const importedRecipeSeeds: RecipeSeedDefinition[] = [
     baseServings: 32,
     yieldUnit: RecipeYieldUnit.PIECE,
     prepMinutes: 15,
-    bakeMinutes: 30,
+    bakeMinutes: 20,
     difficulty: Difficulty.MEDIUM,
     sourceYield: '30–32 cái',
-    sourceTime: 'Chuẩn bị 10–15 phút, nướng 30 phút',
+    sourceTime: 'Chuẩn bị 10–15 phút, nướng khoảng 15–20 phút mỗi mẻ',
+    story: 'Vị trà xanh giúp chiếc bánh quy bơ bớt ngọt gắt, còn màu xanh thay đổi theo loại bột và nhiệt lò. Đây là bánh quy bắt bông hiện đại, không phải một loại bánh truyền thống Nhật Bản; hãy nhìn màu đáy và độ se mặt bánh thay vì chỉ chờ hết giờ.',
+    steps: [
+      { stepNumber: 1, title: 'Chuẩn bị bột khô và lò', instruction: 'Làm nóng lò ở 155°C. Rây chung 140 g bột mì, 30 g bột ngô và 15 g bột trà xanh để bột không còn vón.', temperatureC: 155 },
+      { stepNumber: 2, title: 'Đánh bơ', instruction: 'Đánh 160 g bơ mềm với 100 g đường đến khi mịn và nhạt màu. Cho 1 quả trứng và 3 ml vani vào, trộn vừa hòa quyện.', durationMinutes: 8 },
+      { stepNumber: 3, title: 'Bắt hình và làm lạnh', instruction: 'Trộn bột khô vào hỗn hợp bơ đến khi hết vệt bột. Cho vào túi gắn đui 1M, bắt khoảng 30–32 chiếc lên khay lót giấy nến. Nếu bột mềm, làm lạnh khay 10–15 phút trước khi nướng.', durationMinutes: 15 },
+      { stepNumber: 4, title: 'Nướng và làm nguội', instruction: 'Nướng từng khay ở 155°C; bắt đầu kiểm tra sau 15 phút. Lấy ra khi mặt bánh khô, đáy vàng rất nhẹ; thời gian thực tế có thể tới 20 phút tùy kích thước bánh và lò. Để bánh nguội trên khay rồi chuyển ra giá.', durationMinutes: 20, temperatureC: 155 },
+    ],
     ingredients: [
       { slug: 'bot-mi', name: 'Bột mì đa dụng', unit: gram, quantity: 140 },
       { slug: 'bo-lat', name: 'Bơ lạt', unit: gram, quantity: 160 },
@@ -119,6 +135,7 @@ export const importedRecipeSeeds: RecipeSeedDefinition[] = [
     difficulty: Difficulty.MEDIUM,
     sourceYield: '25–30 cái',
     sourceTime: 'Chuẩn bị 15–20 phút, nướng 12–15 phút',
+    story: 'Vị bơ và chút chua của nam việt quất khô tạo nên một chiếc bánh quy hợp với trà nóng. Tuy nhiên, danh sách mua hiện chưa có định lượng nam việt quất: đây mới là nền bánh bơ, chưa phải bộ nguyên liệu hoàn chỉnh cho món có quả khô.',
     ingredients: [
       { slug: 'bot-mi', name: 'Bột mì đa dụng', unit: gram, quantity: 240 },
       { slug: 'bo-lat', name: 'Bơ lạt', unit: gram, quantity: 225 },
@@ -150,6 +167,7 @@ export const importedRecipeSeeds: RecipeSeedDefinition[] = [
     difficulty: Difficulty.HARD,
     sourceYield: '8–10 phần',
     sourceTime: 'Chuẩn bị 110–120 phút, chờ đông 6–8 giờ',
+    story: 'Cheesecake lạnh không cần lò; phần đế bánh quy giữ lớp kem phô mai mềm bên trên. Bản nguyên liệu này dùng gelatin để giữ dáng, nhưng “ba lá” chưa cho biết khối lượng và độ nở của từng lá, vì vậy kết cấu thực tế vẫn cần thử với đúng sản phẩm sẽ bán.',
     ingredients: [
       { slug: 'banh-quy', name: 'Bánh quy', unit: gram, quantity: 200, note: 'Phần đế bánh.' },
       { slug: 'bo-lat', name: 'Bơ lạt', unit: gram, quantity: 100, note: 'Phần đế bánh.' },
@@ -179,6 +197,14 @@ export const importedRecipeSeeds: RecipeSeedDefinition[] = [
     difficulty: Difficulty.HARD,
     sourceYield: '8 phần',
     sourceTime: 'Chuẩn bị 40 phút, nướng 25–30 phút',
+    story: 'Red velvet hấp dẫn ở sự đối lập: cốt bánh đỏ nâu, vị cacao nhẹ và lớp kem phô mai mát. Sắc đỏ đậm thường đến từ màu thực phẩm; tên “velvet” nhắc nhiều hơn đến cảm giác mềm mịn của cốt bánh. Làm cốt và kem thành hai chặng riêng sẽ dễ theo dõi hơn khi bắt đầu.',
+    steps: [
+      { stepNumber: 1, title: 'Chuẩn bị hai khuôn và sữa chua', instruction: 'Làm nóng lò ở 170°C. Lót giấy nến cho hai khuôn tròn 20–22 cm. Khuấy 15 ml giấm hoặc nước cốt chanh vào 240 ml sữa, để khoảng 10 phút; giữ 5 ml acid còn lại cho muối nở.', durationMinutes: 10, temperatureC: 170 },
+      { stepNumber: 2, title: 'Trộn phần cốt', instruction: 'Rây 240 g bột mì, 5 g bột nở và 20 g cacao. Đánh 120 g bơ mềm với 170 g đường, thêm lần lượt 2 quả trứng, 5 ml vani và 30 ml màu đỏ. Cho hỗn hợp bột vào xen kẽ với phần sữa chua, trộn vừa hết vệt bột.' },
+      { stepNumber: 3, title: 'Nướng cốt bánh', instruction: 'Trộn 5 g muối nở với 5 ml acid còn lại, cho ngay vào bột rồi chia đều hai khuôn. Nướng ở 170°C và kiểm tra từ phút 25; tăm cắm giữa cốt rút ra không còn bột ướt. Để cốt nguội hoàn toàn trước khi phủ kem.', durationMinutes: 30, temperatureC: 170 },
+      { stepNumber: 4, title: 'Đánh kem phô mai', instruction: 'Đánh mịn 250 g cream cheese với 150 g mascarpone, 70 g đường hạt mịn và 5 ml vani. Đánh riêng 200 ml kem tươi lạnh đến chóp mềm, sau đó nhẹ tay trộn vào phần phô mai. Giữ lạnh nếu chưa dùng ngay.' },
+      { stepNumber: 5, title: 'Ghép lớp', instruction: 'Khi cốt đã nguội, phết kem giữa hai lớp và phủ mặt bánh. Làm lạnh để kem ổn định trước khi cắt; nếu đổi số khẩu phần hoặc cỡ khuôn, cần kiểm tra lại độ dày cốt và thời gian nướng.' },
+    ],
     ingredients: [
       { slug: 'sua-tuoi', name: 'Sữa tươi không đường', unit: milliliter, quantity: 240 },
       { slug: 'dam-trang', name: 'Dấm trắng hoặc nước cốt chanh', unit: milliliter, quantity: 20, note: '15 ml pha sữa và 5 ml kích hoạt muối nở.' },
@@ -218,6 +244,7 @@ export const importedRecipeSeeds: RecipeSeedDefinition[] = [
     difficulty: Difficulty.MEDIUM,
     sourceYield: '6 phần, khuôn 15–18 cm',
     sourceTime: 'Chuẩn bị 20–25 phút, nướng 25–35 phút',
+    story: 'Bản ba trứng là cỡ nhỏ của bánh bông lan tách trứng: bọt khí trong lòng trắng giúp cốt nở nhẹ, dầu và sữa giúp ruột bánh đỡ khô. Khuôn nhỏ và thao tác gấp bột nhẹ tay quan trọng không kém định lượng.',
     ingredients: [
       { slug: 'bot-mi', name: 'Bột mì đa dụng', unit: gram, quantity: 30 },
       { slug: 'bot-ngo', name: 'Bột ngô', unit: gram, quantity: 30 },
@@ -250,6 +277,7 @@ export const importedRecipeSeeds: RecipeSeedDefinition[] = [
     difficulty: Difficulty.MEDIUM,
     sourceYield: '8 phần, khuôn 18–21 cm',
     sourceTime: 'Chuẩn bị 20–25 phút, nướng 25–35 phút',
+    story: 'Cùng kỹ thuật tách trứng với bản ba trứng, bản bốn trứng phù hợp khuôn rộng hơn. Tăng lượng nguyên liệu không có nghĩa tăng thời gian nướng theo cùng tỷ lệ; nên kiểm tra độ đàn hồi và que thử ở tâm bánh.',
     ingredients: [
       { slug: 'bot-mi', name: 'Bột mì đa dụng', unit: gram, quantity: 40 },
       { slug: 'bot-ngo', name: 'Bột ngô', unit: gram, quantity: 40 },
@@ -282,6 +310,7 @@ export const importedRecipeSeeds: RecipeSeedDefinition[] = [
     difficulty: Difficulty.EASY,
     sourceYield: '6–8 phần',
     sourceTime: 'Chuẩn bị 30 phút',
+    story: 'Tiramesù gắn với nhà hàng Le Beccherie ở Treviso, nơi công bố một công thức dùng lòng đỏ, đường, mascarpone, bánh savoiardi, cà phê và cacao. Danh sách nguyên liệu đang hiển thị ở đây là một biến thể khác, có kem tươi, cream cheese và rum; chưa thể gọi là bản gốc. Các bước làm sẽ được cập nhật cùng lúc với định lượng mới và phương án dùng trứng an toàn.',
     ingredients: [
       { slug: 'trung-ga', name: 'Trứng gà', unit: piece, quantity: 2 },
       { slug: 'duong-cat', name: 'Đường trắng', unit: gram, quantity: 50 },
@@ -313,6 +342,7 @@ export const importedRecipeSeeds: RecipeSeedDefinition[] = [
     difficulty: Difficulty.EASY,
     sourceYield: '8–10 cốc',
     sourceTime: 'Chuẩn bị 15 phút, nướng 25–35 phút',
+    story: 'Một cốc flan ngon thường có mặt mịn, tâm mềm và lớp caramel chảy xuống khi úp khuôn. Khác với crème brûlée có mặt đường giòn, caramel của flan nằm dưới đáy cốc lúc nướng rồi trở thành nước xốt khi dọn lên đĩa.',
     ingredients: [
       { slug: 'trung-ga', name: 'Trứng gà', unit: piece, quantity: 5 },
       { slug: 'duong-cat', name: 'Đường trắng', unit: gram, quantity: 140, note: '70 g cho flan và 70 g cho caramel.' },
@@ -342,6 +372,7 @@ export const importedRecipeSeeds: RecipeSeedDefinition[] = [
     difficulty: Difficulty.MEDIUM,
     sourceYield: '4 phần',
     sourceTime: 'Chuẩn bị 50 phút',
+    story: 'Hai lớp sô-cô-la và dâu tây dựa vào cùng một nguyên lý: giữ không khí trong kem đánh bông để món tráng miệng nhẹ hơn ganache. Bản định lượng hiện còn trứng chưa được giải thích vai trò và loại gelatin chưa rõ, nên chưa thể viết một quy trình an toàn, nhất quán cho cả hai lớp.',
     ingredients: [
       { slug: 'socola-den', name: 'Sô-cô-la đen', unit: gram, quantity: 80 },
       { slug: 'sua-tuoi', name: 'Sữa tươi không đường', unit: milliliter, quantity: 30 },
@@ -361,16 +392,23 @@ export const importedRecipeSeeds: RecipeSeedDefinition[] = [
   },
   {
     slug: 'banh-mi-sua-hokkaido',
-    title: 'Bánh mì sữa Hokkaido',
+    title: 'Bánh mì sữa mềm',
     imageUrl: '/images/recipes/thumbnails/hokkaido-milk-bread.png',
     category: RecipeCategory.BREAD,
     baseServings: 1,
     yieldUnit: RecipeYieldUnit.LOAF,
-    prepMinutes: 210,
-    bakeMinutes: 0,
+    prepMinutes: 180,
+    bakeMinutes: 30,
     difficulty: Difficulty.HARD,
     sourceYield: '1 ổ lớn hoặc nhiều bánh nhỏ tùy tạo hình',
     sourceTime: 'Chuẩn bị 3–3,5 giờ, gồm thời gian ủ bột',
+    story: 'Mẻ bánh mì sữa này dùng cả sữa tươi, sữa bột và kem tươi để tạo vị sữa rõ và ruột mềm. Công thức hiện không nấu bột tangzhong, vì vậy đây là bánh mì sữa mềm chứ không phải lời hứa về kỹ thuật bánh mì sữa Hokkaido.',
+    steps: [
+      { stepNumber: 1, title: 'Trộn và nhồi bột', instruction: 'Trộn 540 g bột bánh mì, 60 g bột bánh ngọt, 10 g men, 30 g sữa bột và 80 g đường. Thêm 60 g trứng, 250 g sữa và 150 g kem tươi; nhồi đến khi bột kết dính, rồi thêm 8 g muối và nhồi tiếp đến khi bột mịn, đàn hồi. Không cần nấu tangzhong.', durationMinutes: 25 },
+      { stepNumber: 2, title: 'Ủ lần một', instruction: 'Đậy kín khối bột, ủ nơi ấm vừa khoảng 60–90 phút đến khi nở rõ, gần gấp đôi. Thời gian phụ thuộc nhiệt độ phòng và hoạt tính men; tránh đặt bột ở nơi quá nóng.', durationMinutes: 90 },
+      { stepNumber: 3, title: 'Tạo hình và ủ lần hai', instruction: 'Ấn nhẹ để xả bớt khí, tạo hình một ổ lớn hoặc chia bánh nhỏ và đặt vào khuôn/khay phù hợp. Đậy lại, ủ thêm khoảng 45–60 phút đến khi bột nở đầy đặn; không ép thời gian nếu bột còn đặc.', durationMinutes: 60 },
+      { stepNumber: 4, title: 'Nướng và làm nguội', instruction: 'Làm nóng lò ở 170°C. Nướng đến khi mặt vàng và ruột chín; với ổ lớn bắt đầu kiểm tra sau khoảng 25–30 phút, bánh nhỏ cần kiểm tra sớm hơn. Để bánh trên giá đến khi nguội bớt rồi mới cắt. Sữa hoặc trứng quét mặt chỉ là tùy chọn nếu còn dư từ mẻ bột.', durationMinutes: 30, temperatureC: 170 },
+    ],
     ingredients: [
       { slug: 'bot-banh-mi', name: 'Bột làm bánh mì', unit: gram, quantity: 540 },
       { slug: 'bot-banh-ngot', name: 'Bột làm bánh ngọt', unit: gram, quantity: 60 },
@@ -404,6 +442,7 @@ export const importedRecipeSeeds: RecipeSeedDefinition[] = [
     difficulty: Difficulty.HARD,
     sourceYield: '10 cái nhỏ',
     sourceTime: 'Chuẩn bị 2,5–3 giờ, gồm thời gian ủ bột',
+    story: 'Croissant nhiều lớp chỉ hình thành khi khối bột và bơ cán được gấp, nghỉ lạnh rồi cán lại có kiểm soát. Danh sách hiện chỉ có bơ trộn trong bột, chưa có phần bơ cán; viết một quy trình croissant hoàn chỉnh lúc này sẽ khiến người làm không có đủ nguyên liệu.',
     ingredients: [
       { slug: 'bot-mi', name: 'Bột mì đa dụng', unit: gram, quantity: 200 },
       { slug: 'sua-tuoi-theo-khoi-luong', name: 'Sữa tươi không đường (theo khối lượng)', unit: gram, quantity: 90 },
@@ -436,6 +475,7 @@ export const importedRecipeSeeds: RecipeSeedDefinition[] = [
     difficulty: Difficulty.HARD,
     sourceYield: '12 bánh',
     sourceTime: 'Chuẩn bị 2–2,5 giờ, gồm thời gian ủ bột',
+    story: 'Bánh mì cà phê nhân bơ hấp dẫn bởi hai kết cấu đi cùng nhau: vỏ bánh mì mềm và lớp phủ cà phê nứt giòn khi vừa ra lò. “PappaRoti” là tên thương hiệu khác; công thức này sẽ cần đổi sang tên mô tả trước khi dùng như một bài công thức riêng của Một Mẻ Bánh.',
     ingredients: [
       { slug: 'bot-banh-mi', name: 'Bột làm bánh mì', unit: gram, quantity: 260, note: 'Phần vỏ bánh.' },
       { slug: 'bot-mi', name: 'Bột mì đa dụng', unit: gram, quantity: 35, note: 'Phần phủ cà phê.' },

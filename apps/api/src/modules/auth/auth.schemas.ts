@@ -27,5 +27,12 @@ export const loginRequestSchema = z.object({
   password: passwordSchema,
 }).strict();
 
+export const emailOnlyRequestSchema = z.object({ email: emailSchema }).strict();
+export const accountTokenRequestSchema = z.object({ token: z.string().length(43) }).strict();
+export const resetPasswordRequestSchema = z.object({
+  token: z.string().length(43),
+  password: passwordSchema,
+}).strict();
+
 export type RegisterInput = z.infer<typeof registerRequestSchema>;
 export type LoginInput = z.infer<typeof loginRequestSchema>;

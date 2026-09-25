@@ -6,7 +6,9 @@ Cơ chế này đã được chọn thay cho việc để trình duyệt tự gi
 
 ## Cách phiên hoạt động
 
-- `POST /api/auth/register` tạo tài khoản khách hàng, băm mật khẩu bằng Argon2id và mở một phiên.
+- `POST /api/auth/register` tạo tài khoản khách hàng chưa xác minh, băm mật khẩu bằng Argon2id và gửi thư xác minh; **chưa mở phiên**. Sau khi xác minh email, khách đăng nhập riêng.
+- `POST /api/auth/resend-verification` gửi lại thư xác minh cho tài khoản phù hợp; `POST /api/auth/verify-email` tiêu thụ mã một lần.
+- `POST /api/auth/forgot-password` gửi liên kết đặt lại mật khẩu; `POST /api/auth/reset-password` đổi mật khẩu và thu hồi mọi phiên cũ.
 - `POST /api/auth/login` kiểm tra mật khẩu rồi luôn tạo mã phiên mới, tránh tái sử dụng mã cũ.
 - `GET /api/auth/me` đọc cookie và trả thông tin công khai của tài khoản đang hoạt động.
 - `POST /api/auth/logout` xóa phiên hiện tại trong database và xóa cookie.
@@ -38,13 +40,14 @@ Cơ chế này đã được chọn thay cho việc để trình duyệt tự gi
 
 ## Bố trí tên miền
 
-Frontend production dùng `bepdubanh.congtc145.id.vn`; hostname API production dự kiến vẫn là `api.ecomtech.congtc145.id.vn` cho đến khi chốt tên mới. Hai origin (nguồn truy cập gồm giao thức, tên miền và cổng) khác nhau nhưng vẫn cùng site `congtc145.id.vn`, nên cookie `SameSite=Lax` có thể đi cùng lời gọi API khi frontend dùng `credentials: include` và backend chỉ cho phép đúng origin frontend qua CORS. Khi đổi hostname API phải cập nhật đồng bộ DNS, Caddy, CORS, cookie, callback ZaloPay và biến frontend.
+Frontend production dùng `bepdubanh.congtc145.id.vn`; hostname API production chưa chốt. Khi API dùng một subdomain cùng site `congtc145.id.vn`, hai origin (nguồn truy cập gồm giao thức, tên miền và cổng) khác nhau nhưng cookie `SameSite=Lax` có thể đi cùng lời gọi API nếu frontend dùng `credentials: include` và backend chỉ cho phép đúng origin frontend qua CORS. Khi chốt/đổi hostname API phải cập nhật đồng bộ DNS, Caddy, CORS, cookie, callback ZaloPay và biến frontend.
 
 Nếu API dùng tên miền hoàn toàn khác như `*.onrender.com`, cookie phải dùng `SameSite=None; Secure` và có thể bị chính sách chặn cookie bên thứ ba của trình duyệt ảnh hưởng. Không đổi sang cấu hình đó nếu chưa kiểm thử trên các trình duyệt mục tiêu.
 
 ## Việc bảo mật còn phải hoàn thiện trước production
 
-- Giới hạn số lần thử đăng nhập theo IP và tài khoản.
-- Mở rộng kiểm tra `Origin` hiện đã dùng ở endpoint tạo đơn/đối chiếu thanh toán sang mọi endpoint thay đổi dữ liệu được thêm sau này.
-- Thiết kế quên/đặt lại mật khẩu và thu hồi toàn bộ phiên sau khi đổi mật khẩu.
+- Nâng bộ giới hạn lượt thử đang ở bộ nhớ một tiến trình lên kho đếm dùng chung khi chạy nhiều tiến trình/máy; kiểm tra IP thật qua proxy tin cậy. Hiện đăng nhập được giới hạn theo email băm, các thao tác thư theo email băm và nhiều thao tác theo IP.
+- Kiểm thử trên miền thật lớp kiểm tra `Origin` và header trình duyệt đang áp dụng cho yêu cầu thay đổi dữ liệu; callback ZaloPay có cơ chế chữ ký riêng. Header không phải bí mật hay cơ chế phân quyền.
+- Kiểm thử gửi thư bằng nhà cung cấp thật và giảm chênh lệch thời gian phản hồi có thể làm lộ email đã đăng ký; xem [giới hạn hiện tại](../security/auth-flow.md).
+- Bổ sung xác thực nhiều lớp và xác thực lại cho thao tác quản trị nhạy cảm trước vận hành thật.
 - Chốt thời gian bất hoạt nếu cần ngắn hơn thời hạn tuyệt đối 30 ngày.

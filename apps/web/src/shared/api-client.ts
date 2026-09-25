@@ -13,6 +13,10 @@ const usesNgrokFreeTunnel = (() => {
 export function apiFetch(path: string, init: RequestInit = {}) {
   const headers = new Headers(init.headers);
 
+  if (init.method && !['GET', 'HEAD', 'OPTIONS'].includes(init.method.toUpperCase())) {
+    headers.set('X-BDB-Client-Request', '1');
+  }
+
   // ngrok Free trả một trang cảnh báo HTML cho request từ trình duyệt nếu
   // không có header này. Chỉ gửi header khi API thật sự đi qua tunnel ngrok.
   if (usesNgrokFreeTunnel) {

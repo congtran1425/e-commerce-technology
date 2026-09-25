@@ -30,7 +30,7 @@ Cho đến khi từng công thức có bản chuyển thể và biên bản th�
 - nút giỏ hàng của công thức còn lại chỉ thêm các mặt hàng thực sự có quy cách và cảnh báo số mục còn thiếu;
 - không tạo giá hoặc tồn kho minh họa mới ngoài danh mục thử nghiệm đã có.
 
-Câu chuyện thương hiệu đã được biên tập riêng tại [nền tảng câu chuyện Bếp Đủ Bánh](../content/brand-story.md). Câu chuyện thương hiệu, câu chuyện món và bài viết chuyên sâu là ba lớp nội dung khác nhau.
+Câu chuyện thương hiệu đã được biên tập riêng tại [nền tảng câu chuyện Một Mẻ Bánh](../content/brand-story.md). Câu chuyện thương hiệu, câu chuyện món và bài viết chuyên sâu là ba lớp nội dung khác nhau.
 
 ## Quyết định cần chốt
 

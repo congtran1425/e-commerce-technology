@@ -38,8 +38,7 @@ export function CustomerLayout() {
             <NavLink to="/cau-chuyen">Câu chuyện</NavLink>
           </nav>
           <Link className="wordmark" to="/">
-            <strong>Bếp Đủ Bánh</strong>
-            <span>công thức · nguyên liệu · dụng cụ</span>
+            <img src="/images/brand/mot-me-banh.png" alt="Một Mẻ Bánh" width="112" height="112" />
           </Link>
           <Link className="mobile-cart-link cart-link" to="/gio-hang" aria-label={`Giỏ hàng có ${itemCount} sản phẩm`}>
             <ShoppingBasket aria-hidden="true" size={20} />
@@ -68,7 +67,7 @@ export function CustomerLayout() {
             {user?.role === 'CUSTOMER' ? <Link to="/tai-khoan">Sổ bếp</Link> : null}
           </nav>
           <p className="site-footer__colophon">
-            © <time dateTime="2026">2026</time> Bếp Đủ Bánh · Mã nguồn phát hành theo giấy phép MIT.
+            © <time dateTime="2026">2026</time> Một Mẻ Bánh · Mã nguồn phát hành theo giấy phép MIT.
           </p>
         </div>
       </footer>

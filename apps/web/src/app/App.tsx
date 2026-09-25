@@ -4,6 +4,7 @@ import { RequireAuth } from '../features/auth/RequireAuth';
 import { CustomerLayout } from '../layouts/CustomerLayout';
 import { CartPage } from '../pages/customer/CartPage';
 import { AuthPage } from '../pages/customer/AuthPage';
+import { AccountRecoveryPage } from '../pages/customer/AccountRecoveryPage';
 import { CheckoutPage } from '../pages/customer/CheckoutPage';
 import { HomePage } from '../pages/customer/HomePage';
 import { RecipeDetailPage } from '../pages/customer/RecipeDetailPage';
@@ -37,6 +38,10 @@ export function App() {
         <Route path="cau-chuyen" element={<StoryPage />} />
         <Route path="gio-hang" element={<CartPage />} />
         <Route path="dang-nhap" element={<AuthPage />} />
+        <Route path="xac-minh-email" element={<AccountRecoveryPage mode="verify" />} />
+        <Route path="gui-lai-xac-minh" element={<AccountRecoveryPage mode="resend" />} />
+        <Route path="quen-mat-khau" element={<AccountRecoveryPage mode="forgot" />} />
+        <Route path="dat-lai-mat-khau" element={<AccountRecoveryPage mode="reset" />} />
         <Route path="thanh-toan" element={<RequireAuth><CheckoutPage /></RequireAuth>} />
         <Route path="thanh-toan/ket-qua" element={<RequireAuth><PaymentResultPage /></RequireAuth>} />
         <Route path="tai-khoan" element={<RequireAuth allowedRoles={['CUSTOMER']}><Suspense fallback={<div className="route-loading" role="status">Đang mở sổ bếp…</div>}><AccountLayout /></Suspense></RequireAuth>}>

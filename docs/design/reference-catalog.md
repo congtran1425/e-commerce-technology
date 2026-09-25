@@ -88,4 +88,4 @@ Trang quản trị dùng bố cục “chỉ mục trước”: danh sách tác 
 
 Các trang vận hành dùng cấu trúc “bàn điều hành”: tổng quan chỉ hiển thị số liệu thật; đơn hàng và giao dịch dùng danh sách–chi tiết; vận chuyển là một hàng đợi công việc; kho tách cảnh báo tồn khỏi sổ biến động. Doanh thu luôn được ghi rõ là tiền đã thu, không đồng nhất với lợi nhuận.
 
-Khu vực khách hàng dùng cấu trúc “mục lục trước”: mục tài khoản nằm thành dải ngang trên điện thoại và thành cột trái trên màn hình rộng; nội dung thật nằm ở vùng đọc bên phải. Hình thức vẫn là cuốn sổ biên tập ấm áp của `Bếp Đủ Bánh`, không bê bảng điều khiển quản trị hay lưới thẻ thống kê sang phía khách hàng.
+Khu vực khách hàng dùng cấu trúc “mục lục trước”: mục tài khoản nằm thành dải ngang trên điện thoại và thành cột trái trên màn hình rộng; nội dung thật nằm ở vùng đọc bên phải. Hình thức vẫn là cuốn sổ biên tập ấm áp của `Một Mẻ Bánh`, không bê bảng điều khiển quản trị hay lưới thẻ thống kê sang phía khách hàng.

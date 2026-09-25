@@ -37,3 +37,4 @@ Không sửa lịch sử của một ADR đã được thay thế; tạo ADR m�
 - [0006 — Tích hợp ZaloPay qua backend](0006-zalopay-backend-integration.md)
 - [0007 — Quản lý tồn kho bằng sổ biến động](0007-inventory-movement-ledger.md)
 - [0008 — Tài khoản khách hàng và sổ địa chỉ](0008-customer-account-and-address-book.md)
+- [0009 — Xác minh email và gửi thư qua SMTP](0009-email-verification-and-smtp.md)
