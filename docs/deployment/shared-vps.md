@@ -13,7 +13,7 @@
 
 1. Kiểm tra `git status -sb`, nhánh/commit và chắc chắn mã nguồn cần phát hành đã lên GitHub. Clone hoặc `git pull --ff-only` vào thư mục riêng, không dùng thư mục dự án của người khác.
 2. Máy đã cài `docker.io` và `docker-compose-v2` từ kho Ubuntu 20.04. Tài liệu Docker Engine chính thức hiện không liệt kê Ubuntu 20.04 trong các phiên bản được hỗ trợ; bộ gói Ubuntu này phục vụ giai đoạn thử nghiệm, cần kế hoạch cập nhật bảo mật riêng. Không thay bằng tập lệnh cài Docker tùy tiện hoặc nâng cấp OS khi máy vẫn dùng chung.
-3. Chuẩn bị `/opt/apps/bep-du-banh/config/.env` từ mẫu `deploy/oracle/.env.example`, quyền `600`, chỉ trên VPS. Thay mật khẩu PostgreSQL mẫu bằng giá trị ngẫu nhiên riêng và cùng giá trị đã mã hóa đúng trong `DATABASE_URL`. Không in `.env` ra terminal/chat/log; không chép khóa từ `server.js` minh họa.
+3. Trên VPS, chạy `bash /opt/apps/bep-du-banh/repo/deploy/oracle/init-shared-env.sh` để tạo `/opt/apps/bep-du-banh/config/.env` quyền `600`, với mật khẩu PostgreSQL ngẫu nhiên riêng. Script từ chối ghi đè tệp đã có. Không in `.env` ra terminal/chat/log; không chép khóa từ `server.js` minh họa.
 4. Cấu hình dịch vụ gửi thư và bộ khóa ZaloPay Sandbox trước khi thử đăng ký hoặc thanh toán. Nếu chưa có, API vẫn chạy nhưng đăng ký/quên mật khẩu trả lỗi `503` và thanh toán ZaloPay chưa khả dụng; không gọi đó là hệ thống đã sẵn sàng cho khách hàng.
 
 ## Khởi động riêng, khi các điều kiện trên đã đủ
