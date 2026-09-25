@@ -3,7 +3,17 @@
 name: mot-me-banh
 
 services:
+  postgres:
+    cpus: 1.0
+    mem_limit: 1536m
+
+  migrate:
+    cpus: 1.0
+    mem_limit: 2g
+
   api:
+    cpus: 1.0
+    mem_limit: 768m
     ports:
       - "127.0.0.1:${API_BIND_PORT:-3080}:3000"
 

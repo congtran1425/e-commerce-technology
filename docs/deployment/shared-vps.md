@@ -6,6 +6,7 @@
 
 - Mã nguồn: `/opt/apps/bep-du-banh/repo`; cấu hình bí mật: `/opt/apps/bep-du-banh/config` (không nằm trong Git); dữ liệu PostgreSQL: volume riêng của Compose.
 - Tên dự án Compose: `mot-me-banh`. API chỉ mở `127.0.0.1:3080` trên VPS; PostgreSQL không công bố cổng. Các cổng 9000 trở lên dành cho dự án của người cùng dùng máy.
+- Giới hạn ban đầu trên máy 2 CPU/11 GiB RAM: API 1 CPU/768 MiB, PostgreSQL 1 CPU/1536 MiB, tác vụ migration 1 CPU/2 GiB. Đây là trần sử dụng, không phải tài nguyên được giữ riêng; theo dõi rồi điều chỉnh nếu tải thực tế thay đổi.
 - Nginx hiện tại là chủ cổng công khai; hostname API đã chốt là `apimotmebanh.congtc145.id.vn`. Ngày 25/09/2026, hostname này đã trả `/api/health` qua Cloudflare từ một đường kết nối cũ, **không phải VPS**. Cần xác định và chuyển đường Cloudflare hiện tại một cách có kiểm soát. **Chưa đổi bản ghi DNS, callback ZaloPay hay biến `VITE_API_BASE_URL` trên Vercel** khi chỉ mới kiểm tra API nội bộ.
 - Không thêm tài khoản thường vào nhóm `docker`: quyền đó gần tương đương root trên máy dùng chung.
 
