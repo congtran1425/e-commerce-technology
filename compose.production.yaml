@@ -32,6 +32,12 @@ services:
     environment:
       NODE_ENV: production
       DATABASE_URL: ${DATABASE_URL:?DATABASE_URL chưa được cấu hình}
+      SEED_ADMIN_EMAIL: ${SEED_ADMIN_EMAIL:-}
+      SEED_ADMIN_PASSWORD: ${SEED_ADMIN_PASSWORD:-}
+      SEED_ADMIN_DISPLAY_NAME: ${SEED_ADMIN_DISPLAY_NAME:-}
+      SEED_CUSTOMER_EMAIL: ${SEED_CUSTOMER_EMAIL:-}
+      SEED_CUSTOMER_PASSWORD: ${SEED_CUSTOMER_PASSWORD:-}
+      SEED_CUSTOMER_DISPLAY_NAME: ${SEED_CUSTOMER_DISPLAY_NAME:-}
     depends_on:
       postgres:
         condition: service_healthy
